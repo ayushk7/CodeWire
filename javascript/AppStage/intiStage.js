@@ -1,8 +1,8 @@
 export var AppStage = {
     zoomScale: 1.05,
-    getStage: function (width, height) {
+    getStage: function (width, height, container_name) {
         let stage = new Konva.Stage({
-            container: 'container',
+            container: container_name,
             width: width,
             height: height,
             draggable: true

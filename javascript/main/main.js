@@ -1,10 +1,10 @@
 import {AppStage} from '../AppStage/intiStage.js'
 var width = window.innerWidth;
 var height = window.innerHeight;
-let stage = AppStage.getStage(width, height);
+let stage = AppStage.getStage(width, height, 'container');
 var layer = new Konva.Layer();
 stage.add(layer);
-
+// stage.container().style.backgroundColor = 'linear(';
 for(let i=0; i<200; i++){
     let circle = new Konva.Circle({
         x: Math.floor(Math.random() * 10000),
