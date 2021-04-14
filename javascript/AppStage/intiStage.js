@@ -5,7 +5,7 @@ export var AppStage = {
             container: container_name,
             width: width,
             height: height,
-            draggable: true
+            // draggable: true
         });
         this.zoomScale = 1.05;
         stage.on('wheel', (e) => {
@@ -22,7 +22,7 @@ export var AppStage = {
             // console.log("mousePointTo: " + mousePointTo.x + " " + mousePointTo.y);
             var newScale =
                 e.evt.deltaY > 0 ? oldScale / this.zoomScale : oldScale * this.zoomScale;
-
+            // console.log(stage.x() + pointer.x + " " + stage.y() + pointer.y)
             stage.scale({ x: newScale, y: newScale });
 
             var newPos = {
@@ -31,6 +31,16 @@ export var AppStage = {
             };
             stage.position(newPos);
             stage.batchDraw();
+        });
+        stage.on('mousedown', function(e){
+            if(e.target === stage){
+                stage.draggable(true);
+            }
+        });
+        stage.on('mouseup', function(e){
+            if(e.target === stage){
+                stage.draggable(false);
+            }
         });
         return stage;
     }
