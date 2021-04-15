@@ -32,8 +32,21 @@ export var AppStage = {
             stage.position(newPos);
             stage.batchDraw();
         });
+        stage.container().tabIndex = 1;
+        stage.container().focus();
+        let canDragStage = false;
+        stage.container().addEventListener('keydown', e => {
+            e.preventDefault();
+            if(e.code == 'ShiftLeft')
+                canDragStage = true;
+        });
+        stage.container().addEventListener('keyup', e => {
+            e.preventDefault();
+            if(e.code == 'ShiftLeft')
+                canDragStage = false;
+        });
         stage.on('mousedown', function(e){
-            if(e.target === stage){
+            if(e.target === stage && canDragStage){
                 stage.draggable(true);
             }
         });
