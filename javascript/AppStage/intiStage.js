@@ -53,6 +53,7 @@ export var AppStage = {
         stage.on('mouseup', function(e){
             if(e.target === stage){
                 stage.draggable(false);
+                canDragStage = false;
             }
         });
         return stage;
