@@ -29,9 +29,16 @@ export var AppStage = {
                 x: pointer.x - mousePointTo.x * newScale,
                 y: pointer.y - mousePointTo.y * newScale,
             };
+            stage.container().style.backgroundSize = `${stage.scaleX() * 100}%`;
+            // console.log(stage.container().style.backgroundSize);
             stage.position(newPos);
             stage.batchDraw();
+            stage.container().style.backgroundPosition = `${stage.position().x}px ${stage.position().y}px`;
         });
+        stage.on('dragmove', () => {
+            // console.log(stage.position(), stage.container().style.backgroundPosition);
+            stage.container().style.backgroundPosition = `${stage.position().x}px ${stage.position().y}px`;            
+        })
         stage.container().tabIndex = 1;
         stage.container().focus();
         let canDragStage = false;

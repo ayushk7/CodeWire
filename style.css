@@ -9,9 +9,13 @@ html{
 }
 #container {
     overflow: hidden;
-    background-size: 100px 100px;
-    background-color: #f0f0f0;
-    background-image: url(images/296010.png)
+    /* background-size: 100px 100px; */
+    background-color: white;
+background-image: url("images/296010.png");
+background-position: 0px 0px;
+/* background-size: 50%; */
+  }
+  #container:first-child{
   }
   #context-menu{
     display: none;
@@ -28,3 +32,13 @@ html{
     color: white;
     
   }
+input{
+  position: absolute;
+  display: none;
+  top:0;
+  left:0;
+  width: 3rem;
+  /* height: 3rem; */
+  transform: scale(1);
+  font-family: monospace;
+}
