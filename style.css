@@ -9,11 +9,10 @@ html{
 }
 #container {
     overflow: hidden;
-    /* background-size: 100px 100px; */
     background-color: white;
-background-image: url("images/296010.png");
-background-position: 0px 0px;
-/* background-size: 50%; */
+    background-image: url("images/296010.png");
+    background-position: 0px 0px;
+    background-size: 100%;
   }
   #container:first-child{
   }
