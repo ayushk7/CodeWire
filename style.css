@@ -2,19 +2,18 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: sans-serif;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 html{
   font-size: 10px;
 }
 #container {
     overflow: hidden;
-    background-color: white;
-    background-image: url("images/296010.png");
+    background-color: #2d2d38;
+    background-image: url("images/white2.png");
     background-position: 0px 0px;
-    background-size: 100%;
-  }
-  #container:first-child{
+    background-size: 50%;
+    /* background-repeat:initial; */
   }
   #context-menu{
     display: none;
@@ -24,7 +23,9 @@ html{
     border-radius: 2px;
     cursor:pointer;
     font-size: 1.5rem;
-    width: 10rem;
+    width: 20rem;
+    height: 20rem;
+    overflow: auto;
   }
   .context-menu-items:hover{
     background-color: #111;
