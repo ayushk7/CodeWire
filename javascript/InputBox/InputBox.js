@@ -36,7 +36,7 @@ export var InputBox = class{
         }
         else
         {
-            defaultValue = "0";
+            defaultValue = `"0"`;
             htmlInputBox = document.getElementById("string-ip");            
         }
         text.text(defaultValue);
@@ -62,7 +62,11 @@ export var InputBox = class{
         htmlInputBox.addEventListener("input", () => {
             if(this.focused)
             {
-                text.text(htmlInputBox.value);
+                if(type != "String" && type != "Data")
+                    text.text(htmlInputBox.value);
+                else {
+                    text.text(`"${htmlInputBox.value}"`);
+                }
             }
         });
         inputPin.on("wireconnected", (e) => {

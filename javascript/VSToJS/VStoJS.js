@@ -37,7 +37,7 @@ export var VSToJS = class {
                 X.push({ node: aNode.wire.attrs.src.getParent(), isWire: true });
             }
             else {
-                // console.log(aNode);
+                console.log(aNode);
                 X.push({ node: aNode.textBox.textBox.text(), isWire: false });
             }
         }

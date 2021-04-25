@@ -34,6 +34,7 @@ export class leftPanel {
                 }
                 else {
                     value = document.getElementById("variable-default-value").value.toString();
+                    value = `"${value}"`;
                 }
                 if (value == 0 || value) {
                     this.variables[variableName] = {
