@@ -30,7 +30,7 @@ export var Wiring = {
         let wireColor = null;
         stage.add(templayer2);
         stage.on('mousedown', (e) => {
-            if (e.target.name() == 'pin') {
+            if (e.target.name() == 'pin' && e.evt.button == 0) {
                 src = e.target;
                 // console.log("clicked " + src.attrs.pinType);
                 currentPinType = e.target.attrs.pinType;
@@ -72,7 +72,8 @@ export var Wiring = {
             }
         });
         stage.on('mouseup', (e) => {
-            if (src && src.name() == 'pin') {
+            // console.table(e);
+            if (src && src.name() == 'pin' && e.evt.button == 0) {
                 if (potentialTarget) {
                     target = potentialTarget;
                     let srcLoc = this.placeLocation(src.getAbsolutePosition(), stage);
@@ -170,7 +171,7 @@ export var Wiring = {
             }
         });
         stage.on('mouseover', (e) => {
-            if (e.target && src && e.target.name() == 'pin' && src != e.target && isValidMatch(e.target.attrs.pinType, e.target.attrs.pinDataType)) {
+            if (e.target && src && e.target.name() == 'pin' && src != e.target && src.getParent() !== e.target.getParent() && isValidMatch(e.target.attrs.pinType, e.target.attrs.pinDataType)) {
                 potentialTarget = e.target;
                 let srcLoc = this.placeLocation(src.getAbsolutePosition(), stage);
                 let destLoc = this.placeLocation(stage.getPointerPosition(), stage);

@@ -7,13 +7,26 @@
 html{
   font-size: 10px;
 }
+.main{
+  display: flex;
+  align-items: center;
+}
+#left-panel{
+  flex: 1;
+  height: 100vh;
+  background-color: #2d2d38;
+}
+
 #container {
-    overflow: hidden;
-    background-color: #2d2d38;
-    background-image: url("images/white2.png");
-    background-position: 0px 0px;
-    background-size: 50%;
-    /* background-repeat:initial; */
+  height: 100vh;
+  flex: 4;
+  overflow: hidden;
+  border: #f0f0f0 solid 7px;
+  background-color: #2d2d38;
+  background-image: url("images/white2.png");
+  background-position: 0px 0px;
+  background-size: 50%;
+  /* background-repeat:initial; */
   }
   #context-menu{
     display: none;
@@ -32,13 +45,36 @@ html{
     color: white;
     
   }
-input{
+.ip{
+  display:none;
   position: absolute;
-  display: none;
-  top:0;
-  left:0;
-  width: 3rem;
-  /* height: 3rem; */
-  transform: scale(1);
-  font-family: monospace;
+  left: 0;
+  top: 0;
+  width: 50px;
+  height: 14px;
+  transform-origin: top left;
+
+  /* transform: scaleY(2); */
+}
+#run{
+  position: absolute;
+  font-size: 15px;
+  top: 20px;
+  right: 40px;
+  width: 80px;
+  height: 40px;
+  background-color: #2d2d38;
+  z-index: 10;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: white solid 2px;
+  cursor: pointer;
+  user-select: none;
+  /* box-shadow: 0 0 20px rgba(255, 254, 254, 0.15); */
+}
+#run:hover{
+  color: #2d2d38;
+  background-color: white;
 }

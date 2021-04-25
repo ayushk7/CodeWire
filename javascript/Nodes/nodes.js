@@ -1,5 +1,4 @@
 let placeLocation = function (location) {
-    // console.log(this);
     //"this" is stage
     return {
         x: (location.x - this.x()) / this.scaleX(),
@@ -9,7 +8,7 @@ let placeLocation = function (location) {
 let colorMap = {
     'Number': '#00ffff',
     'String': '#aaff00',
-    'Boolean': '#e60000', 
+    'Boolean': '#e60000',
     'Data': '#ffb3ff'
 }
 export var Nodes = {
@@ -25,8 +24,8 @@ export var Nodes = {
             id: id,
             name: 'pin',
             offsetX: -7,
-            pinType: (inType) ? 'exec-in': 'exec-out',
-            pinDataType:null,
+            pinType: (inType) ? 'exec-in' : 'exec-out',
+            pinDataType: null,
         });
         return pin;
     },
@@ -41,13 +40,13 @@ export var Nodes = {
         });
         return rect;
     },
-    getInputPin: function(inType, id, type){
+    getInputPin: function (inType, id, type) {
         let pin = new Konva.Circle({
             radius: 7,
             stroke: colorMap[type],
             strokeWidth: '2',
             name: 'pin',
-            pinType: (inType) ? 'inp': 'outp',
+            pinType: (inType) ? 'inp' : 'outp',
             pinDataType: type,
             id: id,
         });
@@ -63,7 +62,7 @@ export var Nodes = {
     //     });
     //     return pin;
     // },
-    getLabel: function(text, size, width){
+    getLabel: function (text, size, width) {
         let rect = new Konva.Rect({
             width: width,
             height: size + 3,
@@ -72,63 +71,113 @@ export var Nodes = {
         });
         let label = new Konva.Text({
             text: text,
-            fontSize: size-2,
+            fontSize: size - 2,
             fontFamily: 'Verdana',
             fill: 'black',
             width: width,
-            height: size+3,
+            height: size + 3,
             align: 'center',
             padding: 3,
             // padding: 10
         });
-        return {bg: rect, text: label};   
+        return { bg: rect, text: label };
     },
-    getPinCounts: function(nodeDescription){
+    getPinCounts: function (nodeDescription) {
         let inputPinCounts = 0;
         let outputPinCounts = 0;
-        if(nodeDescription.execIn) 
+        if (nodeDescription.execIn)
             inputPinCounts++;
-        if(nodeDescription.inputs)
-        {
+        if (nodeDescription.inputs) {
             inputPinCounts += Object.keys(nodeDescription.inputs).length;
         }
-        
+
         //For outputs
-        if(nodeDescription.execOut)
-        {
+        if (nodeDescription.execOut) {
             outputPinCounts += Object.keys(nodeDescription.execOut).length;
         }
-        if(nodeDescription.outputs)
-        {
+        if (nodeDescription.outputs) {
             outputPinCounts += Object.keys(nodeDescription.outputs).length;
 
         }
         return Math.max(inputPinCounts, outputPinCounts);
     },
-    getEditableTextBox: function(type){
+    getEditableTextBox: function (type, stage, index) {
         let rect = new Konva.Rect({
-            width: (type == 'Boolean' )? 18: 50,
-            height: 18,
+            width: (type == 'Boolean') ? 14 : 50,
+            height: 14,
             stroke: colorMap[type],
             strokeWidth: 1,
         });
-        rect.on('click', () => {
-            console.log(rect.absolutePosition());
-        })
+        // let insideText = new Konva.Text({
+        //     width: (type == 'Boolean') ? 14 : 50,
+        //     fontSize : 10,
+        //     fill: "black",
+        //     height: 12,
+        //     fontFamily: 'Verdana',
+        //     text: '',            
+        // })
+        // rect.on('click', (e) => {
+        //     // console.log(rect.absolutePosition());
+        //     if(type == 'Number')
+        //     {   
+        //         console.log(index);
+        //         inputIsFocused = rect.getParent().customClass.inputPins[index].value;
+        //         console.log(inputIsFocused);
+        //         let ipbox = document.getElementById("number-ip");
+        //         ipbox.style.display = "inline-block";
+        //         ipbox.style.transform = `scale(${stage.scaleX()})`;
+        //         // console.log(document.getElementById("container"));
+        //         ipbox.style.left = stage.getContainer().getBoundingClientRect().x + rect.absolutePosition().x + 7 + "px";
+        //         ipbox.style.top =  stage.getContainer().getBoundingClientRect().y + rect.absolutePosition().y + 7 + "px";
+        //         ipbox.focus();
+        //         // console.log(ipbox.style.left, ipbox.style.top, stage.getContainer().getBoundingClientRect().x, stage.getContainer().getBoundingClientRect().y);
+        //     }
+        // });
         return rect;
+    },
+    getInputLabel: function (labelText, type)
+    {
+        let text = new Konva.Text({
+            width: 40,
+            height: 14,
+            text: labelText,
+            fontSize: 11,
+            fontFamily: 'Verdana',
+            fill: colorMap[type],
+        });
+        // text.off()
+        return text;
+    },
+    getExecOutTitle: function(labelText)
+    {
+        let text = new Konva.Text({
+            width: 60,
+            height: 14,
+            fontSize: 11,
+            text: labelText,
+            fontFamily: 'Verdana',
+            fill: "white",
+        });
+        return text;
     },
     ProgramNode: class {
         constructor(nodeDescription, location, layer, stage) {
+            
+            
+            
             this.grp = new Konva.Group({
-                draggable: true
+                draggable: true,
             });
+            if (nodeDescription.nodeTitle == 'Begin') {
+                this.grp.id('Begin');
+            } 
             this.grp.customClass = this;
             this.grp.on('dblclick', (e) => {
-                console.log(e);
+                console.table(e.currentTarget.customClass);
             })
             let relativePosition = placeLocation.bind(stage);
             let maxOfPinsOnEitherSide = Nodes.getPinCounts(nodeDescription);
-            let height = maxOfPinsOnEitherSide * 50 + 5;
+            let height = maxOfPinsOnEitherSide * 50 + 10;
             let width = nodeDescription.colums * 15;
             this.grp.position(relativePosition(location));
             let rect = Nodes.getRectBlock(height, width);
@@ -142,21 +191,31 @@ export var Nodes = {
             this.execInPins = [];
             if (nodeDescription.execIn == true) {
                 let execInPin = Nodes.getExecPin(true, 'exec-in-0');
-                execInPin.position({x: 14, y: 44});
+                execInPin.position({ x: 14, y: 44 });
                 this.grp.add(execInPin);
                 let tmp = {
                     thisNode: execInPin,
-                    wire: [], 
+                    wire: [],
                 }
                 this.execInPins.push(tmp);
                 inputPinsPlaced = 1;
+            }
+            this.type = {
+                isGetSet: (nodeDescription.nodeTitle.slice(0, 3) == 'Get' || nodeDescription.nodeTitle.slice(0, 3) == 'Set'),
+                typeOfNode: nodeDescription.nodeTitle,
             }
             this.execOutPins = [];
             if (nodeDescription.execOut) {
                 Object.keys(nodeDescription.execOut).forEach((value, index) => {
                     let execOutPin = Nodes.getExecPin(false, `exec-out-${index}`);
-                    execOutPin.position({x: width - 14, y: 44 + index * 39});
+                    execOutPin.position({ x: width - 14, y: 44 + index * 39 });
                     this.grp.add(execOutPin);
+                    if(nodeDescription.execOut[value].execOutTitle)
+                    {
+                        let exLabel = Nodes.getExecOutTitle(nodeDescription.execOut[value].execOutTitle);
+                        exLabel.position({ x: width - 84, y: 44 + index * 39 - 4});
+                        this.grp.add(exLabel);
+                    }
                     let tmp = {
                         thisNode: execOutPin,
                         wire: null,
@@ -167,12 +226,15 @@ export var Nodes = {
                 });
             }
             this.inputPins = [];
-            if(nodeDescription.inputs){
+            if (nodeDescription.inputs) {
                 Object.keys(nodeDescription.inputs).forEach((value, index) => {
                     let inputPin = Nodes.getInputPin(true, `inp-${index}`, nodeDescription.inputs[value].dataType);
-                    inputPin.position({x: 14, y: 44 + 39 * inputPinsPlaced});
-                    let iprect = Nodes.getEditableTextBox(nodeDescription.inputs[value].dataType);
-                    iprect.position({x: 28, y: 44 + 39 * inputPinsPlaced - 9});
+                    inputPin.position({ x: 14, y: 44 + 39 * inputPinsPlaced });
+                    let iprect = Nodes.getEditableTextBox(nodeDescription.inputs[value].dataType, stage, index);
+                    iprect.position({ x: 28, y: 44 + 39 * inputPinsPlaced - 2 });                    
+                    let iplabel = Nodes.getInputLabel(nodeDescription.inputs[value].inputTitle, nodeDescription.inputs[value].dataType);
+                    iplabel.position({x: 28, y: 44 + 39 * inputPinsPlaced - 14});
+                    this.grp.add(iplabel);
                     this.grp.add(inputPin);
                     this.grp.add(iprect);
                     let tmp = {
@@ -186,11 +248,14 @@ export var Nodes = {
                 });
             }
             this.outputPins = [];
-            if(nodeDescription.outputs){
+            if (nodeDescription.outputs) {
                 Object.keys(nodeDescription.outputs).forEach((value, index) => {
                     let outputPin = Nodes.getInputPin(false, `out-${index}`, nodeDescription.outputs[value].dataType);
-                    outputPin.position({x: width - 14, y: 44 + 39 * outputPinsPlaced});
+                    outputPin.position({ x: width - 14, y: 44 + 39 * outputPinsPlaced });
                     this.grp.add(outputPin);
+                    let outLabel = Nodes.getInputLabel(nodeDescription.outputs[value].outputTitle, nodeDescription.outputs[value].dataType);
+                    outLabel.position({x: width - 60, y: 44 + 39 * outputPinsPlaced - 4})
+                    this.grp.add(outLabel);
                     let tmp = {
                         wire: [],
                         value: null,
@@ -204,12 +269,12 @@ export var Nodes = {
             layer.draw();
         }
     },
-    
 
 
 
 
-    CreateNode: function (type, location, layer, stage) {
+
+    CreateNode: function (type, location, layer, stage, isGetSet, dataType) {
         let nodeDescription = {};
         if (type == 'Begin') {
             nodeDescription.nodeTitle = 'Begin';
@@ -239,15 +304,15 @@ export var Nodes = {
             nodeDescription.rows = 3;
             nodeDescription.colums = 12;
         }
-        if(type == 'Branch'){
+        if (type == 'Branch') {
             nodeDescription.nodeTitle = 'Branch';
             nodeDescription.execIn = true;
             nodeDescription.execOut = {
                 execOut0: {
-                    execOutTitle: 'True',
+                    execOutTitle: '       True',
                 },
                 execOut1: {
-                    execOutTitle: 'False',
+                    execOutTitle: '       False',
                 }
             }
             nodeDescription.inputs = {
@@ -267,7 +332,7 @@ export var Nodes = {
                     dataType: 'Number',
                 },
                 input1: {
-                    inputTitle: 'ValueB',   
+                    inputTitle: 'ValueB',
                     dataType: 'Number',
                 }
             }
@@ -288,7 +353,7 @@ export var Nodes = {
                     dataType: 'Number',
                 },
                 input1: {
-                    inputTitle: 'ValueB',   
+                    inputTitle: 'ValueB',
                     dataType: 'Number',
                 }
             }
@@ -309,7 +374,7 @@ export var Nodes = {
                     dataType: 'Number',
                 },
                 input1: {
-                    inputTitle: 'ValueB',   
+                    inputTitle: 'ValueB',
                     dataType: 'Number',
                 }
             }
@@ -330,7 +395,7 @@ export var Nodes = {
                     dataType: 'Number',
                 },
                 input1: {
-                    inputTitle: 'ValueB',   
+                    inputTitle: 'ValueB',
                     dataType: 'Number',
                 }
             }
@@ -361,7 +426,7 @@ export var Nodes = {
                 }
             }
             nodeDescription.rows = 2;
-            nodeDescription.colums = 10;
+            nodeDescription.colums = 12;
         }
 
         if (type == 'OR') {
@@ -380,7 +445,8 @@ export var Nodes = {
             }
             nodeDescription.outputs = {
                 output0: {
-                    outputTitle: 'Boolean',
+                    outputTitle: 'Result',
+                    dataType: 'Boolean'
                 }
             }
             nodeDescription.rows = 2;
@@ -409,8 +475,123 @@ export var Nodes = {
             nodeDescription.rows = 2;
             nodeDescription.colums = 10;
         }
+        if(type == "Equals"){
+            nodeDescription.nodeTitle = 'Equals';
+            nodeDescription.inputs = {
+                input0: {
+                    inputTitle: 'ValueA',
+                    dataType: 'Data'
+
+                },
+                input1: {
+                    inputTitle: 'ValueB',
+                    dataType: 'Data'
+
+                }
+            }
+            nodeDescription.outputs = {
+                output0: {
+                    outputTitle: 'Result',
+                    dataType: 'Boolean'
+                }
+            }
+            nodeDescription.rows = 2;
+            nodeDescription.colums = 10;
+        }
+        if(type == "LessEq"){
+            nodeDescription.nodeTitle = 'LessEq';
+            nodeDescription.inputs = {
+                input0: {
+                    inputTitle: 'ValueA',
+                    dataType: 'Number'
+
+                },
+                input1: {
+                    inputTitle: 'ValueB',
+                    dataType: 'Number'
+
+                }
+            }
+            nodeDescription.outputs = {
+                output0: {
+                    outputTitle: 'Result',
+                    dataType: 'Boolean'
+                }
+            }
+            nodeDescription.rows = 2;
+            nodeDescription.colums = 10;
+        }
+        if(type == "Less"){
+            nodeDescription.nodeTitle = 'Less';
+            nodeDescription.inputs = {
+                input0: {
+                    inputTitle: 'ValueA',
+                    dataType: 'Number'
+
+                },
+                input1: {
+                    inputTitle: 'ValueB',
+                    dataType: 'Number'
+
+                }
+            }
+            nodeDescription.outputs = {
+                output0: {
+                    outputTitle: 'Result',
+                    dataType: 'Boolean'
+                }
+            }
+            nodeDescription.rows = 2;
+            nodeDescription.colums = 10;
+        }
+        if(type == "Greater"){
+            nodeDescription.nodeTitle = 'Greater';
+            nodeDescription.inputs = {
+                input0: {
+                    inputTitle: 'ValueA',
+                    dataType: 'Number'
+
+                },
+                input1: {
+                    inputTitle: 'ValueB',
+                    dataType: 'Number'
+
+                }
+            }
+            nodeDescription.outputs = {
+                output0: {
+                    outputTitle: 'Result',
+                    dataType: 'Boolean'
+                }
+            }
+            nodeDescription.rows = 2;
+            nodeDescription.colums = 10;
+        }
+        if(type == "GreaterEq"){
+            nodeDescription.nodeTitle = 'GreaterEq';
+            nodeDescription.inputs = {
+                input0: {
+                    inputTitle: 'ValueA',
+                    dataType: 'Number'
+
+                },
+                input1: {
+                    inputTitle: 'ValueB',
+                    dataType: 'Number'
+
+                }
+            }
+            nodeDescription.outputs = {
+                output0: {
+                    outputTitle: 'Result',
+                    dataType: 'Boolean'
+                }
+            }
+            nodeDescription.rows = 2;
+            nodeDescription.colums = 10;
+        }
         if (type == 'NEG') {
-            nodeDescription.nodeTitle = 'Negation';
+            nodeDescription.nodeTitle = 'NEG';
             nodeDescription.inputs = {
                 input0: {
                     inputTitle: 'Value',
@@ -419,15 +600,15 @@ export var Nodes = {
             }
             nodeDescription.outputs = {
                 output0: {
-                    outputTitle: 'Negated Value',
+                    outputTitle: 'Value',
                     dataType: 'Boolean'
                 }
             }
             nodeDescription.rows = 2;
             nodeDescription.colums = 10;
         }
-        if(type == 'SetVariable'){
-            nodeDescription.nodeTitle = 'SetVariable';
+        if (isGetSet == "Set") {
+            nodeDescription.nodeTitle = type;
             nodeDescription.execIn = true;
             nodeDescription.execOut = {
                 execOut0: {
@@ -437,34 +618,34 @@ export var Nodes = {
             nodeDescription.inputs = {
                 input0: {
                     inputTitle: 'Value',
-                    dataType: 'Data'
+                    dataType: dataType,
                 },
             }
             nodeDescription.outputs = {
                 output0: {
                     outputTitle: 'Value',
-                    dataType: 'Data'
+                    dataType: dataType,
                 }
             }
             nodeDescription.rows = 2;
             nodeDescription.colums = 10;
         }
-        if(type == 'GetVariable'){
-            nodeDescription.nodeTitle = 'GetVariable';
+        if (isGetSet == "Get") {
+            nodeDescription.nodeTitle = type;
             nodeDescription.outputs = {
                 output0: {
                     outputTitle: 'Value',
-                    dataType: 'Data'
+                    dataType: dataType,
                 }
             }
             nodeDescription.rows = 2;
             nodeDescription.colums = 10;
         }
-        if(type == 'GetRandom'){
-            nodeDescription.nodeTitle = 'GetRandom';
+        if (type == 'Random') {
+            nodeDescription.nodeTitle = 'Random';
             nodeDescription.outputs = {
                 output0: {
-                    outputTitle: 'Random Number',
+                    outputTitle: 'Rand',
                     dataType: 'Number'
 
                 }
@@ -472,7 +653,7 @@ export var Nodes = {
             nodeDescription.rows = 2;
             nodeDescription.colums = 10;
         }
-        if(type == 'For'){
+        if (type == 'For') {
             nodeDescription.nodeTitle = 'For';
             nodeDescription.execIn = true;
             nodeDescription.execOut = {
@@ -480,9 +661,6 @@ export var Nodes = {
                     execOutTitle: 'Loop Body',
                 },
                 execOut1: {
-                    execOutTitle: 'Break',
-                },
-                execOut2: {
                     execOutTitle: 'Completed',
                 }
             }
@@ -496,18 +674,25 @@ export var Nodes = {
                     dataType: 'Number'
                 },
                 input2: {
-                    inputTitle: 'Increment',
+                    inputTitle: 'Incr',
                     dataType: 'Number'
                 }
             }
             nodeDescription.outputs = {
                 output0: {
-                    outputTitle: 'Loop Index',
+                    outputTitle: 'Index',
                     dataType: 'Number'
                 }
             }
             nodeDescription.rows = 2;
             nodeDescription.colums = 12;
+        }
+        if(type == "Break")
+        {
+            nodeDescription.nodeTitle = 'Break';
+            nodeDescription.execIn = true;
+            nodeDescription.rows = 2;
+            nodeDescription.colums = 10;
         }
         new this.ProgramNode(nodeDescription, location, layer, stage);
 
