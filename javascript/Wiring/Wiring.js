@@ -75,6 +75,7 @@ export var Wiring = {
             // console.table(e);
             if (src && src.name() == 'pin' && e.evt.button == 0) {
                 if (potentialTarget) {
+
                     target = potentialTarget;
                     let srcLoc = this.placeLocation(src.getAbsolutePosition(), stage);
                     let destLoc = this.placeLocation(potentialTarget.getAbsolutePosition(), stage);
@@ -155,6 +156,22 @@ export var Wiring = {
                         lineClone.points([sLoc.x, sLoc.y, mmid1.x, mmid1.y, mmid2.x, mmid2.y, dLoc.x, dLoc.y]);
                         layer.draw();
                     });
+                    lineClone.attrs.dest.fire(
+                        'wireconnected',
+                        {
+                            type: 'wireconnected',
+                            target: lineClone.attrs.dest,
+                        }
+                    )
+                    lineClone.attrs.src.fire(
+                        'wireconnected',
+                        {
+                            type: 'wireconnected',
+                            target: lineClone.attrs.src,
+                        }
+                    )
+
+
                     layer.draw();
                 }
                 src.getParent().draggable(true);

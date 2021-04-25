@@ -45,7 +45,7 @@ html{
     color: white;
     
   }
-.ip{
+.ipn, .ips{
   display:none;
   position: absolute;
   left: 0;
@@ -53,8 +53,21 @@ html{
   width: 50px;
   height: 14px;
   transform-origin: top left;
-
+  opacity: 0.5;
+  outline: none;
+  caret-color: red;
   /* transform: scaleY(2); */
+}
+.ipb{
+  display:none;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 40px;
+  height: 14px;
+  transform-origin: top left;
+  opacity: 0.5;
+  outline: none;
 }
 #run{
   position: absolute;

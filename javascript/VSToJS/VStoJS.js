@@ -9,6 +9,13 @@ export var VSToJS = class {
         this.coreAlgorithm(begin);
         // console.log(begin);
         console.log(this.script);
+        try{
+            eval(this.script);
+        }
+        catch
+        {
+            console.log("error");
+        }
     }
     getBegin(stage) {
         let X = stage.findOne("#Begin");
@@ -26,8 +33,13 @@ export var VSToJS = class {
     getInputPins(node) {
         let X = [];
         for (let aNode of node.customClass.inputPins) {
-            if (aNode.wire)
-                X.push(aNode.wire.attrs.src.getParent());
+            if (aNode.wire) {
+                X.push({ node: aNode.wire.attrs.src.getParent(), isWire: true });
+            }
+            else {
+                // console.log(aNode);
+                X.push({ node: aNode.textBox.textBox.text(), isWire: false });
+            }
         }
         return X;
     }
@@ -111,12 +123,15 @@ export var VSToJS = class {
     }
     handleInputs(inputNode) {
 
-        let inputPins = this.getInputPins(inputNode);
-        if (inputNode.customClass.type.isGetSet) {
-            return `(${inputNode.customClass.type.typeOfNode.slice(4)})`;
+        if (!inputNode.isWire) {
+            return inputNode.node;
+        }
+        let inputPins = this.getInputPins(inputNode.node);
+        if (inputNode.node.customClass.type.isGetSet) {
+            return `(${inputNode.node.customClass.type.typeOfNode.slice(4)})`;
         }
         let expr = ``;
-        switch (inputNode.customClass.type.typeOfNode) {
+        switch (inputNode.node.customClass.type.typeOfNode) {
             case "Add": {
                 expr = `(${this.handleInputs(inputPins[0])} + ${this.handleInputs(inputPins[1])})`;
             }
@@ -173,7 +188,6 @@ export var VSToJS = class {
                 expr = `(${this.handleInputs(inputPins[0])} >= ${this.handleInputs(inputPins[1])})`;
             }
                 break;
-
         }
         return expr;
     }

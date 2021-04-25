@@ -1,3 +1,4 @@
+import {InputBox} from '../InputBox/InputBox.js'
 let placeLocation = function (location) {
     //"this" is stage
     return {
@@ -101,40 +102,15 @@ export var Nodes = {
         }
         return Math.max(inputPinCounts, outputPinCounts);
     },
-    getEditableTextBox: function (type, stage, index) {
-        let rect = new Konva.Rect({
-            width: (type == 'Boolean') ? 14 : 50,
-            height: 14,
-            stroke: colorMap[type],
-            strokeWidth: 1,
-        });
-        // let insideText = new Konva.Text({
-        //     width: (type == 'Boolean') ? 14 : 50,
-        //     fontSize : 10,
-        //     fill: "black",
-        //     height: 12,
-        //     fontFamily: 'Verdana',
-        //     text: '',            
-        // })
-        // rect.on('click', (e) => {
-        //     // console.log(rect.absolutePosition());
-        //     if(type == 'Number')
-        //     {   
-        //         console.log(index);
-        //         inputIsFocused = rect.getParent().customClass.inputPins[index].value;
-        //         console.log(inputIsFocused);
-        //         let ipbox = document.getElementById("number-ip");
-        //         ipbox.style.display = "inline-block";
-        //         ipbox.style.transform = `scale(${stage.scaleX()})`;
-        //         // console.log(document.getElementById("container"));
-        //         ipbox.style.left = stage.getContainer().getBoundingClientRect().x + rect.absolutePosition().x + 7 + "px";
-        //         ipbox.style.top =  stage.getContainer().getBoundingClientRect().y + rect.absolutePosition().y + 7 + "px";
-        //         ipbox.focus();
-        //         // console.log(ipbox.style.left, ipbox.style.top, stage.getContainer().getBoundingClientRect().x, stage.getContainer().getBoundingClientRect().y);
-        //     }
-        // });
-        return rect;
-    },
+    // getEditableTextBox: function (type, stage, index) {
+    //     let rect = new Konva.Rect({
+    //         width: (type == 'Boolean') ? 14 : 50,
+    //         height: 14,
+    //         stroke: colorMap[type],
+    //         strokeWidth: 1,
+    //     });
+    //     return rect;
+    // },
     getInputLabel: function (labelText, type)
     {
         let text = new Konva.Text({
@@ -230,16 +206,17 @@ export var Nodes = {
                 Object.keys(nodeDescription.inputs).forEach((value, index) => {
                     let inputPin = Nodes.getInputPin(true, `inp-${index}`, nodeDescription.inputs[value].dataType);
                     inputPin.position({ x: 14, y: 44 + 39 * inputPinsPlaced });
-                    let iprect = Nodes.getEditableTextBox(nodeDescription.inputs[value].dataType, stage, index);
-                    iprect.position({ x: 28, y: 44 + 39 * inputPinsPlaced - 2 });                    
+                    // iprect.position({ x: 28, y: 44 + 39 * inputPinsPlaced - 2 });
+                    let iprect = new InputBox(stage, layer, nodeDescription.inputs[value].dataType, this.grp, { x: 28, y: 44 + 39 * inputPinsPlaced - 2 }, colorMap, inputPin);
                     let iplabel = Nodes.getInputLabel(nodeDescription.inputs[value].inputTitle, nodeDescription.inputs[value].dataType);
                     iplabel.position({x: 28, y: 44 + 39 * inputPinsPlaced - 14});
                     this.grp.add(iplabel);
                     this.grp.add(inputPin);
-                    this.grp.add(iprect);
+                    // this.grp.add(iprect);
                     let tmp = {
                         thisNode: inputPin,
                         wire: null,
+                        textBox: iprect,
                         value: null,
                         title: value.inputTitle,
                     }
@@ -317,7 +294,7 @@ export var Nodes = {
             }
             nodeDescription.inputs = {
                 input0: {
-                    inputTitle: 'Condition',
+                    inputTitle: 'Bool',
                     dataType: 'Boolean',
                 }
             }
@@ -413,7 +390,7 @@ export var Nodes = {
             nodeDescription.execIn = true;
             nodeDescription.inputs = {
                 input0: {
-                    inputTitle: 'Condition',
+                    inputTitle: 'Bool',
                     dataType: 'Boolean'
                 },
             }
