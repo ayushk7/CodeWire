@@ -112,15 +112,7 @@ html{
   background-color: white;
   opacity: 1;
 }
-a.gh-link{
-  color: white;
-  /* background-color: #2d2d38; */
-}
-a.gh-link:hover{
-  background-color: white;
-  color: #2d2d38;
-  opacity: 1;
-}
+
 
 #console-window{
   position: absolute;
