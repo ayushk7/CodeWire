@@ -20,7 +20,7 @@ export var AppStage = {
             };
             var newScale = oldScale;
             var checkScale = e.evt.deltaY > 0 ? oldScale / AppStage.zoomScale : oldScale * AppStage.zoomScale;
-            if (checkScale > 0.15 && checkScale < 1.6) {
+            if (checkScale > 0.4 && checkScale < 1.6) {
                 newScale = checkScale;
             }
             // console.log(stage.x() + pointer.x + " " + stage.y() + pointer.y)
@@ -30,7 +30,7 @@ export var AppStage = {
                 x: pointer.x - mousePointTo.x * newScale,
                 y: pointer.y - mousePointTo.y * newScale,
             };
-            stage.container().style.backgroundSize = `${stage.scaleX() * 100 * 0.5}%`;
+            stage.container().style.backgroundSize = `${stage.scaleX() * 100 * 0.05}%`;
             stage.position(newPos);
             stage.batchDraw();
             stage.container().style.backgroundPosition = `${stage.position().x}px ${stage.position().y}px`;

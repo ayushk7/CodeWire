@@ -60,6 +60,7 @@ export var Wiring = {
                     src: null,
                     dest: null,
                     // tension: 0.4,
+                    name: "isConnection",
                     bezier: true,
                     // zIndex: -1
                     // fill: 'red'

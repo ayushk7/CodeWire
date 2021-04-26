@@ -14,7 +14,7 @@ let colorMap = {
 }
 export var Nodes = {
     countNodes: 0,
-    getExecPin: function (inType, id) {
+    getExecPin: function (inType, id, layer) {
         // let pointsExecIn = [0, 0, -14, -7, -14, 7];
         // let pointsExecOut = []
         let pin = new Konva.Line({
@@ -28,6 +28,20 @@ export var Nodes = {
             pinType: (inType) ? 'exec-in' : 'exec-out',
             pinDataType: null,
         });
+        pin.on("mouseenter", () => {
+            pin.strokeWidth(3);
+            layer.draw();
+        });
+        pin.on("mouseleave", () => {
+            pin.strokeWidth(1);
+            layer.draw();
+        });
+        pin.on("wireremoved", (e) => {
+            if(e.isPinEmpty)
+            {
+                pin.fill('transparent');
+            }
+        });
         return pin;
     },
     getRectBlock: function (height, width) {
@@ -36,12 +50,12 @@ export var Nodes = {
             width: width,
             fill: 'white',
             opacity: 0.5,
-            cornerRadius: 5
+            cornerRadius: 5,
 
         });
         return rect;
     },
-    getInputPin: function (inType, id, type) {
+    getInputPin: function (inType, id, type, layer) {
         let pin = new Konva.Circle({
             radius: 7,
             stroke: colorMap[type],
@@ -50,6 +64,20 @@ export var Nodes = {
             pinType: (inType) ? 'inp' : 'outp',
             pinDataType: type,
             id: id,
+        });
+        pin.on("mouseenter", () => {
+            pin.strokeWidth(3);
+            layer.draw();
+        });
+        pin.on("mouseleave", () => {
+            pin.strokeWidth(1);
+            layer.draw();
+        });
+        pin.on("wireremoved", (e) => {
+            if(e.isPinEmpty)
+            {
+                pin.fill('transparent');
+            }
         });
         return pin;
     },
@@ -143,6 +171,7 @@ export var Nodes = {
             
             this.grp = new Konva.Group({
                 draggable: true,
+                name: "aProgramNodeGroup",
             });
             if (nodeDescription.nodeTitle == 'Begin') {
                 this.grp.id('Begin');
@@ -158,6 +187,15 @@ export var Nodes = {
             this.grp.position(relativePosition(location));
             let rect = Nodes.getRectBlock(height, width);
             this.grp.add(rect);
+            this.grp.on("mouseenter", (e) => {
+                // console.log(e);
+                rect.opacity(0.55);
+                layer.draw();
+            });
+            this.grp.on("mouseleave", (e) => {
+                rect.opacity(0.5);
+                layer.draw();
+            })
             let titleLabel = Nodes.getLabel(nodeDescription.nodeTitle, 20, width);
             // console.log(titleLabel.width());
             this.grp.add(titleLabel.bg);
@@ -166,7 +204,7 @@ export var Nodes = {
             let inputPinsPlaced = 0, outputPinsPlaced = 0;
             this.execInPins = [];
             if (nodeDescription.execIn == true) {
-                let execInPin = Nodes.getExecPin(true, 'exec-in-0');
+                let execInPin = Nodes.getExecPin(true, 'exec-in-0', layer);
                 execInPin.position({ x: 14, y: 44 });
                 this.grp.add(execInPin);
                 let tmp = {
@@ -183,7 +221,7 @@ export var Nodes = {
             this.execOutPins = [];
             if (nodeDescription.execOut) {
                 Object.keys(nodeDescription.execOut).forEach((value, index) => {
-                    let execOutPin = Nodes.getExecPin(false, `exec-out-${index}`);
+                    let execOutPin = Nodes.getExecPin(false, `exec-out-${index}`, layer);
                     execOutPin.position({ x: width - 14, y: 44 + index * 39 });
                     this.grp.add(execOutPin);
                     if(nodeDescription.execOut[value].execOutTitle)
@@ -204,7 +242,7 @@ export var Nodes = {
             this.inputPins = [];
             if (nodeDescription.inputs) {
                 Object.keys(nodeDescription.inputs).forEach((value, index) => {
-                    let inputPin = Nodes.getInputPin(true, `inp-${index}`, nodeDescription.inputs[value].dataType);
+                    let inputPin = Nodes.getInputPin(true, `inp-${index}`, nodeDescription.inputs[value].dataType, layer);
                     inputPin.position({ x: 14, y: 44 + 39 * inputPinsPlaced });
                     // iprect.position({ x: 28, y: 44 + 39 * inputPinsPlaced - 2 });
                     let iprect = new InputBox(stage, layer, nodeDescription.inputs[value].dataType, this.grp, { x: 28, y: 44 + 39 * inputPinsPlaced - 2 }, colorMap, inputPin);
@@ -227,7 +265,7 @@ export var Nodes = {
             this.outputPins = [];
             if (nodeDescription.outputs) {
                 Object.keys(nodeDescription.outputs).forEach((value, index) => {
-                    let outputPin = Nodes.getInputPin(false, `out-${index}`, nodeDescription.outputs[value].dataType);
+                    let outputPin = Nodes.getInputPin(false, `out-${index}`, nodeDescription.outputs[value].dataType, layer);
                     outputPin.position({ x: width - 14, y: 44 + 39 * outputPinsPlaced });
                     this.grp.add(outputPin);
                     let outLabel = Nodes.getInputLabel(nodeDescription.outputs[value].outputTitle, nodeDescription.outputs[value].dataType);

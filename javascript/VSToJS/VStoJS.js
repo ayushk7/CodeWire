@@ -1,21 +1,76 @@
 export var VSToJS = class {
-    constructor(stage, layer, variables) {
+    constructor(stage, layer, variables, isRunOrCode) {
         this.script = '';
+        this.isRunOrCode = isRunOrCode;
         for (let variable in variables) {
             // console.log(variable);
             this.script += `let ${variables[variable].name} = ${variables[variable].value}; // dataType ${variables[variable].dataType} \n`;
         }
         let begin = this.getBegin(stage);
-        this.coreAlgorithm(begin);
+        if (begin) {
+            this.coreAlgorithm(begin);
+            console.log(this.script);
+            if(this.isRunOrCode == "Run")
+            {
+                document.getElementById("console-window").classList.toggle("hidden", false);
+                let codeDoc = document.getElementById("console").contentWindow.document;
+                codeDoc.open();
+                codeDoc.writeln(
+                    `<!DOCTYPE html>\n
+                    <style>
+                        html{
+                            color: white;
+                            margin: 20;
+                        }
+                    </style>
+                    <script>
+                    try{
+                    ${this.script}
+                    }
+                    catch{
+                        document.write("Error");
+                    }
+                    </script>
+                    </html>
+                    `
+                );
+                codeDoc.close();
+            }
+            else
+            {
+                document.getElementById("console-window").classList.toggle("hidden", false);
+                let codeDoc = document.getElementById("console").contentWindow.document;
+                codeDoc.open();
+                codeDoc.writeln(
+                    `<!DOCTYPE html>\n
+                    <style>
+                        html{
+                            color: white;
+                            margin: 20;
+                        }
+                    </style>
+                    <body>
+                    <code>
+                    ${this.script}
+                    </code>
+                    </body>
+                    </html>
+                    `
+                );
+                codeDoc.close();
+            }
+        }
+        else {
+            alert("include begin node");
+        }
         // console.log(begin);
-        console.log(this.script);
-        try{
-            eval(this.script);
-        }
-        catch
-        {
-            console.log("error");
-        }
+        // try{
+        //     eval(this.script);
+        // }
+        // catch
+        // {
+        //     console.log("error");
+        // }
     }
     getBegin(stage) {
         let X = stage.findOne("#Begin");
@@ -37,7 +92,6 @@ export var VSToJS = class {
                 X.push({ node: aNode.wire.attrs.src.getParent(), isWire: true });
             }
             else {
-                console.log(aNode);
                 X.push({ node: aNode.textBox.textBox.text(), isWire: false });
             }
         }
@@ -65,10 +119,19 @@ export var VSToJS = class {
                 }
                     break;
                 case "Log": {
-                    if (inputPins.length)
-                        this.script += `console.log(${this.handleInputs(inputPins[0])});\n`;
-                    for (let each of execOutPins) {
-                        this.coreAlgorithm(each);
+                    if (this.isRunOrCode == "Code") {
+                        if (inputPins.length)
+                            this.script += `console.log(${this.handleInputs(inputPins[0])});\n`;
+                        for (let each of execOutPins) {
+                            this.coreAlgorithm(each);
+                        }
+                    }
+                    else{
+                        if (inputPins.length)
+                            this.script += `document.write(${this.handleInputs(inputPins[0])} + "<br>");\n`;
+                        for (let each of execOutPins) {
+                            this.coreAlgorithm(each);
+                        }
                     }
                 }
                     break;
