@@ -9,14 +9,14 @@ export var VSToJS = class {
         }
         let begin = this.getBegin(stage);
         if (begin) {
-            this.coreAlgorithm(begin);
-            console.log(this.script);
-            if (this.isRunOrCode == "Run") {
-                document.getElementById("console-window").classList.toggle("hidden", false);
-                let codeDoc = document.getElementById("console").contentWindow.document;
-                codeDoc.open();
-                codeDoc.writeln(
-                    `<!DOCTYPE html>\n
+            try {
+                this.coreAlgorithm(begin);
+                if (this.isRunOrCode == "Run") {
+                    document.getElementById("console-window").classList.toggle("hidden", false);
+                    let codeDoc = document.getElementById("console").contentWindow.document;
+                    codeDoc.open();
+                    codeDoc.writeln(
+                        `<!DOCTYPE html>\n
                     <style>
                         html{
                             color: white;
@@ -27,21 +27,22 @@ export var VSToJS = class {
                     try{
                     ${this.script}
                     }
-                    catch{
-                        document.write("Error");
+                    catch(err){
+                        document.write("Error" + "<br>");
+                        document.write(err);
                     }
                     </script>
                     </html>
                     `
-                );
-                codeDoc.close();
-            }
-            else {
-                document.getElementById("console-window").classList.toggle("hidden", false);
-                let codeDoc = document.getElementById("console").contentWindow.document;
-                codeDoc.open();
-                codeDoc.writeln(
-                    `<!DOCTYPE html>\n
+                    );
+                    codeDoc.close();
+                }
+                else {
+                    document.getElementById("console-window").classList.toggle("hidden", false);
+                    let codeDoc = document.getElementById("console").contentWindow.document;
+                    codeDoc.open();
+                    codeDoc.writeln(
+                        `<!DOCTYPE html>\n
                     <style>
                         html{
                             color: white;
@@ -55,9 +56,34 @@ export var VSToJS = class {
                     </body>
                     </html>
                     `
-                );
-                codeDoc.close();
+                    );
+                    codeDoc.close();
+                }
             }
+            catch(err)
+            {
+                document.getElementById("console-window").classList.toggle("hidden", false);
+                    let codeDoc = document.getElementById("console").contentWindow.document;
+                    codeDoc.open();
+                    codeDoc.writeln(
+                        `<!DOCTYPE html>\n
+                    <style>
+                        html{
+                            color: white;
+                            margin: 20;
+                        }
+                    </style>
+                    <body>
+                    <code>
+                    Recheck the nodes <br>
+                    ${err}
+                    </code>
+                    </body>
+                    </html>
+                    `
+                    );
+            }
+            // console.log(this.script);
         }
         else {
             alert("include begin node");
@@ -193,8 +219,7 @@ export var VSToJS = class {
         if (inputNode.node.customClass.type.isGetSet) {
             return `(${inputNode.node.customClass.type.typeOfNode.slice(4)})`;
         }
-        if(inputNode.node.customClass.type.isFor)
-        {
+        if (inputNode.node.customClass.type.isFor) {
             return `(i${inputNode.node.customClass.type.isFor})`;
         }
         let expr = ``;
@@ -234,7 +259,7 @@ export var VSToJS = class {
             case "Random": {
                 expr = `Math.floor(Math.random())`;
             }
-            
+
                 break;
             case "Equals": {
                 expr = `(${this.handleInputs(inputPins[0])} == ${this.handleInputs(inputPins[1])})`;

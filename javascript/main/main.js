@@ -31,11 +31,15 @@ let panel = new leftPanel();
 // document.getElementById("number-ip").value = 12;
 layer.draw();
 document.getElementById("Run").addEventListener("click", (e) => {
-    new VSToJS(stage, layer, panel.variables, "Run");
+    try {
+        new VSToJS(stage, layer, panel.variables, "Run");
+    }
+    catch(err){
+        
+    }
 })
 document.getElementById("Code").addEventListener("click", () => {
     new VSToJS(stage, layer, panel.variables, "Code");
-
 });
 document.getElementById("Console").addEventListener("click", (e) => {
     document.getElementById("console-window").classList.toggle("hidden");
