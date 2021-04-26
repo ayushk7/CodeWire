@@ -217,6 +217,8 @@ export var Nodes = {
             this.type = {
                 isGetSet: (nodeDescription.nodeTitle.slice(0, 3) == 'Get' || nodeDescription.nodeTitle.slice(0, 3) == 'Set'),
                 typeOfNode: nodeDescription.nodeTitle,
+                isFor: (nodeDescription.nodeTitle.slice(0, 3) == 'For') ? this.grp._id: 0,
+
             }
             this.execOutPins = [];
             if (nodeDescription.execOut) {
@@ -341,6 +343,27 @@ export var Nodes = {
         }
         if (type == 'Add') {
             nodeDescription.nodeTitle = 'Add';
+            nodeDescription.inputs = {
+                input0: {
+                    inputTitle: 'ValueA',
+                    dataType: 'Number',
+                },
+                input1: {
+                    inputTitle: 'ValueB',
+                    dataType: 'Number',
+                }
+            }
+            nodeDescription.outputs = {
+                output0: {
+                    outputTitle: 'Result',
+                    dataType: 'Number',
+                }
+            }
+            nodeDescription.rows = 2;
+            nodeDescription.colums = 10;
+        }
+        if (type == 'Modulo') {
+            nodeDescription.nodeTitle = 'Modulo';
             nodeDescription.inputs = {
                 input0: {
                     inputTitle: 'ValueA',

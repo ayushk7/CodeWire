@@ -1,6 +1,7 @@
 export var VSToJS = class {
     constructor(stage, layer, variables, isRunOrCode) {
         this.script = '';
+        this.nodeCount = 0;
         this.isRunOrCode = isRunOrCode;
         for (let variable in variables) {
             // console.log(variable);
@@ -10,8 +11,7 @@ export var VSToJS = class {
         if (begin) {
             this.coreAlgorithm(begin);
             console.log(this.script);
-            if(this.isRunOrCode == "Run")
-            {
+            if (this.isRunOrCode == "Run") {
                 document.getElementById("console-window").classList.toggle("hidden", false);
                 let codeDoc = document.getElementById("console").contentWindow.document;
                 codeDoc.open();
@@ -36,8 +36,7 @@ export var VSToJS = class {
                 );
                 codeDoc.close();
             }
-            else
-            {
+            else {
                 document.getElementById("console-window").classList.toggle("hidden", false);
                 let codeDoc = document.getElementById("console").contentWindow.document;
                 codeDoc.open();
@@ -126,7 +125,7 @@ export var VSToJS = class {
                             this.coreAlgorithm(each);
                         }
                     }
-                    else{
+                    else {
                         if (inputPins.length)
                             this.script += `document.write(${this.handleInputs(inputPins[0])} + "<br>");\n`;
                         for (let each of execOutPins) {
@@ -152,7 +151,8 @@ export var VSToJS = class {
                 }
                     break;
                 case "For": {
-                    this.script += `for(let i = (${this.handleInputs(inputPins[0])}); i < (${this.handleInputs(inputPins[1])}); i += (${this.handleInputs(inputPins[2])})){\n`;
+                    let forVar = `i${node.customClass.type.isFor}`;
+                    this.script += `for(let ${forVar} = (${this.handleInputs(inputPins[0])}); ${forVar} < (${this.handleInputs(inputPins[1])}); ${forVar} += (${this.handleInputs(inputPins[2])})){\n`;
                     let hasBody = false;
                     if (node.customClass.execOutPins[0].wire) {
                         this.coreAlgorithm(execOutPins[0]);
@@ -193,6 +193,10 @@ export var VSToJS = class {
         if (inputNode.node.customClass.type.isGetSet) {
             return `(${inputNode.node.customClass.type.typeOfNode.slice(4)})`;
         }
+        if(inputNode.node.customClass.type.isFor)
+        {
+            return `(i${inputNode.node.customClass.type.isFor})`;
+        }
         let expr = ``;
         switch (inputNode.node.customClass.type.typeOfNode) {
             case "Add": {
@@ -211,6 +215,10 @@ export var VSToJS = class {
                 expr = `(${this.handleInputs(inputPins[0])} / ${this.handleInputs(inputPins[1])})`;
             }
                 break;
+            case "Modulo": {
+                expr = `(${this.handleInputs(inputPins[0])} % ${this.handleInputs(inputPins[1])})`;
+            }
+                break;
             case "AND": {
                 expr = `(${this.handleInputs(inputPins[0])} && ${this.handleInputs(inputPins[1])})`;
             }
@@ -226,10 +234,7 @@ export var VSToJS = class {
             case "Random": {
                 expr = `Math.floor(Math.random())`;
             }
-                break;
-            case "For": {
-                expr = `(i)`;
-            }
+            
                 break;
             case "Equals": {
                 expr = `(${this.handleInputs(inputPins[0])} == ${this.handleInputs(inputPins[1])})`;
