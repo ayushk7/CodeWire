@@ -61,7 +61,7 @@ document.getElementById("Tutorial").addEventListener("click", (e) => {
                     <li>Include Begin Node By Right Click And Select Begin</li>
                     <li>Include Other In The Same Way</li>
                     <li>Use Left Panel To create New Variable</li>
-                    <li>Hold left Shift and Drag To Pan</li>
+                    <li>Hold middle mouse button To Pan</li>
                     <li>Use Scroll Wheel To Zoom in and out</li>
                     <li>Hold left Ctrl and click the node or the wire to delete it</li>
                     <li>Click Code to get Javascript native code</li>

@@ -7,6 +7,7 @@ export var AppStage = {
             container: container_name,
             width: width,
             height: height,
+            draggable: false,
         });
         AppStage.zoomScale = 1.05;
         stage.on('wheel', (e) => {
@@ -37,26 +38,15 @@ export var AppStage = {
         });
         stage.container().tabIndex = 1;
         stage.container().focus();
-        let canDragStage = false;
-        stage.container().addEventListener('keydown', e => {
-            e.preventDefault();
-            if (e.code == 'ShiftLeft')
-                canDragStage = true;
-        });
-        stage.container().addEventListener('keyup', e => {
-            e.preventDefault();
-            if (e.code == 'ShiftLeft')
-                canDragStage = false;
-        });
+        
         stage.on('mousedown', function (e) {
-            if (e.target === stage && canDragStage) {
+            if (e.target === stage && e.evt.button == 1) {
                 stage.draggable(true);
             }
         });
         stage.on('mouseup', function (e) {
-            if (e.target === stage) {
+            if (e.evt.button == 1) {
                 stage.draggable(false);
-                canDragStage = false;
             }
         });
         stage.on('dragmove', (e) => {

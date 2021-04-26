@@ -8,7 +8,7 @@ Tutorial:
 1. Include Begin Node By Right Click And Select Begin.
 2. Include Other In The Same Way.
 3. Use Left Panel To create New Variable.
-4. Hold left Shift and Drag To Pan.
+4. Hold middle mouse button To Pan.
 5. Use Scroll Wheel To Zoom in and out.
 6. Hold left Ctrl and click the node or the wire to delete it.
 7. Click Code to get Javascript native code.
