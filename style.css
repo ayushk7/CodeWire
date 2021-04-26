@@ -74,28 +74,7 @@ html{
   opacity: 0.8;
   outline: none;
 }
-#run{
-  position: absolute;
-  font-size: 15px;
-  top: 20px;
-  right: 40px;
-  width: 80px;
-  height: 40px;
-  background-color: #2d2d38;
-  z-index: 10;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: white solid 2px;
-  cursor: pointer;
-  user-select: none;
-  /* box-shadow: 0 0 20px rgba(255, 254, 254, 0.15); */
-}
-#run:hover{
-  color: #2d2d38;
-  background-color: white;
-}
+
 
 .rightbar{
   position: absolute;
@@ -131,6 +110,15 @@ html{
 .rightbar .icon:hover{
   color: #2d2d38;
   background-color: white;
+  opacity: 1;
+}
+a.gh-link{
+  color: white;
+  /* background-color: #2d2d38; */
+}
+a.gh-link:hover{
+  background-color: white;
+  color: #2d2d38;
   opacity: 1;
 }
 
