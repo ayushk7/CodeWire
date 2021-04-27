@@ -18,10 +18,10 @@ Tutorial:
 
 # Screenshots
 
-##Prime Number
+#Prime Number
 ![Prime Number](images/PrimeNumberCheck.png)
 
-##Fibonacci Series
+#Fibonacci Series
 ![Fibonacci Series](images/FibonacciSeries.png)
 
 This Program is Still Work in progress,
