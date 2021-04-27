@@ -1,5 +1,5 @@
-import {InputBox} from '../InputBox/InputBox.js'
-import {colorMap} from '../ColorMap/colorMap.js'
+import { InputBox } from '../InputBox/InputBox.js'
+import { colorMap } from '../ColorMap/colorMap.js'
 let placeLocation = function (location) {
     //"this" is stage
     return {
@@ -19,7 +19,7 @@ export var Nodes = {
             closed: true,
             id: id,
             name: 'pin',
-            offsetX: -7,
+            offsetX: (inType) ? -14 : 0,
             pinType: (inType) ? 'exec-in' : 'exec-out',
             pinDataType: null,
         });
@@ -32,8 +32,7 @@ export var Nodes = {
             layer.draw();
         });
         pin.on("wireremoved", (e) => {
-            if(e.isPinEmpty)
-            {
+            if (e.isPinEmpty) {
                 pin.fill('transparent');
             }
         });
@@ -61,6 +60,7 @@ export var Nodes = {
             name: 'pin',
             pinType: (inType) ? 'inp' : 'outp',
             pinDataType: type,
+            offsetX:(inType) ? -7 : 7,
             id: id,
         });
         pin.on("mouseenter", () => {
@@ -72,8 +72,7 @@ export var Nodes = {
             layer.draw();
         });
         pin.on("wireremoved", (e) => {
-            if(e.isPinEmpty)
-            {
+            if (e.isPinEmpty) {
                 pin.fill('transparent');
             }
         });
@@ -140,8 +139,7 @@ export var Nodes = {
     //     });
     //     return rect;
     // },
-    getInputLabel: function (labelText, type)
-    {
+    getInputLabel: function (labelText, type) {
         let text = new Konva.Text({
             width: 40,
             height: 14,
@@ -153,8 +151,7 @@ export var Nodes = {
         // text.off()
         return text;
     },
-    getExecOutTitle: function(labelText)
-    {
+    getExecOutTitle: function (labelText) {
         let text = new Konva.Text({
             width: 60,
             height: 14,
@@ -167,16 +164,16 @@ export var Nodes = {
     },
     ProgramNode: class {
         constructor(nodeDescription, location, layer, stage) {
-            
-            
-            
+
+
+
             this.grp = new Konva.Group({
                 draggable: true,
                 name: "aProgramNodeGroup",
             });
             if (nodeDescription.nodeTitle == 'Begin') {
                 this.grp.id('Begin');
-            } 
+            }
             this.grp.customClass = this;
             // this.grp.on('dblclick', (e) => {
             //     console.table(e.currentTarget.customClass);
@@ -206,7 +203,7 @@ export var Nodes = {
             this.execInPins = [];
             if (nodeDescription.execIn == true) {
                 let execInPin = Nodes.getExecPin(true, 'exec-in-0', layer);
-                execInPin.position({ x: 14, y: 44 });
+                execInPin.position({ x: 7, y: 44 });
                 this.grp.add(execInPin);
                 let tmp = {
                     thisNode: execInPin,
@@ -215,22 +212,22 @@ export var Nodes = {
                 this.execInPins.push(tmp);
                 inputPinsPlaced = 1;
             }
+            let X = nodeDescription.nodeTitle.split(" ");
             this.type = {
-                isGetSet: (nodeDescription.nodeTitle.slice(0, 3) == 'Get' || nodeDescription.nodeTitle.slice(0, 3) == 'Set'),
+                isGetSet: (X[0] == 'Get' || X[0] == 'Set'),
                 typeOfNode: nodeDescription.nodeTitle,
-                isFor: (nodeDescription.nodeTitle.slice(0, 3) == 'For') ? this.grp._id: 0,
+                isFor: (nodeDescription.nodeTitle.slice(0, 3) == 'For') ? this.grp._id : 0,
 
             }
             this.execOutPins = [];
             if (nodeDescription.execOut) {
                 Object.keys(nodeDescription.execOut).forEach((value, index) => {
                     let execOutPin = Nodes.getExecPin(false, `exec-out-${index}`, layer);
-                    execOutPin.position({ x: width - 14, y: 44 + index * 39 });
+                    execOutPin.position({ x: width - 7, y: 44 + index * 39 });
                     this.grp.add(execOutPin);
-                    if(nodeDescription.execOut[value].execOutTitle)
-                    {
+                    if (nodeDescription.execOut[value].execOutTitle) {
                         let exLabel = Nodes.getExecOutTitle(nodeDescription.execOut[value].execOutTitle);
-                        exLabel.position({ x: width - 84, y: 44 + index * 39 - 4});
+                        exLabel.position({ x: width - 84, y: 44 + index * 39 - 4 });
                         this.grp.add(exLabel);
                     }
                     let tmp = {
@@ -246,11 +243,15 @@ export var Nodes = {
             if (nodeDescription.inputs) {
                 Object.keys(nodeDescription.inputs).forEach((value, index) => {
                     let inputPin = Nodes.getInputPin(true, `inp-${index}`, nodeDescription.inputs[value].dataType, layer);
-                    inputPin.position({ x: 14, y: 44 + 39 * inputPinsPlaced });
+                    inputPin.position({ x: 7, y: 44 + 39 * inputPinsPlaced });
                     // iprect.position({ x: 28, y: 44 + 39 * inputPinsPlaced - 2 });
-                    let iprect = new InputBox(stage, layer, nodeDescription.inputs[value].dataType, this.grp, { x: 28, y: 44 + 39 * inputPinsPlaced - 2 }, colorMap, inputPin);
+                    let iprect = null;
                     let iplabel = Nodes.getInputLabel(nodeDescription.inputs[value].inputTitle, nodeDescription.inputs[value].dataType);
-                    iplabel.position({x: 28, y: 44 + 39 * inputPinsPlaced - 14});
+                    iplabel.position({ x: 28, y: 44 + 39 * inputPinsPlaced - 4 });
+                    if (nodeDescription.inputs[value].isInputBoxRequired !== false) {
+                        iprect = new InputBox(stage, layer, nodeDescription.inputs[value].dataType, this.grp, { x: 28, y: 44 + 39 * inputPinsPlaced - 2 }, colorMap, inputPin, iplabel, inputPinsPlaced);
+                        iplabel.position({ x: 28, y: 44 + 39 * inputPinsPlaced - 14 });                        
+                    } 
                     this.grp.add(iplabel);
                     this.grp.add(inputPin);
                     // this.grp.add(iprect);
@@ -269,10 +270,10 @@ export var Nodes = {
             if (nodeDescription.outputs) {
                 Object.keys(nodeDescription.outputs).forEach((value, index) => {
                     let outputPin = Nodes.getInputPin(false, `out-${index}`, nodeDescription.outputs[value].dataType, layer);
-                    outputPin.position({ x: width - 14, y: 44 + 39 * outputPinsPlaced });
+                    outputPin.position({ x: width - 7, y: 44 + 39 * outputPinsPlaced });
                     this.grp.add(outputPin);
                     let outLabel = Nodes.getInputLabel(nodeDescription.outputs[value].outputTitle, nodeDescription.outputs[value].dataType);
-                    outLabel.position({x: width - 65, y: 44 + 39 * outputPinsPlaced - 4})
+                    outLabel.position({ x: width - 65, y: 44 + 39 * outputPinsPlaced - 4 })
                     this.grp.add(outLabel);
                     let tmp = {
                         wire: [],
@@ -514,7 +515,139 @@ export var Nodes = {
             nodeDescription.rows = 2;
             nodeDescription.colums = 10;
         }
-        if(type == "Equals"){
+        if (type == 'XOR') {
+            nodeDescription.nodeTitle = 'XOR';
+            nodeDescription.inputs = {
+                input0: {
+                    inputTitle: 'ValueA',
+                    dataType: 'Boolean'
+
+                },
+                input1: {
+                    inputTitle: 'ValueB',
+                    dataType: 'Boolean'
+
+                }
+            }
+            nodeDescription.outputs = {
+                output0: {
+                    outputTitle: ' Result',
+                    dataType: 'Boolean'
+                }
+            }
+            nodeDescription.rows = 2;
+            nodeDescription.colums = 10;
+        }
+        if (type == 'bXOR') {
+            nodeDescription.nodeTitle = 'bXOR';
+            nodeDescription.inputs = {
+                input0: {
+                    inputTitle: 'ValueA',
+                    dataType: 'Number'
+
+                },
+                input1: {
+                    inputTitle: 'ValueB',
+                    dataType: 'Number'
+
+                }
+            }
+            nodeDescription.outputs = {
+                output0: {
+                    outputTitle: ' Result',
+                    dataType: 'Number'
+                }
+            }
+            nodeDescription.rows = 2;
+            nodeDescription.colums = 10;
+        }
+        if (type == 'bOR') {
+            nodeDescription.nodeTitle = 'bOR';
+            nodeDescription.inputs = {
+                input0: {
+                    inputTitle: 'ValueA',
+                    dataType: 'Number'
+
+                },
+                input1: {
+                    inputTitle: 'ValueB',
+                    dataType: 'Number'
+
+                }
+            }
+            nodeDescription.outputs = {
+                output0: {
+                    outputTitle: ' Result',
+                    dataType: 'Number'
+                }
+            }
+            nodeDescription.rows = 2;
+            nodeDescription.colums = 10;
+        }
+        if (type == 'bAND') {
+            nodeDescription.nodeTitle = 'bAND';
+            nodeDescription.inputs = {
+                input0: {
+                    inputTitle: 'ValueA',
+                    dataType: 'Number'
+
+                },
+                input1: {
+                    inputTitle: 'ValueB',
+                    dataType: 'Number'
+
+                }
+            }
+            nodeDescription.outputs = {
+                output0: {
+                    outputTitle: ' Result',
+                    dataType: 'Number'
+                }
+            }
+            nodeDescription.rows = 2;
+            nodeDescription.colums = 10;
+        }
+        if (type == 'bXOR') {
+            nodeDescription.nodeTitle = 'XOR';
+            nodeDescription.inputs = {
+                input0: {
+                    inputTitle: 'ValueA',
+                    dataType: 'Number'
+
+                },
+                input1: {
+                    inputTitle: 'ValueB',
+                    dataType: 'Number'
+
+                }
+            }
+            nodeDescription.outputs = {
+                output0: {
+                    outputTitle: ' Result',
+                    dataType: 'Number'
+                }
+            }
+            nodeDescription.rows = 2;
+            nodeDescription.colums = 10;
+        }
+        if (type == 'bNEG') {
+            nodeDescription.nodeTitle = 'bNEG';
+            nodeDescription.inputs = {
+                input0: {
+                    inputTitle: 'Value',
+                    dataType: 'Number',
+                },
+            }
+            nodeDescription.outputs = {
+                output0: {
+                    outputTitle: ' Result',
+                    dataType: 'Number'
+                }
+            }
+            nodeDescription.rows = 2;
+            nodeDescription.colums = 10;
+        }
+        if (type == "Equals") {
             nodeDescription.nodeTitle = 'Equals';
             nodeDescription.inputs = {
                 input0: {
@@ -537,7 +670,7 @@ export var Nodes = {
             nodeDescription.rows = 2;
             nodeDescription.colums = 10;
         }
-        if(type == "LessEq"){
+        if (type == "LessEq") {
             nodeDescription.nodeTitle = 'LessEq';
             nodeDescription.inputs = {
                 input0: {
@@ -560,7 +693,7 @@ export var Nodes = {
             nodeDescription.rows = 2;
             nodeDescription.colums = 10;
         }
-        if(type == "Less"){
+        if (type == "Less") {
             nodeDescription.nodeTitle = 'Less';
             nodeDescription.inputs = {
                 input0: {
@@ -583,7 +716,7 @@ export var Nodes = {
             nodeDescription.rows = 2;
             nodeDescription.colums = 10;
         }
-        if(type == "Greater"){
+        if (type == "Greater") {
             nodeDescription.nodeTitle = 'Greater';
             nodeDescription.inputs = {
                 input0: {
@@ -606,7 +739,7 @@ export var Nodes = {
             nodeDescription.rows = 2;
             nodeDescription.colums = 10;
         }
-        if(type == "GreaterEq"){
+        if (type == "GreaterEq") {
             nodeDescription.nodeTitle = 'GreaterEq';
             nodeDescription.inputs = {
                 input0: {
@@ -726,16 +859,275 @@ export var Nodes = {
             nodeDescription.rows = 2;
             nodeDescription.colums = 12;
         }
-        if(type == "Break")
-        {
+        if (type == "Break") {
             nodeDescription.nodeTitle = 'Break';
             nodeDescription.execIn = true;
             nodeDescription.rows = 2;
             nodeDescription.colums = 10;
         }
+        if (type == 'Length') {
+            nodeDescription.nodeTitle = 'Length';
+            nodeDescription.inputs = {
+                input0: {
+                    inputTitle: 'Array',
+                    dataType: 'Array',
+                    isInputBoxRequired : false,
+                },
+            }
+            nodeDescription.outputs = {
+                output0: {
+                    outputTitle: ' Value',
+                    dataType: 'Number'
+                }
+            }
+            nodeDescription.rows = 2;
+            nodeDescription.colums = 10;
+        }
+        if (type == 'isEmpty') {
+            nodeDescription.nodeTitle = 'isEmpty';
+            nodeDescription.inputs = {
+                input0: {
+                    inputTitle: 'Array',
+                    dataType: 'Array',
+                    isInputBoxRequired : false,
+                },
+            }
+            nodeDescription.outputs = {
+                output0: {
+                    outputTitle: ' Result',
+                    dataType: 'Boolean'
+                }
+            }
+            nodeDescription.rows = 2;
+            nodeDescription.colums = 10;
+        }
+        if (type == 'Front') {
+            nodeDescription.nodeTitle = 'Front';
+            nodeDescription.inputs = {
+                input0: {
+                    inputTitle: 'Array',
+                    dataType: 'Array',
+                    isInputBoxRequired : false,
+                },
+            }
+            nodeDescription.outputs = {
+                output0: {
+                    outputTitle: ' Front',
+                    dataType: 'Data'
+                }
+            }
+            nodeDescription.rows = 2;
+            nodeDescription.colums = 10;
+        }
+        if (type == 'Back') {
+            nodeDescription.nodeTitle = 'Back';
+            nodeDescription.inputs = {
+                input0: {
+                    inputTitle: 'Array',
+                    dataType: 'Array',
+                    isInputBoxRequired : false,
+                },
+            }
+            nodeDescription.outputs = {
+                output0: {
+                    outputTitle: ' Back',
+                    dataType: 'Data'
+                }
+            }
+            nodeDescription.rows = 2;
+            nodeDescription.colums = 10;
+        }
+        if(type == 'GetByPos'){
+            nodeDescription.nodeTitle = 'GetByPos';
+            nodeDescription.inputs = {
+                input0:{
+                    inputTitle: 'Pos',
+                    dataType: 'Number',
+                },
+                input1: {
+                    inputTitle: 'Array',
+                    dataType: 'Array',
+                    isInputBoxRequired : false,
+                },
+            }
+            nodeDescription.outputs = {
+                output0: {
+                    outputTitle: ' Value',
+                    dataType: 'Data'
+                }
+            }
+            nodeDescription.rows = 2;
+            nodeDescription.colums = 10;
+        }
+        if(type == 'SetByPos'){
+            nodeDescription.nodeTitle = 'SetByPos';
+            nodeDescription.execIn = true;
+            nodeDescription.execOut = {
+                execOut0: {
+                    execOutTitle: null,
+                },
+            }
+            nodeDescription.inputs = {
+                input0:{
+                    inputTitle: 'Pos',
+                    dataType: 'Number',
+                },
+                input1:{
+                    inputTitle: 'Value',
+                    dataType: 'Data',
+                },
+                input2: {
+                    inputTitle: 'Array',
+                    dataType: 'Array',
+                    isInputBoxRequired : false,
+                },
+            }
+            nodeDescription.outputs = {
+                output0: {
+                    outputTitle: ' Value',
+                    dataType: 'Data'
+                }
+            }
+            nodeDescription.rows = 4;
+            nodeDescription.colums = 10;
+        }
+        if(type == 'Insert'){
+            nodeDescription.nodeTitle = 'Insert';
+            nodeDescription.execIn = true;
+            nodeDescription.execOut = {
+                execOut0: {
+                    execOutTitle: null,
+                },
+            }
+            nodeDescription.inputs = {
+                input0:{
+                    inputTitle: 'Pos',
+                    dataType: 'Number',
+                },
+                input1:{
+                    inputTitle: 'Value',
+                    dataType: 'Data',
+                },
+                input2: {
+                    inputTitle: 'Array',
+                    dataType: 'Array',
+                    isInputBoxRequired : false,
+                },
+            }
+            nodeDescription.outputs = {
+                output0: {
+                    outputTitle: ' Array',
+                    dataType: 'Array'
+                }
+            }
+            nodeDescription.rows = 4;
+            nodeDescription.colums = 10;
+        }
+        if(type == 'PushBack'){
+            nodeDescription.nodeTitle = 'PushBack';
+            nodeDescription.execIn = true;
+            nodeDescription.execOut = {
+                execOut0: {
+                    execOutTitle: null,
+                },
+            }
+            nodeDescription.inputs = {
+                input0: {
+                    inputTitle: 'Value',
+                    dataType: 'Data',
+                },
+                input1: {
+                    inputTitle: 'Array',
+                    dataType: 'Array',
+                    isInputBoxRequired : false,
+                },
+            }
+            nodeDescription.outputs = {
+                output0: {
+                    outputTitle: ' Array',
+                    dataType: 'Array'
+                }
+            }
+            nodeDescription.rows = 2;
+            nodeDescription.colums = 10;
+        }
+        if(type == 'PushFront'){
+            nodeDescription.nodeTitle = 'PushFront';
+            nodeDescription.execIn = true;
+            nodeDescription.execOut = {
+                execOut0: {
+                    execOutTitle: null,
+                },
+            }
+            nodeDescription.inputs = {
+                input0: {
+                    inputTitle: 'Value',
+                    dataType: 'Data',
+                },
+                input1: {
+                    inputTitle: 'Array',
+                    dataType: 'Array',
+                    isInputBoxRequired : false,
+                },
+            }
+            nodeDescription.outputs = {
+                output0: {
+                    outputTitle: ' Array',
+                    dataType: 'Array'
+                }
+            }
+            nodeDescription.rows = 2;
+            nodeDescription.colums = 10;
+        }
+        if(type == 'PopBack'){
+            nodeDescription.nodeTitle = 'PopBack';
+            nodeDescription.execIn = true;
+            nodeDescription.execOut = {
+                execOut0: {
+                    execOutTitle: null,
+                },
+            }
+            nodeDescription.inputs = {
+                input0: {
+                    inputTitle: 'Array',
+                    dataType: 'Array',
+                    isInputBoxRequired : false,
+                },
+            }
+            nodeDescription.outputs = {
+                output0: {
+                    outputTitle: ' Array',
+                    dataType: 'Array'
+                }
+            }
+            nodeDescription.rows = 2;
+            nodeDescription.colums = 10;
+        }
+        if(type == 'PopFront'){
+            nodeDescription.nodeTitle = 'PopFront';
+            nodeDescription.execIn = true;
+            nodeDescription.execOut = {
+                execOut0: {
+                    execOutTitle: null,
+                },
+            }
+            nodeDescription.inputs = {
+                input0: {
+                    inputTitle: 'Array',
+                    dataType: 'Array',
+                    isInputBoxRequired : false,
+                },
+            }
+            nodeDescription.outputs = {
+                output0: {
+                    outputTitle: ' Array',
+                    dataType: 'Array'
+                }
+            }
+            nodeDescription.rows = 2;
+            nodeDescription.colums = 10;
+        }
         new this.ProgramNode(nodeDescription, location, layer, stage);
-
-
     }
 
 

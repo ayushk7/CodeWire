@@ -18,25 +18,33 @@
                 <div class="input-group pt-5 ps-5 pe-5 input-group-lg">
                     <span class="input-group-text">Select Variable Type</span>
                     <select class="form-select" id="variable-data-type">
-                        <option value="Number" class="text-primary" selected>Number</option>
-                        <option value="Boolean" class="text-danger">Boolean</option>
-                        <option value="String" class="text-success">String</option>
+                        <option value="Number" selected>Number</option>
+                        <option value="Boolean">Boolean</option>
+                        <option value="String">String</option>
+                        <option value="Array">Array</option>
                     </select>
                 </div>
                 <div class="input-group input-group-lg pt-5 ps-5 pe-5">
                     <span class="input-group-text">Variable Name</span>
                     <input type="text" class="form-control" placeholder="Name" id="variable-name">
                 </div>
-                <div class="input-group input-group-lg pt-5 ps-5 pe-5" id="non-bool-default-form">
+                <div class="input-group input-group-lg pt-5 ps-5 pe-5" id="number-default-form">
                     <span class="input-group-text">Default Value</span>
-                    <input type="text" class="form-control" placeholder="Default" id="variable-default-value" value=0>
-                    <!-- <input class="form-check-input" type="checkbox" value="true" id="flexCheckDefault"> -->
+                    <input type="text" class="form-control" placeholder="Default" title="enter number" id="number-default-value" value=0>
                 </div>
-                <div class="input-group pt-5 ps-5 pe-5 input-group-lg" style="display: none;" id="bool-default-form">
+                <div class="input-group input-group-lg pt-5 ps-5 pe-5 hidden" id="string-default-form">
                     <span class="input-group-text">Default Value</span>
-                    <select class="form-select" id="variable-bool-default-value">
-                        <option value=1 class="text-primary" selected>True</option>
-                        <option value=0 class="text-primary">False</option>
+                    <input type="text" class="form-control" placeholder="Default" title="enter string" id="string-default-value" value=0>
+                </div>
+                <div class="input-group input-group-lg pt-5 ps-5 pe-5 hidden" id="array-default-form">
+                    <span class="input-group-text">Default Value</span>
+                    <input type="text" class="form-control" placeholder="Default" title="enter array values in [1, 2, 3, 4] or ['Love', 'Shove', 'Dove'] or [true, false, true] etc format"id="array-default-value" value=[]>
+                </div>
+                <div class="input-group pt-5 ps-5 pe-5 input-group-lg hidden" id="bool-default-form">
+                    <span class="input-group-text">Default Value</span>
+                    <select class="form-select" id="bool-default-value">
+                        <option value=1 selected>True</option>
+                        <option value=0>False</option>
                     </select>
                 </div>
                 <button type="button" class="btn btn-outline-light btn-lg mx-auto mt-5" style="display: block;"
@@ -96,15 +104,35 @@
         <hr>
         <div class="context-menu-items">AND</div>
         <div class="context-menu-items">OR</div>
+        <div class="context-menu-items">XOR</div>
         <div class="context-menu-items">NEG</div>
+        <hr>
+        <div class="context-menu-items" title="bitwise operators">bAND</div>
+        <div class="context-menu-items" title="bitwise operators">bOR</div>
+        <div class="context-menu-items" title="bitwise operators">bXOR</div>
+        <div class="context-menu-items" title="bitwise operators">bNEG</div>
+        <hr>
+        <div class="context-menu-items">Length</div>
+        <div class="context-menu-items">Front</div>
+        <div class="context-menu-items">Back</div>
+        <div class="context-menu-items">GetByPos</div>
+        <div class="context-menu-items">SetByPos</div>
+        <div class="context-menu-items">PushBack</div>
+        <div class="context-menu-items">PopBack</div>
+        <div class="context-menu-items">PushFront</div>
+        <div class="context-menu-items">PopFront</div>
+        <div class="context-menu-items">Insert</div>
+        <div class="context-menu-items">isEmpty</div>        
         <hr>
     </div>
     <input type="number" name="number-ip" id="number-ip" class="ipn" title="Enter Number">
-    <input type="text" name="string-ip" id="string-ip" class="ips" title="*string With 'quotes' ">
+    <input type="text" name="string-ip" id="string-ip" class="ips" title="if(string) then enter with 'quotes' ">
+    <input type="text" name="array-ip" id="array-ip" class="ips" title="enter array in [1, 2, 3, 4] format">
     <select class="ipb" id="bool-ip" title="select value">
         <option value=1 selected>True</option>
         <option value=0>False</option>
     </select>
+    
     <div class="hidden" id="console-window">
         <div class="top-bar">
             <button id="cross">

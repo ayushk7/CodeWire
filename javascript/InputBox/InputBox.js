@@ -1,6 +1,6 @@
 
 export var InputBox = class{
-    constructor(stage, layer, type, grp, position, colorMap, inputPin)
+    constructor(stage, layer, type, grp, position, colorMap, inputPin, iplabel, inputPinsPlaced)
     {
         let rect = new Konva.Rect({
             width: (type == 'Boolean') ? 50 : 50,
@@ -34,6 +34,11 @@ export var InputBox = class{
         {
             defaultValue = 1;
             htmlInputBox = document.getElementById("bool-ip");
+        }
+        else if(type == "Array")
+        {
+            defaultValue = [];
+            htmlInputBox = document.getElementById("array-ip");
         }
         else
         {
@@ -71,11 +76,13 @@ export var InputBox = class{
         });
         inputPin.on("wireconnected", (e) => {
             this.inputBox.visible(false);
+            iplabel.position({ x: 28, y: 44 + 39 * inputPinsPlaced - 4 });    
         });
         inputPin.on("wireremoved", (e) => {
             if(e.isPinEmpty)
             {
                 this.inputBox.visible(true);
+                iplabel.position({ x: 28, y: 44 + 39 * inputPinsPlaced - 14 });    
             }
         });
 
