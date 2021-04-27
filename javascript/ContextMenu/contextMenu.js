@@ -5,12 +5,12 @@ export var ContextMenu = {
         let contextMenu = document.getElementById("context-menu");
         function toggleContextMenu(location, show) {
             if (show) {
-                contextMenu.style.display = 'block';
+                contextMenu.classList.toggle("hidden", false);
                 contextMenu.style.left = location[0] + 'px';
                 contextMenu.style.top = location[1] + 'px';
             }
             else {
-                contextMenu.style.display = 'none';
+                contextMenu.classList.toggle("hidden", true);
             }
         }
         let alreadyPresent = [];
@@ -45,6 +45,10 @@ export var ContextMenu = {
         });
         stage.on('click', function (e) {
             toggleContextMenu([e.evt.clientX, e.evt.clientY], false);
+        });
+        document.addEventListener("click", (e) => {
+            if(e.target !== stage.getContainer())
+                toggleContextMenu([0, 0], false);
         });
         // for (let e of contextMenu.children) {
         //     e.addEventListener('click', function () {

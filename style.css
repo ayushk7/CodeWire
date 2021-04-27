@@ -30,7 +30,7 @@ html{
   /* background-repeat:initial; */
   }
   #context-menu{
-    display: none;
+    /* display: none; */
     position: absolute;
     background-color: #f0f0f0;
     border: black solid 1px;
@@ -42,6 +42,7 @@ html{
     border-radius: 2px;
     overflow: auto;
     user-select: none;
+    z-index: 20;
   }
   .context-menu-items:hover{
     background-color: #2d2d38;
