@@ -16,5 +16,12 @@ Tutorial:
 10. Colored wire is used for input/outputs.
 11. Click Code to get Javascript native code.
 
+# Screenshots
+
+##Prime Number
+![Prime Number](images/PrimeNumberCheck.png)
+##Fibonacci Series
+![Fibonacci Series](images/FibonacciSeires.png)
+
 This Program is Still Work in progress,
 subsequent new features like functions, delay, sandboxing, save, undo will be added soon.
