@@ -1,16 +1,11 @@
 import {InputBox} from '../InputBox/InputBox.js'
+import {colorMap} from '../ColorMap/colorMap.js'
 let placeLocation = function (location) {
     //"this" is stage
     return {
         x: (location.x - this.x()) / this.scaleX(),
         y: (location.y - this.y()) / this.scaleY()
     };
-}
-let colorMap = {
-    'Number': '#00ffff',
-    'String': '#aaff00',
-    'Boolean': '#e60000',
-    'Data': '#ffb3ff'
 }
 export var Nodes = {
     countNodes: 0,
@@ -41,6 +36,9 @@ export var Nodes = {
             {
                 pin.fill('transparent');
             }
+        });
+        pin.on("wireconnected", (e) => {
+            pin.fill("white");
         });
         return pin;
     },
@@ -78,6 +76,9 @@ export var Nodes = {
             {
                 pin.fill('transparent');
             }
+        });
+        pin.on("wireconnected", (e) => {
+            pin.fill(`${colorMap[type]}`);
         });
         return pin;
     },
@@ -177,9 +178,9 @@ export var Nodes = {
                 this.grp.id('Begin');
             } 
             this.grp.customClass = this;
-            this.grp.on('dblclick', (e) => {
-                console.table(e.currentTarget.customClass);
-            })
+            // this.grp.on('dblclick', (e) => {
+            //     console.table(e.currentTarget.customClass);
+            // })
             let relativePosition = placeLocation.bind(stage);
             let maxOfPinsOnEitherSide = Nodes.getPinCounts(nodeDescription);
             let height = maxOfPinsOnEitherSide * 50 + 10;

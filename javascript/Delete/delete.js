@@ -79,9 +79,9 @@ export var Delete = {
         })
     }
 }
-function deleteWire(aWire) {
+export function deleteWire(aWire) {
     let lineClone = aWire;
-    console.log(lineClone);
+    // console.log(lineClone);
     if (lineClone.attrs.src.attrs.pinType == 'exec-out') {
         let tmpA = lineClone.attrs.src.id().split('-');
         lineClone.attrs.src.getParent().customClass.execOutPins[parseInt(tmpA[tmpA.length - 1])].wire = null;
@@ -114,7 +114,7 @@ function deleteWire(aWire) {
     if (lineClone.attrs.dest.attrs.pinType == 'exec-in') {
         lineClone.attrs.dest.getParent().customClass.execInPins[0].wire.forEach((value, index) => {
             if (value == lineClone) {
-                console.log("req", value);
+                // console.log("req", value);
                 lineClone.attrs.dest.getParent().customClass.execInPins[0].wire.splice(index, 1);
             }
         });
