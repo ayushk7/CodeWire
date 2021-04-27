@@ -272,7 +272,7 @@ export var Nodes = {
                     outputPin.position({ x: width - 14, y: 44 + 39 * outputPinsPlaced });
                     this.grp.add(outputPin);
                     let outLabel = Nodes.getInputLabel(nodeDescription.outputs[value].outputTitle, nodeDescription.outputs[value].dataType);
-                    outLabel.position({x: width - 60, y: 44 + 39 * outputPinsPlaced - 4})
+                    outLabel.position({x: width - 65, y: 44 + 39 * outputPinsPlaced - 4})
                     this.grp.add(outLabel);
                     let tmp = {
                         wire: [],
@@ -356,7 +356,7 @@ export var Nodes = {
             }
             nodeDescription.outputs = {
                 output0: {
-                    outputTitle: 'Result',
+                    outputTitle: ' Result',
                     dataType: 'Number',
                 }
             }
@@ -377,7 +377,7 @@ export var Nodes = {
             }
             nodeDescription.outputs = {
                 output0: {
-                    outputTitle: 'Result',
+                    outputTitle: ' Result',
                     dataType: 'Number',
                 }
             }
@@ -398,7 +398,7 @@ export var Nodes = {
             }
             nodeDescription.outputs = {
                 output0: {
-                    outputTitle: 'Result',
+                    outputTitle: ' Result',
                     dataType: 'Number',
                 }
             }
@@ -419,7 +419,7 @@ export var Nodes = {
             }
             nodeDescription.outputs = {
                 output0: {
-                    outputTitle: 'Result',
+                    outputTitle: ' Result',
                     dataType: 'Number',
                 }
             }
@@ -440,7 +440,7 @@ export var Nodes = {
             }
             nodeDescription.outputs = {
                 output0: {
-                    outputTitle: 'Result',
+                    outputTitle: ' Result',
                     dataType: 'Number',
                 }
             }
@@ -484,7 +484,7 @@ export var Nodes = {
             }
             nodeDescription.outputs = {
                 output0: {
-                    outputTitle: 'Result',
+                    outputTitle: ' Result',
                     dataType: 'Boolean'
                 }
             }
@@ -507,7 +507,7 @@ export var Nodes = {
             }
             nodeDescription.outputs = {
                 output0: {
-                    outputTitle: 'Result',
+                    outputTitle: ' Result',
                     dataType: 'Boolean'
                 }
             }
@@ -530,7 +530,7 @@ export var Nodes = {
             }
             nodeDescription.outputs = {
                 output0: {
-                    outputTitle: 'Result',
+                    outputTitle: ' Result',
                     dataType: 'Boolean'
                 }
             }
@@ -553,7 +553,7 @@ export var Nodes = {
             }
             nodeDescription.outputs = {
                 output0: {
-                    outputTitle: 'Result',
+                    outputTitle: ' Result',
                     dataType: 'Boolean'
                 }
             }
@@ -576,7 +576,7 @@ export var Nodes = {
             }
             nodeDescription.outputs = {
                 output0: {
-                    outputTitle: 'Result',
+                    outputTitle: ' Result',
                     dataType: 'Boolean'
                 }
             }
@@ -599,7 +599,7 @@ export var Nodes = {
             }
             nodeDescription.outputs = {
                 output0: {
-                    outputTitle: 'Result',
+                    outputTitle: ' Result',
                     dataType: 'Boolean'
                 }
             }
@@ -622,7 +622,7 @@ export var Nodes = {
             }
             nodeDescription.outputs = {
                 output0: {
-                    outputTitle: 'Result',
+                    outputTitle: ' Result',
                     dataType: 'Boolean'
                 }
             }
@@ -639,7 +639,7 @@ export var Nodes = {
             }
             nodeDescription.outputs = {
                 output0: {
-                    outputTitle: 'Value',
+                    outputTitle: ' Result',
                     dataType: 'Boolean'
                 }
             }
@@ -662,7 +662,7 @@ export var Nodes = {
             }
             nodeDescription.outputs = {
                 output0: {
-                    outputTitle: 'Value',
+                    outputTitle: ' Value',
                     dataType: dataType,
                 }
             }
@@ -673,7 +673,7 @@ export var Nodes = {
             nodeDescription.nodeTitle = type;
             nodeDescription.outputs = {
                 output0: {
-                    outputTitle: 'Value',
+                    outputTitle: ' Value',
                     dataType: dataType,
                 }
             }
@@ -684,7 +684,7 @@ export var Nodes = {
             nodeDescription.nodeTitle = 'Random';
             nodeDescription.outputs = {
                 output0: {
-                    outputTitle: 'Rand',
+                    outputTitle: ' Rand',
                     dataType: 'Number'
 
                 }
@@ -709,7 +709,7 @@ export var Nodes = {
                     dataType: 'Number'
                 },
                 input1: {
-                    inputTitle: 'To',
+                    inputTitle: 'To(Ex)',
                     dataType: 'Number'
                 },
                 input2: {
@@ -719,7 +719,7 @@ export var Nodes = {
             }
             nodeDescription.outputs = {
                 output0: {
-                    outputTitle: 'Index',
+                    outputTitle: ' Index',
                     dataType: 'Number'
                 }
             }

@@ -5,7 +5,7 @@ export var VSToJS = class {
         this.isRunOrCode = isRunOrCode;
         for (let variable in variables) {
             // console.log(variable);
-            this.script += `let ${variables[variable].name} = ${variables[variable].value}; // dataType ${variables[variable].dataType} \n`;
+            this.script += `let ${variables[variable].name} = ${variables[variable].value};`;
         }
         let begin = this.getBegin(stage);
         if (begin) {
