@@ -47,6 +47,7 @@ export var Delete = {
                             {deleteWire(each.wire[0]);}
                     }
                 }
+                console.log(e.target.getParent());
                 e.target.getParent().destroy();
                 layer.draw();
             }

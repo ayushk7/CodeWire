@@ -31,7 +31,7 @@ export var VSToJS = class {
                     window.console = {
                         log: function(str){
                           var node = document.createElement("div");
-                          node.appendChild(document.createTextNode(str));
+                          node.appendChild(document.createTextNode(JSON.stringify(str)));
                           document.getElementById("myLog").appendChild(node);
                         }
                       }
@@ -194,12 +194,12 @@ export var VSToJS = class {
                 }
                     break;
                 case "For": {
-                    let forVar = `i${node.customClass.type.isFor}`;
+                    let forVar = `i${node._id}`;
                     this.script += `let __loop__control__${node._id} = 0;
                     for(let ${forVar} = (${this.handleInputs(inputPins[0])}); ${forVar} < (${this.handleInputs(inputPins[1])}); ${forVar} += (${this.handleInputs(inputPins[2])})){\n
                         __loop__control__${node._id}++; 
-                        if(__loop__control__${node._id} > 10000000){
-                            console.log("There is a probabily INFINITE LOOP in your program  !!Breaking");
+                        if(__loop__control__${node._id} > 100000){
+                            console.log("The program is taking too long in your program  !!Breaking");
                             break;
                         }
                         `;
@@ -222,8 +222,8 @@ export var VSToJS = class {
                     this.script += `let __loop__control__${node._id} = 0;
                                      while(${this.handleInputs(inputPins[0])}){ 
                                          __loop__control__${node._id}++; 
-                                        if(__loop__control__${node._id} > 10000000){
-                                            console.log("There is a probabily INFINITE LOOP in your program  !!Breaking");
+                                        if(__loop__control__${node._id} > 100000){
+                                            console.log("The program is taking too long in your program  !!Breaking");
                                             break;
                                         }
                                         \n`;
@@ -303,9 +303,9 @@ export var VSToJS = class {
         if (inputNode.node.customClass.type.isGetSet) {
             return `(${inputNode.node.customClass.type.typeOfNode.slice(4)})`;
         }
-        if (inputNode.node.customClass.type.isFor) {
-            return `(i${inputNode.node.customClass.type.isFor})`;
-        }
+        // if (inputNode.node.customClass.type.isFor) {
+        //     return `(i${inputNode.node.customClass.type.isFor})`;
+        // }
         let expr = ``;
         switch (inputNode.node.customClass.type.typeOfNode) {
             case "Add": {
@@ -442,6 +442,9 @@ export var VSToJS = class {
                 expr = `(${this.handleInputs(inputPins[inputNode.srcOutputPinNumber])})`;
             }
             break;
+            case "For":{
+                expr = `(i${inputNode.node._id})`;
+            }
         }
         return expr;
     }

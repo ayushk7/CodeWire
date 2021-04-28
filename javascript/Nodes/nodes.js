@@ -216,8 +216,6 @@ export var Nodes = {
             this.type = {
                 isGetSet: (X[0] == 'Get' || X[0] == 'Set'),
                 typeOfNode: nodeDescription.nodeTitle,
-                isFor: (nodeDescription.nodeTitle.slice(0, 3) == 'For') ? this.grp._id : null,
-
             }
             this.execOutPins = [];
             if (nodeDescription.execOut) {
@@ -286,6 +284,7 @@ export var Nodes = {
             };
             layer.add(this.grp);
             layer.draw();
+            console.log(JSON.parse(JSON.stringify(this.grp)));
         }
     },
 

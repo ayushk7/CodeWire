@@ -59,7 +59,7 @@ export class leftPanel {
                 let value;
                 let type = document.getElementById("variable-data-type").value;
                 if (type == "Boolean") {
-                    value = parseInt(formInputsField.boolFormField.value);
+                    value = formInputsField.boolFormField.value;
                 }
                 else if (type == "Number") {
                     value = formInputsField.numberFormField.value.toString();
