@@ -306,8 +306,8 @@ export var Nodes = {
             nodeDescription.rows = 2;
             nodeDescription.colums = 10;
         }
-        if (type == 'Log') {
-            nodeDescription.nodeTitle = 'Log';
+        if (type == 'Print') {
+            nodeDescription.nodeTitle = 'Print';
             nodeDescription.execIn = true;
             nodeDescription.execOut = {
                 execOut0: {
@@ -448,6 +448,41 @@ export var Nodes = {
             nodeDescription.rows = 2;
             nodeDescription.colums = 10;
         }
+        if (type == 'Ceil') {
+            nodeDescription.nodeTitle = 'Ceil';
+            nodeDescription.inputs = {
+                input0: {
+                    inputTitle: 'ValueA',
+                    dataType: 'Number',
+                },
+            }
+            nodeDescription.outputs = {
+                output0: {
+                    outputTitle: ' Result',
+                    dataType: 'Number',
+                }
+            }
+            nodeDescription.rows = 2;
+            nodeDescription.colums = 10;
+        }
+        if (type == 'Floor') {
+            nodeDescription.nodeTitle = 'Floor';
+            nodeDescription.inputs = {
+                input0: {
+                    inputTitle: 'ValueA',
+                    dataType: 'Number',
+                },
+            }
+            nodeDescription.outputs = {
+                output0: {
+                    outputTitle: ' Result',
+                    dataType: 'Number',
+                }
+            }
+            nodeDescription.rows = 2;
+            nodeDescription.colums = 10;
+        }
+
         if (type == 'While') {
             nodeDescription.nodeTitle = 'While';
             nodeDescription.execIn = true;

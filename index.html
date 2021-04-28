@@ -82,7 +82,7 @@
     </div>
     <div id="context-menu" class="hidden">
         <div class="context-menu-items">Begin</div>
-        <div class="context-menu-items">Log</div>
+        <div class="context-menu-items">Print</div>
         <hr>
         <div class="context-menu-items" title="if/else">Branch</div>
         <div class="context-menu-items">While</div>
@@ -95,6 +95,8 @@
         <div class="context-menu-items">Divide</div>
         <div class="context-menu-items">Modulo</div>        
         <div class="context-menu-items">Random</div>
+        <div class="context-menu-items">Ceil</div>
+        <div class="context-menu-items">Floor</div>
         <hr>
         <div class="context-menu-items">Equals</div>
         <div class="context-menu-items">LessEq</div>
@@ -129,8 +131,8 @@
     <input type="text" name="string-ip" id="string-ip" class="ips" title="if(string) then enter with 'quotes' ">
     <input type="text" name="array-ip" id="array-ip" class="ips" title="enter array in [1, 2, 3, 4] format">
     <select class="ipb" id="bool-ip" title="select value">
-        <option value=1 selected>True</option>
-        <option value=0>False</option>
+        <option value=true selected>true</option>
+        <option value=false>false</option>
     </select>
     
     <div class="hidden" id="console-window">

@@ -131,7 +131,7 @@ export var VSToJS = class {
         // console.log(inputPins);
         if (node.customClass.type.isGetSet) {
             if (node.customClass.type.typeOfNode.slice(0, 3) == 'Set') {
-                this.script += `${node.customClass.type.typeOfNode.slice(4)} = ${this.handleInputs(inputPins[0])}\n`;
+                this.script += `${node.customClass.type.typeOfNode.slice(4)} = ${this.handleInputs(inputPins[0])};\n`;
                 for (let each of execOutPins) {
                     this.coreAlgorithm(each);
                 }
@@ -145,7 +145,7 @@ export var VSToJS = class {
                     }
                 }
                     break;
-                case "Log": {
+                case "Print": {
                     // if (this.isRunOrCode == "Code") {
                     if (inputPins.length)
                         this.script += `console.log(${this.handleInputs(inputPins[0])});
@@ -181,7 +181,14 @@ export var VSToJS = class {
                     break;
                 case "For": {
                     let forVar = `i${node.customClass.type.isFor}`;
-                    this.script += `for(let ${forVar} = (${this.handleInputs(inputPins[0])}); ${forVar} < (${this.handleInputs(inputPins[1])}); ${forVar} += (${this.handleInputs(inputPins[2])})){\n`;
+                    this.script += `let __loop__control__${node._id} = 0;
+                    for(let ${forVar} = (${this.handleInputs(inputPins[0])}); ${forVar} < (${this.handleInputs(inputPins[1])}); ${forVar} += (${this.handleInputs(inputPins[2])})){\n
+                        __loop__control__${node._id}++; 
+                        if(__loop__control__${node._id} > 10000000){
+                            console.log("There is a probabily INFINITE LOOP in your program  !!Breaking");
+                            break;
+                        }
+                        `;
                     let hasBody = false;
                     if (node.customClass.execOutPins[0].wire) {
                         this.coreAlgorithm(execOutPins[0]);
@@ -198,7 +205,14 @@ export var VSToJS = class {
                 }
                     break;
                 case "While": {
-                    this.script += `while(${this.handleInputs(inputPins[0])}){\n`;
+                    this.script += `let __loop__control__${node._id} = 0;
+                                     while(${this.handleInputs(inputPins[0])}){ 
+                                         __loop__control__${node._id}++; 
+                                        if(__loop__control__${node._id} > 10000000){
+                                            console.log("There is a probabily INFINITE LOOP in your program  !!Breaking");
+                                            break;
+                                        }
+                                        \n`;
                     let hasBody = false;
                     if (node.customClass.execOutPins[0].wire) {
                         this.coreAlgorithm(execOutPins[0]);
@@ -293,6 +307,14 @@ export var VSToJS = class {
                 expr = `(${this.handleInputs(inputPins[0])} && ${this.handleInputs(inputPins[1])})`;
             }
                 break;
+            case "Ceil": {
+                expr = `(Math.ceil(${this.handleInputs(inputPins[0])}))`;
+            }
+                break;
+            case "Floor": {
+                expr = `Math.floor((${this.handleInputs(inputPins[0])}))`;
+            }
+                break;
             case "OR": {
                 expr = `(${this.handleInputs(inputPins[0])} || ${this.handleInputs(inputPins[1])})`;
             }
@@ -322,7 +344,7 @@ export var VSToJS = class {
             }
                 break;
             case "Random": {
-                expr = `Math.floor(Math.random())`;
+                expr = `(Math.random())`;
             }
 
                 break;

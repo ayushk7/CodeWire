@@ -66,6 +66,8 @@ html{
 .ipb{
   display:none;
   position: absolute;
+  /* appearance: none; */
+  padding: 0;
   left: 0;
   top: 0;
   width: 50px;

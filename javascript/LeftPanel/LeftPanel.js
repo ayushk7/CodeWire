@@ -62,7 +62,7 @@ export class leftPanel {
                     value = parseInt(formInputsField.boolFormField.value);
                 }
                 else if (type == "Number") {
-                    value = parseInt(formInputsField.numberFormField.value);
+                    value = formInputsField.numberFormField.value.toString();
                 }
                 else if(type == "String"){
                     value = formInputsField.stringFormField.value.toString();

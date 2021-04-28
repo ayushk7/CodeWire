@@ -32,7 +32,7 @@ export var InputBox = class{
         }
         else if(type == "Boolean")
         {
-            defaultValue = 1;
+            defaultValue = true;
             htmlInputBox = document.getElementById("bool-ip");
         }
         else if(type == "Array")
