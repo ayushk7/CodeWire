@@ -1,18 +1,50 @@
+import {colorMap} from '../ColorMap/colorMap.js'
 export class leftPanel {
     constructor() {
         this.variables = {};
         let createVariableForm = document.getElementById("create-variables");
-
+        let forms = {
+            numberForm: document.getElementById("number-default-form"),
+            stringForm: document.getElementById("string-default-form"),
+            boolForm: document.getElementById("bool-default-form"),
+            arrayForm: document.getElementById("array-default-form"),
+        }
+        let formInputsField = {
+            numberFormField: document.getElementById("number-default-value"),
+            stringFormField: document.getElementById("string-default-value"),
+            boolFormField: document.getElementById("bool-default-value"),
+            arrayFormField: document.getElementById("array-default-value"),
+        }
         let variableDataTypeForm = document.getElementById("variable-data-type");
         variableDataTypeForm.addEventListener("input", (e) => {
             let dataType = variableDataTypeForm.value;
-            if (dataType == "Boolean") {
-                document.getElementById("non-bool-default-form").style.display = "none";
-                document.getElementById("bool-default-form").style.display = "flex";
+            if (dataType == "Number") {
+                for(let each in forms)
+                {
+                    forms[each].classList.toggle("hidden", true);
+                }
+                forms.numberForm.classList.toggle("hidden", false);
             }
-            else {
-                document.getElementById("non-bool-default-form").style.display = "flex";
-                document.getElementById("bool-default-form").style.display = "none";
+            else if(dataType == "String"){
+                for(let each in forms)
+                {
+                    forms[each].classList.toggle("hidden", true);
+                }
+                forms.stringForm.classList.toggle("hidden", false);
+            }
+            else if(dataType == "Boolean"){
+                for(let each in forms)
+                {
+                    forms[each].classList.toggle("hidden", true);
+                }
+                forms.boolForm.classList.toggle("hidden", false);
+            }
+            else if(dataType == "Array"){
+                for(let each in forms)
+                {
+                    forms[each].classList.toggle("hidden", true);
+                }
+                forms.arrayForm.classList.toggle("hidden", false);
             }
         });
         document.getElementById("create-btn").addEventListener("click", () => {
@@ -27,14 +59,17 @@ export class leftPanel {
                 let value;
                 let type = document.getElementById("variable-data-type").value;
                 if (type == "Boolean") {
-                    value = parseInt(document.getElementById("variable-bool-default-value").value);
+                    value = parseInt(formInputsField.boolFormField.value);
                 }
                 else if (type == "Number") {
-                    value = parseInt(document.getElementById("variable-default-value").value);
+                    value = formInputsField.numberFormField.value.toString();
                 }
-                else {
-                    value = document.getElementById("variable-default-value").value.toString();
+                else if(type == "String"){
+                    value = formInputsField.stringFormField.value.toString();
                     value = `"${value}"`;
+                }
+                else if(type == "Array"){
+                    value = formInputsField.arrayFormField.value.toString();
                 }
                 if (value == 0 || value) {
                     this.variables[variableName] = {
@@ -42,12 +77,7 @@ export class leftPanel {
                         dataType: document.getElementById("variable-data-type").value,
                         value: value,
                     };
-                    let color = '#e60000';
-                    if (this.variables[variableName].dataType == 'Number')
-                        color = '#00ffff';
-                    else if (this.variables[variableName].dataType == 'String')
-                        color = '#aaff00';
-                    let el = `<li id=${this.variables[variableName].dataType}-${variableName} class="list-group-item mt-2 ms-5 me-5 p-2 ps-3 rounded" style="font-size:15px; border: ${color} 2px solid; color: white; background: transparent;">${variableName}
+                    let el = `<li id=${this.variables[variableName].dataType}-${variableName} class="list-group-item mt-2 ms-5 me-5 p-2 ps-3 rounded" style="font-size:15px; border: ${colorMap[this.variables[variableName].dataType]} 2px solid; color: white; background: transparent;">${variableName}
             </li>`;
             //<button type="button" class="btn btn-outline-danger position-absolute end-0 me-1"">Delete</button>
                     document.getElementById("variable-list").innerHTML += el;

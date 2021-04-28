@@ -38,7 +38,7 @@ export var ContextMenu = {
                         // layer.add(node);
                         layer.draw();
                         toggleContextMenu([], false);
-                    })
+                    });
                     alreadyPresent.push(e);
                 };
             }

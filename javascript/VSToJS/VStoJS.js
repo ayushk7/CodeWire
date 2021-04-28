@@ -1,3 +1,4 @@
+
 export var VSToJS = class {
     constructor(stage, layer, variables, isRunOrCode) {
         this.script = '';
@@ -11,6 +12,7 @@ export var VSToJS = class {
         if (begin) {
             try {
                 this.coreAlgorithm(begin);
+                console.log(this.script);
                 if (this.isRunOrCode == "Run") {
                     document.getElementById("console-window").classList.toggle("hidden", false);
                     let codeDoc = document.getElementById("console").contentWindow.document;
@@ -23,13 +25,23 @@ export var VSToJS = class {
                             margin: 20;
                         }
                     </style>
+                    <body>
+                    <p id="myLog"></p>
+                    </body>
                     <script>
+                    window.console = {
+                        log: function(str){
+                          var node = document.createElement("div");
+                          node.appendChild(document.createTextNode(str));
+                          document.getElementById("myLog").appendChild(node);
+                        }
+                      }
                     try{
                     ${this.script}
                     }
                     catch(err){
-                        document.write("Error" + "<br>");
-                        document.write(err);
+                        console.log("Error");
+                        console.log(err);
                     }
                     </script>
                     </html>
@@ -60,13 +72,12 @@ export var VSToJS = class {
                     codeDoc.close();
                 }
             }
-            catch(err)
-            {
+            catch (err) {
                 document.getElementById("console-window").classList.toggle("hidden", false);
-                    let codeDoc = document.getElementById("console").contentWindow.document;
-                    codeDoc.open();
-                    codeDoc.writeln(
-                        `<!DOCTYPE html>\n
+                let codeDoc = document.getElementById("console").contentWindow.document;
+                codeDoc.open();
+                codeDoc.writeln(
+                    `<!DOCTYPE html>\n
                     <style>
                         html{
                             color: white;
@@ -81,21 +92,12 @@ export var VSToJS = class {
                     </body>
                     </html>
                     `
-                    );
+                );
             }
-            // console.log(this.script);
         }
         else {
             alert("include begin node");
         }
-        // console.log(begin);
-        // try{
-        //     eval(this.script);
-        // }
-        // catch
-        // {
-        //     console.log("error");
-        // }
     }
     getBegin(stage) {
         let X = stage.findOne("#Begin");
@@ -129,7 +131,7 @@ export var VSToJS = class {
         // console.log(inputPins);
         if (node.customClass.type.isGetSet) {
             if (node.customClass.type.typeOfNode.slice(0, 3) == 'Set') {
-                this.script += `${node.customClass.type.typeOfNode.slice(4)} = ${this.handleInputs(inputPins[0])}\n`;
+                this.script += `${node.customClass.type.typeOfNode.slice(4)} = ${this.handleInputs(inputPins[0])};\n`;
                 for (let each of execOutPins) {
                     this.coreAlgorithm(each);
                 }
@@ -143,21 +145,22 @@ export var VSToJS = class {
                     }
                 }
                     break;
-                case "Log": {
-                    if (this.isRunOrCode == "Code") {
-                        if (inputPins.length)
-                            this.script += `console.log(${this.handleInputs(inputPins[0])});\n`;
-                        for (let each of execOutPins) {
-                            this.coreAlgorithm(each);
-                        }
+                case "Print": {
+                    // if (this.isRunOrCode == "Code") {
+                    if (inputPins.length)
+                        this.script += `console.log(${this.handleInputs(inputPins[0])});
+                         `;
+                    for (let each of execOutPins) {
+                        this.coreAlgorithm(each);
                     }
-                    else {
-                        if (inputPins.length)
-                            this.script += `document.write(${this.handleInputs(inputPins[0])} + "<br>");\n`;
-                        for (let each of execOutPins) {
-                            this.coreAlgorithm(each);
-                        }
-                    }
+                    // }
+                    // else {
+                    //     if (inputPins.length)
+                    //         this.script += `document.write(${this.handleInputs(inputPins[0])} + "<br>");\n`;
+                    //     for (let each of execOutPins) {
+                    //         this.coreAlgorithm(each);
+                    //     }
+                    // }
                 }
                     break;
                 case "Branch": {
@@ -178,7 +181,14 @@ export var VSToJS = class {
                     break;
                 case "For": {
                     let forVar = `i${node.customClass.type.isFor}`;
-                    this.script += `for(let ${forVar} = (${this.handleInputs(inputPins[0])}); ${forVar} < (${this.handleInputs(inputPins[1])}); ${forVar} += (${this.handleInputs(inputPins[2])})){\n`;
+                    this.script += `let __loop__control__${node._id} = 0;
+                    for(let ${forVar} = (${this.handleInputs(inputPins[0])}); ${forVar} < (${this.handleInputs(inputPins[1])}); ${forVar} += (${this.handleInputs(inputPins[2])})){\n
+                        __loop__control__${node._id}++; 
+                        if(__loop__control__${node._id} > 10000000){
+                            console.log("There is a probabily INFINITE LOOP in your program  !!Breaking");
+                            break;
+                        }
+                        `;
                     let hasBody = false;
                     if (node.customClass.execOutPins[0].wire) {
                         this.coreAlgorithm(execOutPins[0]);
@@ -195,7 +205,14 @@ export var VSToJS = class {
                 }
                     break;
                 case "While": {
-                    this.script += `while(${this.handleInputs(inputPins[0])}){\n`;
+                    this.script += `let __loop__control__${node._id} = 0;
+                                     while(${this.handleInputs(inputPins[0])}){ 
+                                         __loop__control__${node._id}++; 
+                                        if(__loop__control__${node._id} > 10000000){
+                                            console.log("There is a probabily INFINITE LOOP in your program  !!Breaking");
+                                            break;
+                                        }
+                                        \n`;
                     let hasBody = false;
                     if (node.customClass.execOutPins[0].wire) {
                         this.coreAlgorithm(execOutPins[0]);
@@ -204,6 +221,48 @@ export var VSToJS = class {
                     this.script += `}\n`;
                     if (node.customClass.execOutPins[1].wire) {
                         this.coreAlgorithm(execOutPins[(hasBody) ? 1 : 0]);
+                    }
+                }
+                    break;
+                case "SetByPos": {
+                    this.script += `${this.handleInputs(inputPins[2])}[${this.handleInputs(inputPins[0])}] = ${this.handleInputs(inputPins[1])};\n`;
+                    if (node.customClass.execOutPins[0].wire) {
+                        this.coreAlgorithm(execOutPins[0]);
+                    }
+                }
+                    break;
+                case "PushBack": {
+                    this.script += `${this.handleInputs(inputPins[1])}.push(${this.handleInputs(inputPins[0])});\n`;
+                    if (node.customClass.execOutPins[0].wire) {
+                        this.coreAlgorithm(execOutPins[0]);
+                    }
+                }
+                    break;
+                case "PushFront": {
+                    this.script += `${this.handleInputs(inputPins[1])}.unshift(${this.handleInputs(inputPins[0])});\n`;
+                    if (node.customClass.execOutPins[0].wire) {
+                        this.coreAlgorithm(execOutPins[0]);
+                    }
+                }
+                    break;
+                case "PopBack": {
+                    this.script += `${this.handleInputs(inputPins[0])}.pop();\n`;
+                    if (node.customClass.execOutPins[0].wire) {
+                        this.coreAlgorithm(execOutPins[0]);
+                    }
+                }
+                    break;
+                case "PopFront": {
+                    this.script += `${this.handleInputs(inputPins[0])}.shift();\n`;
+                    if (node.customClass.execOutPins[0].wire) {
+                        this.coreAlgorithm(execOutPins[0]);
+                    }
+                }
+                    break;
+                case "Insert": {
+                    this.script += `${this.handleInputs(inputPins[2])}.splice(${this.handleInputs(inputPins[0])}, 0, ${this.handleInputs(inputPins[1])});\n`;
+                    if (node.customClass.execOutPins[0].wire) {
+                        this.coreAlgorithm(execOutPins[0]);
                     }
                 }
                     break;
@@ -248,16 +307,44 @@ export var VSToJS = class {
                 expr = `(${this.handleInputs(inputPins[0])} && ${this.handleInputs(inputPins[1])})`;
             }
                 break;
+            case "Ceil": {
+                expr = `(Math.ceil(${this.handleInputs(inputPins[0])}))`;
+            }
+                break;
+            case "Floor": {
+                expr = `Math.floor((${this.handleInputs(inputPins[0])}))`;
+            }
+                break;
             case "OR": {
                 expr = `(${this.handleInputs(inputPins[0])} || ${this.handleInputs(inputPins[1])})`;
+            }
+                break;
+            case "XOR": {
+                expr = `(${this.handleInputs(inputPins[0])} ^ ${this.handleInputs(inputPins[1])})`;
             }
                 break;
             case "NEG": {
                 expr = `!(${this.handleInputs(inputPins[0])})`;
             }
                 break;
+            case "bAND": {
+                expr = `(${this.handleInputs(inputPins[0])} & ${this.handleInputs(inputPins[1])})`;
+            }
+                break;
+            case "bOR": {
+                expr = `(${this.handleInputs(inputPins[0])} | ${this.handleInputs(inputPins[1])})`;
+            }
+                break;
+            case "bXOR": {
+                expr = `(${this.handleInputs(inputPins[0])} ^ ${this.handleInputs(inputPins[1])})`;
+            }
+                break;
+            case "bNEG": {
+                expr = `~(${this.handleInputs(inputPins[0])})`;
+            }
+                break;
             case "Random": {
-                expr = `Math.floor(Math.random())`;
+                expr = `(Math.random())`;
             }
 
                 break;
@@ -281,6 +368,50 @@ export var VSToJS = class {
                 expr = `(${this.handleInputs(inputPins[0])} >= ${this.handleInputs(inputPins[1])})`;
             }
                 break;
+            case "Length": {
+                expr = `(${this.handleInputs(inputPins[0])}.length)`;
+            }
+                break;
+            case "GetByPos": {
+                // console.log("GetByPos");
+                expr = `(${this.handleInputs(inputPins[1])}[${this.handleInputs(inputPins[0])}])`;
+            }
+                break;
+            case "SetByPos": {
+                expr = `(${this.handleInputs(inputPins[2])}[${this.handleInputs(inputPins[0])}])`;
+            }
+                break;
+            case "isEmpty": {
+                expr = `(${this.handleInputs(inputPins[0])}.length == (0))`;
+            }
+                break;
+            case "PushBack": {
+                expr = `(${this.handleInputs(inputPins[1])})`;
+            }
+                break;
+            case "PushFront": {
+                expr = `(${this.handleInputs(inputPins[1])})`;
+            }
+                break;
+            case "PopBack": {
+                expr = `(${this.handleInputs(inputPins[0])})`;
+            }
+                break;
+            case "PopFront": {
+                expr = `(${this.handleInputs(inputPins[0])})`;
+            }
+                break;
+            case "Front": {
+                expr = `(${this.handleInputs(inputPins[0])}[0])`;
+            }
+                break;
+            case "Back": {
+                expr = `(${this.handleInputs(inputPins[0])}[${this.handleInputs(inputPins[0])}.length - 1])`;
+            }
+                break;
+            case "Insert": {
+                expr = `(${this.handleInputs(inputPins[2])})`;
+            }
         }
         return expr;
     }
