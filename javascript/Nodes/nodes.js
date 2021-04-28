@@ -56,7 +56,7 @@ export var Nodes = {
         let pin = new Konva.Circle({
             radius: 7,
             stroke: colorMap[type],
-            strokeWidth: '2',
+            strokeWidth: 1,
             name: 'pin',
             pinType: (inType) ? 'inp' : 'outp',
             pinDataType: type,
@@ -216,7 +216,7 @@ export var Nodes = {
             this.type = {
                 isGetSet: (X[0] == 'Get' || X[0] == 'Set'),
                 typeOfNode: nodeDescription.nodeTitle,
-                isFor: (nodeDescription.nodeTitle.slice(0, 3) == 'For') ? this.grp._id : 0,
+                isFor: (nodeDescription.nodeTitle.slice(0, 3) == 'For') ? this.grp._id : null,
 
             }
             this.execOutPins = [];
@@ -681,6 +681,39 @@ export var Nodes = {
             }
             nodeDescription.rows = 2;
             nodeDescription.colums = 10;
+        }
+        if (type == "Swap") {
+            nodeDescription.nodeTitle = 'Swap';
+            nodeDescription.execIn = true,
+            nodeDescription.inputs = {
+                input0: {
+                    inputTitle: 'ValueA',
+                    dataType: 'Data',
+                    isInputBoxRequired : false,
+                },
+                input1: {
+                    inputTitle: 'ValueB',
+                    dataType: 'Data',
+                    isInputBoxRequired : false,
+                }
+            }
+            nodeDescription.outputs = {
+                output0: {
+                    outputTitle: 'ValueA',
+                    dataType: 'Data'
+                },
+                output1: {
+                    outputTitle: 'ValueB',
+                    dataType: 'Data'
+                }
+            }
+            nodeDescription.execOut = {
+                execOut0: {
+                    execOutTitle: null,
+                },
+            }
+            nodeDescription.rows = 2;
+            nodeDescription.colums = 12;
         }
         if (type == "Equals") {
             nodeDescription.nodeTitle = 'Equals';

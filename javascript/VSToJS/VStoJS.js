@@ -1,4 +1,3 @@
-
 export var VSToJS = class {
     constructor(stage, layer, variables, isRunOrCode) {
         this.script = '';
@@ -112,14 +111,29 @@ export var VSToJS = class {
         // console.log(X);
         return X;
     }
+    getSrcOutputPinNumber(grp, aNodeWire)
+    {
+        let c = 0;
+        for(let eachPin of grp.customClass.outputPins)
+        {
+            for(let aWire of eachPin.wire)
+            {
+                if(aWire === aNodeWire)
+                {
+                    return c;
+                }
+            }
+            c++;
+        }
+    }
     getInputPins(node) {
         let X = [];
         for (let aNode of node.customClass.inputPins) {
             if (aNode.wire) {
-                X.push({ node: aNode.wire.attrs.src.getParent(), isWire: true });
+                X.push({ node: aNode.wire.attrs.src.getParent(), isWire: true, srcOutputPinNumber: this.getSrcOutputPinNumber(aNode.wire.attrs.src.getParent(), aNode.wire) });
             }
             else {
-                X.push({ node: aNode.textBox.textBox.text(), isWire: false });
+                X.push({ node: aNode.textBox.textBox.text(), isWire: false, srcOutputPinNumber: null });
             }
         }
         return X;
@@ -261,6 +275,17 @@ export var VSToJS = class {
                     break;
                 case "Insert": {
                     this.script += `${this.handleInputs(inputPins[2])}.splice(${this.handleInputs(inputPins[0])}, 0, ${this.handleInputs(inputPins[1])});\n`;
+                    if (node.customClass.execOutPins[0].wire) {
+                        this.coreAlgorithm(execOutPins[0]);
+                    }
+                }
+                    break;
+                case "Swap": {
+                    this.script += `
+                        let __tmp__${node._id} = ${this.handleInputs(inputPins[0])};\n
+                        ${this.handleInputs(inputPins[0])} = ${this.handleInputs(inputPins[1])};\n
+                        ${this.handleInputs(inputPins[1])} = __tmp__${node._id};\n
+                    `;
                     if (node.customClass.execOutPins[0].wire) {
                         this.coreAlgorithm(execOutPins[0]);
                     }
@@ -412,6 +437,11 @@ export var VSToJS = class {
             case "Insert": {
                 expr = `(${this.handleInputs(inputPins[2])})`;
             }
+            break;
+            case "Swap":{
+                expr = `(${this.handleInputs(inputPins[inputNode.srcOutputPinNumber])})`;
+            }
+            break;
         }
         return expr;
     }
