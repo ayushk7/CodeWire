@@ -24,7 +24,7 @@ export var Wiring = {
         let src = null;
         let target = null;
         let templayer2 = new Konva.Layer();
-        let wire = null;
+        let drawWire = null;
         let potentialTarget = null;
         let dir = 0;
         let wireColor = null;
@@ -40,7 +40,7 @@ export var Wiring = {
                 let srcLoc = this.placeLocation(src.getAbsolutePosition(), stage);
                 let destLoc = this.placeLocation(stage.getPointerPosition(), stage); 
                 wireColor = e.target.attrs.stroke;
-                wire = new Konva.Line({
+                drawWire = new Konva.Line({
                     strokeWidth: 2,
                     stroke: wireColor,
                     hitStrokeWidth: 0,
@@ -49,21 +49,21 @@ export var Wiring = {
                     name: "isConnection",
                     bezier: true,
                 });
-                setWirePoints(destLoc, srcLoc, dir, wire);
-                templayer2.add(wire);
+                setWirePoints(destLoc, srcLoc, dir, drawWire);
+                templayer2.add(drawWire);
                 templayer2.draw();
             }
         });
         stage.on('mouseup', (e) => {
             if (src && src.name() == 'pin' && e.evt.button == 0) {
-                if (potentialTarget) {
-                    target = potentialTarget;
+                if (e.target && src && e.target.name() == 'pin' && src != e.target && src.getParent() !== e.target.getParent() && isValidMatch(e.target.attrs.pinType, e.target.attrs.pinDataType)) {
+                    target = e.target;
                     let srcLoc = this.placeLocation(src.getAbsolutePosition(), stage);
-                    let destLoc = this.placeLocation(potentialTarget.getAbsolutePosition(), stage);
-                    setWirePoints(destLoc, srcLoc, dir, wire);
-                    wire.setAttr('src', src);
-                    wire.setAttr('dest', target);
-                    let lineClone = wire.clone();
+                    let destLoc = this.placeLocation(target.getAbsolutePosition(), stage);
+                    setWirePoints(destLoc, srcLoc, dir, drawWire);
+                    drawWire.setAttr('src', src);
+                    drawWire.setAttr('dest', target);
+                    let lineClone = drawWire.clone();
                     layer.add(lineClone);
                     swapDestAndSrcIfOutOfOrder(lineClone);
                     if(lineClone.attrs.src.attrs.pinType == 'exec-out')
@@ -119,30 +119,30 @@ export var Wiring = {
                 src.getParent().draggable(true);
                 src = null;
                 isWiring = false;
-                wire.destroy();
+                drawWire.destroy();
                 dir = 0;
-                wire = null;
+                drawWire = null;
                 currentPinType = null;
                 currentPinDataType = null;
                 wireColor = null;
                 templayer2.draw();
             }
         });
-        stage.on('mouseover', (e) => {
-            if (e.target && src && e.target.name() == 'pin' && src != e.target && src.getParent() !== e.target.getParent() && isValidMatch(e.target.attrs.pinType, e.target.attrs.pinDataType)) {
-                potentialTarget = e.target;
-                let srcLoc = this.placeLocation(src.getAbsolutePosition(), stage);
-                let destLoc = this.placeLocation(stage.getPointerPosition(), stage);
-                setWirePoints(destLoc, srcLoc, dir, wire);
-                templayer2.draw();
-            }
-            else potentialTarget = null;
-        });
+        // stage.on('mouseover', (e) => {
+        //     if (e.target && src && e.target.name() == 'pin' && src != e.target && src.getParent() !== e.target.getParent() && isValidMatch(e.target.attrs.pinType, e.target.attrs.pinDataType)) {
+        //         potentialTarget = e.target;
+        //         let srcLoc = this.placeLocation(src.getAbsolutePosition(), stage);
+        //         let destLoc = this.placeLocation(stage.getPointerPosition(), stage);
+        //         setWirePoints(destLoc, srcLoc, dir, drawWire);
+        //         templayer2.draw();
+        //     }
+        //     else potentialTarget = null;
+        // });
         stage.on('mousemove', (e) => {
             if (isWiring) {
                 let srcLoc = this.placeLocation(src.getAbsolutePosition(), stage);
                 let destLoc = this.placeLocation(stage.getPointerPosition(), stage);
-                setWirePoints(destLoc, srcLoc, dir, wire);
+                setWirePoints(destLoc, srcLoc, dir, drawWire);
                 templayer2.draw();
             }
         })

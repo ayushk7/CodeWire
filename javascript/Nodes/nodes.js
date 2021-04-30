@@ -45,10 +45,14 @@ export var Nodes = {
         let rect = new Konva.Rect({
             height: height,
             width: width,
-            fill: 'white',
-            opacity: 0.5,
+            fill: colorMap['MainBox'],
+            opacity: 0.9,
             cornerRadius: 5,
-
+            shadowColor: 'black',
+            shadowBlur: 15,
+            shadowOffset: { x: 15, y: 15 },
+            shadowOpacity: 0.5,
+            // strokeWidth: [10, 10, 110, 0],
         });
         return rect;
     },
@@ -60,7 +64,7 @@ export var Nodes = {
             name: 'pin',
             pinType: (inType) ? 'inp' : 'outp',
             pinDataType: type,
-            offsetX:(inType) ? -7 : 7,
+            offsetX: (inType) ? -7 : 7,
             id: id,
         });
         pin.on("mouseenter", () => {
@@ -95,17 +99,18 @@ export var Nodes = {
         let rect = new Konva.Rect({
             width: width,
             height: size + 3,
-            fill: 'white',
-            cornerRadius: [5, 5, 0, 0]
+            fill: colorMap['MainLabelBox'],
+            cornerRadius: [5, 5, 0, 0],
         });
         let label = new Konva.Text({
             text: text,
-            fontSize: size - 2,
+            fontSize: size - 5,
             fontFamily: 'Verdana',
-            fill: 'black',
+            fill: colorMap['MainLabel'],
             width: width,
-            height: size + 3,
-            align: 'center',
+            // height: size + 3,
+            y: 2,
+            align: 'left',
             padding: 3,
             // padding: 10
         });
@@ -180,18 +185,27 @@ export var Nodes = {
             // })
             let relativePosition = placeLocation.bind(stage);
             let maxOfPinsOnEitherSide = Nodes.getPinCounts(nodeDescription);
-            let height = maxOfPinsOnEitherSide * 50 + 10;
+            let height = maxOfPinsOnEitherSide * 50 + 15;
             let width = nodeDescription.colums * 15;
             this.grp.position(relativePosition(location));
             let rect = Nodes.getRectBlock(height, width);
             this.grp.add(rect);
             this.grp.on("mouseenter", (e) => {
                 // console.log(e);
-                rect.opacity(0.55);
+                // rect.shadowBlur(30);
+                // rect.opacity(0.9);
+                // this.grp.offset({x: 10, y: 10});
+                //  shadowOffset: { x: 15, y: 15 },
+                // this.grp.scale(1.5);
+                // this.grp.filters([Konva.Filters.Grayscale]);
                 layer.draw();
             });
             this.grp.on("mouseleave", (e) => {
-                rect.opacity(0.5);
+                // rect.opacity(0.9);
+                // rect.shadowBlur(10);
+                // rect.shadowOffset({ x: 15, y: 15 });
+                // this.grp.scale(1);
+                // this.grp.filters([]);
                 layer.draw();
             })
             let titleLabel = Nodes.getLabel(nodeDescription.nodeTitle, 20, width);
@@ -248,8 +262,8 @@ export var Nodes = {
                     iplabel.position({ x: 28, y: 44 + 39 * inputPinsPlaced - 4 });
                     if (nodeDescription.inputs[value].isInputBoxRequired !== false) {
                         iprect = new InputBox(stage, layer, nodeDescription.inputs[value].dataType, this.grp, { x: 28, y: 44 + 39 * inputPinsPlaced - 2 }, colorMap, inputPin, iplabel, inputPinsPlaced);
-                        iplabel.position({ x: 28, y: 44 + 39 * inputPinsPlaced - 14 });                        
-                    } 
+                        iplabel.position({ x: 28, y: 44 + 39 * inputPinsPlaced - 14 });
+                    }
                     this.grp.add(iplabel);
                     this.grp.add(inputPin);
                     // this.grp.add(iprect);
@@ -282,6 +296,7 @@ export var Nodes = {
                     outputPinsPlaced++;
                 })
             };
+            // this.grp.cache();
             layer.add(this.grp);
             layer.draw();
             console.log(JSON.parse(JSON.stringify(this.grp)));
@@ -684,18 +699,18 @@ export var Nodes = {
         if (type == "Swap") {
             nodeDescription.nodeTitle = 'Swap';
             nodeDescription.execIn = true,
-            nodeDescription.inputs = {
-                input0: {
-                    inputTitle: 'ValueA',
-                    dataType: 'Data',
-                    isInputBoxRequired : false,
-                },
-                input1: {
-                    inputTitle: 'ValueB',
-                    dataType: 'Data',
-                    isInputBoxRequired : false,
+                nodeDescription.inputs = {
+                    input0: {
+                        inputTitle: 'ValueA',
+                        dataType: 'Data',
+                        isInputBoxRequired: false,
+                    },
+                    input1: {
+                        inputTitle: 'ValueB',
+                        dataType: 'Data',
+                        isInputBoxRequired: false,
+                    }
                 }
-            }
             nodeDescription.outputs = {
                 output0: {
                     outputTitle: 'ValueA',
@@ -938,7 +953,7 @@ export var Nodes = {
                 input0: {
                     inputTitle: 'Array',
                     dataType: 'Array',
-                    isInputBoxRequired : false,
+                    isInputBoxRequired: false,
                 },
             }
             nodeDescription.outputs = {
@@ -956,7 +971,7 @@ export var Nodes = {
                 input0: {
                     inputTitle: 'Array',
                     dataType: 'Array',
-                    isInputBoxRequired : false,
+                    isInputBoxRequired: false,
                 },
             }
             nodeDescription.outputs = {
@@ -974,7 +989,7 @@ export var Nodes = {
                 input0: {
                     inputTitle: 'Array',
                     dataType: 'Array',
-                    isInputBoxRequired : false,
+                    isInputBoxRequired: false,
                 },
             }
             nodeDescription.outputs = {
@@ -992,7 +1007,7 @@ export var Nodes = {
                 input0: {
                     inputTitle: 'Array',
                     dataType: 'Array',
-                    isInputBoxRequired : false,
+                    isInputBoxRequired: false,
                 },
             }
             nodeDescription.outputs = {
@@ -1004,17 +1019,17 @@ export var Nodes = {
             nodeDescription.rows = 2;
             nodeDescription.colums = 10;
         }
-        if(type == 'GetByPos'){
+        if (type == 'GetByPos') {
             nodeDescription.nodeTitle = 'GetByPos';
             nodeDescription.inputs = {
-                input0:{
+                input0: {
                     inputTitle: 'Pos',
                     dataType: 'Number',
                 },
                 input1: {
                     inputTitle: 'Array',
                     dataType: 'Array',
-                    isInputBoxRequired : false,
+                    isInputBoxRequired: false,
                 },
             }
             nodeDescription.outputs = {
@@ -1026,7 +1041,7 @@ export var Nodes = {
             nodeDescription.rows = 2;
             nodeDescription.colums = 10;
         }
-        if(type == 'SetByPos'){
+        if (type == 'SetByPos') {
             nodeDescription.nodeTitle = 'SetByPos';
             nodeDescription.execIn = true;
             nodeDescription.execOut = {
@@ -1035,18 +1050,18 @@ export var Nodes = {
                 },
             }
             nodeDescription.inputs = {
-                input0:{
+                input0: {
                     inputTitle: 'Pos',
                     dataType: 'Number',
                 },
-                input1:{
+                input1: {
                     inputTitle: 'Value',
                     dataType: 'Data',
                 },
                 input2: {
                     inputTitle: 'Array',
                     dataType: 'Array',
-                    isInputBoxRequired : false,
+                    isInputBoxRequired: false,
                 },
             }
             nodeDescription.outputs = {
@@ -1058,7 +1073,7 @@ export var Nodes = {
             nodeDescription.rows = 4;
             nodeDescription.colums = 10;
         }
-        if(type == 'Insert'){
+        if (type == 'Insert') {
             nodeDescription.nodeTitle = 'Insert';
             nodeDescription.execIn = true;
             nodeDescription.execOut = {
@@ -1067,18 +1082,18 @@ export var Nodes = {
                 },
             }
             nodeDescription.inputs = {
-                input0:{
+                input0: {
                     inputTitle: 'Pos',
                     dataType: 'Number',
                 },
-                input1:{
+                input1: {
                     inputTitle: 'Value',
                     dataType: 'Data',
                 },
                 input2: {
                     inputTitle: 'Array',
                     dataType: 'Array',
-                    isInputBoxRequired : false,
+                    isInputBoxRequired: false,
                 },
             }
             nodeDescription.outputs = {
@@ -1090,7 +1105,7 @@ export var Nodes = {
             nodeDescription.rows = 4;
             nodeDescription.colums = 10;
         }
-        if(type == 'PushBack'){
+        if (type == 'PushBack') {
             nodeDescription.nodeTitle = 'PushBack';
             nodeDescription.execIn = true;
             nodeDescription.execOut = {
@@ -1106,7 +1121,7 @@ export var Nodes = {
                 input1: {
                     inputTitle: 'Array',
                     dataType: 'Array',
-                    isInputBoxRequired : false,
+                    isInputBoxRequired: false,
                 },
             }
             nodeDescription.outputs = {
@@ -1118,7 +1133,7 @@ export var Nodes = {
             nodeDescription.rows = 2;
             nodeDescription.colums = 10;
         }
-        if(type == 'PushFront'){
+        if (type == 'PushFront') {
             nodeDescription.nodeTitle = 'PushFront';
             nodeDescription.execIn = true;
             nodeDescription.execOut = {
@@ -1134,7 +1149,7 @@ export var Nodes = {
                 input1: {
                     inputTitle: 'Array',
                     dataType: 'Array',
-                    isInputBoxRequired : false,
+                    isInputBoxRequired: false,
                 },
             }
             nodeDescription.outputs = {
@@ -1146,7 +1161,7 @@ export var Nodes = {
             nodeDescription.rows = 2;
             nodeDescription.colums = 10;
         }
-        if(type == 'PopBack'){
+        if (type == 'PopBack') {
             nodeDescription.nodeTitle = 'PopBack';
             nodeDescription.execIn = true;
             nodeDescription.execOut = {
@@ -1158,7 +1173,7 @@ export var Nodes = {
                 input0: {
                     inputTitle: 'Array',
                     dataType: 'Array',
-                    isInputBoxRequired : false,
+                    isInputBoxRequired: false,
                 },
             }
             nodeDescription.outputs = {
@@ -1170,7 +1185,7 @@ export var Nodes = {
             nodeDescription.rows = 2;
             nodeDescription.colums = 10;
         }
-        if(type == 'PopFront'){
+        if (type == 'PopFront') {
             nodeDescription.nodeTitle = 'PopFront';
             nodeDescription.execIn = true;
             nodeDescription.execOut = {
@@ -1182,7 +1197,7 @@ export var Nodes = {
                 input0: {
                     inputTitle: 'Array',
                     dataType: 'Array',
-                    isInputBoxRequired : false,
+                    isInputBoxRequired: false,
                 },
             }
             nodeDescription.outputs = {

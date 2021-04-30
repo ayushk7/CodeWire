@@ -44,6 +44,7 @@ export var InputBox = class{
         {
             defaultValue = 0;
             htmlInputBox = document.getElementById("string-ip");            
+            // getComputedStyle(html)
         }
         text.text(defaultValue);
         layer.draw();
@@ -52,8 +53,10 @@ export var InputBox = class{
             text.visible(false);
             layer.draw();
             htmlInputBox.value = text.text();
-            htmlInputBox.style.left = stage.getContainer().getBoundingClientRect().x + 7 + this.inputBox.getAbsolutePosition().x + "px";
-            htmlInputBox.style.top = stage.getContainer().getBoundingClientRect().y + 7 + this.inputBox.getAbsolutePosition().y + "px";
+            let stageContainerBorderLeftWidth = parseInt(getComputedStyle(stage.getContainer()).borderLeftWidth);
+            let stageContainerBorderTopWidth = parseInt(getComputedStyle(stage.getContainer()).borderTopWidth);
+            htmlInputBox.style.left = stage.getContainer().getBoundingClientRect().x + stageContainerBorderLeftWidth + this.inputBox.getAbsolutePosition().x + "px";
+            htmlInputBox.style.top = stage.getContainer().getBoundingClientRect().y + stageContainerBorderTopWidth + this.inputBox.getAbsolutePosition().y + "px";
             htmlInputBox.style.transform = `scale(${stage.scaleX()})`;
             htmlInputBox.style.display = "inline-block";
             htmlInputBox.focus();

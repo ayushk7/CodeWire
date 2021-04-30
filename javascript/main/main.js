@@ -34,10 +34,13 @@ document.getElementById("Run").addEventListener("click", (e) => {
     try {
         new VSToJS(stage, layer, panel.variables, "Run");
     }
-    catch(err){
-        
+    catch (err) {
+
     }
-})
+});
+// stage.on('mouseup', () => {
+//     console.log("x");
+// })
 document.getElementById("Code").addEventListener("click", () => {
     new VSToJS(stage, layer, panel.variables, "Code");
 });
