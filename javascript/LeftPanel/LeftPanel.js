@@ -2,7 +2,7 @@ import {colorMap} from '../ColorMap/colorMap.js'
 import {variableList} from '../Variable/variable.js'
 export class leftPanel {
     constructor() {
-        this.variablesNameList = {};
+        // this.variablesNameList = {};
         let createVariableForm = document.getElementById("create-variables");
         let forms = {
             numberForm: document.getElementById("number-default-form"),
@@ -53,7 +53,7 @@ export class leftPanel {
             if (variableName.length == 0) {
                 alert("Variable Name Can't be empty!");
             }
-            else if (this.variablesNameList[variableName]) {
+            else if (variableList.variables.some(value => value.name == variableName)) {
                 alert("Variable Already Exist");
             }
             else {
@@ -78,7 +78,7 @@ export class leftPanel {
                         dataType: document.getElementById("variable-data-type").value,
                         value: value,
                     };
-                    this.variablesNameList[variableName] = variableName;
+                    // this.variablesNameList[variableName] = variableName;
                     variableList.addVariable(variable);
                 }
                 else {
