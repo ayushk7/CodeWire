@@ -31,14 +31,14 @@ export var AppStage = {
                 x: pointer.x - mousePointTo.x * newScale,
                 y: pointer.y - mousePointTo.y * newScale,
             };
-            stage.container().style.backgroundSize = `${stage.scaleX() * 100 * 0.05}%`;
+            stage.container().style.backgroundSize = `${stage.scaleX() * 100 * 0.04}%`;
             stage.position(newPos);
             stage.batchDraw();
             stage.container().style.backgroundPosition = `${stage.position().x}px ${stage.position().y}px`;
         });
         stage.container().tabIndex = 1;
         stage.container().focus();
-        
+
         stage.on('mousedown', function (e) {
             if (e.target === stage && e.evt.button == 1) {
                 stage.draggable(true);
@@ -54,6 +54,15 @@ export var AppStage = {
                 stage.container().style.backgroundPosition = `${stage.position().x}px ${stage.position().y}px`;
             }
         })
+        window.addEventListener('resize', () => {
+            let container = document.querySelector('#container');
+            // console.log("Resized");
+            let containerWidth = container.offsetWidth;
+            let scale = containerWidth / stage.width();
+            stage.width(container.offsetWidth);
+            stage.height(container.offsetHeight);
+            stage.draw();
+        });
         return stage;
     }
 }

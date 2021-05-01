@@ -1,5 +1,6 @@
 import { InputBox } from '../InputBox/InputBox.js'
 import { colorMap } from '../ColorMap/colorMap.js'
+import { setLocationOfNode } from '../setLocationOfNode/setLocationOfNode.js';
 let placeLocation = function (location) {
     //"this" is stage
     return {
@@ -9,7 +10,7 @@ let placeLocation = function (location) {
 }
 export var Nodes = {
     countNodes: 0,
-    getExecPin: function (inType, id, layer) {
+    getExecPin: function (inType, helper, layer) {
         // let pointsExecIn = [0, 0, -14, -7, -14, 7];
         // let pointsExecOut = []
         let pin = new Konva.Line({
@@ -17,11 +18,12 @@ export var Nodes = {
             stroke: 'white',
             strokeWidth: 1,
             closed: true,
-            id: id,
+            helper: helper,
             name: 'pin',
             offsetX: (inType) ? -14 : 0,
             pinType: (inType) ? 'exec-in' : 'exec-out',
             pinDataType: null,
+            fill: '',
         });
         pin.on("mouseenter", () => {
             pin.strokeWidth(3);
@@ -39,6 +41,10 @@ export var Nodes = {
         pin.on("wireconnected", (e) => {
             pin.fill("white");
         });
+        pin.on("wiringstart", (e) => {
+            pin.fill("white");
+            layer.draw();
+        });
         return pin;
     },
     getRectBlock: function (height, width) {
@@ -46,7 +52,7 @@ export var Nodes = {
             height: height,
             width: width,
             fill: colorMap['MainBox'],
-            opacity: 0.9,
+            opacity: 0.8,
             cornerRadius: 5,
             shadowColor: 'black',
             shadowBlur: 15,
@@ -56,7 +62,7 @@ export var Nodes = {
         });
         return rect;
     },
-    getInputPin: function (inType, id, type, layer) {
+    getInputPin: function (inType, helper, type, layer) {
         let pin = new Konva.Circle({
             radius: 7,
             stroke: colorMap[type],
@@ -65,7 +71,8 @@ export var Nodes = {
             pinType: (inType) ? 'inp' : 'outp',
             pinDataType: type,
             offsetX: (inType) ? -7 : 7,
-            id: id,
+            helper: helper,
+            fill: '',
         });
         pin.on("mouseenter", () => {
             pin.strokeWidth(3);
@@ -82,6 +89,10 @@ export var Nodes = {
         });
         pin.on("wireconnected", (e) => {
             pin.fill(`${colorMap[type]}`);
+        });
+        pin.on("wiringstart", (e) => {
+            pin.fill(`${colorMap[type]}`);
+            layer.draw();
         });
         return pin;
     },
@@ -167,6 +178,82 @@ export var Nodes = {
         });
         return text;
     },
+    optimizeDrag: function (grp, stage, layer) {
+        let dragLayer = stage.findOne('#dragLayer');
+        let wireLayer = stage.findOne('#wireLayer');
+        grp.on('dragstart', () => {
+            grp.moveTo(dragLayer);
+            for (let each of grp.customClass.execInPins) {
+                for (let aWire of each.wire) {
+                    aWire.moveTo(dragLayer);
+                }
+            }
+            for (let each of grp.customClass.execOutPins) {
+                if (each.wire)
+                    each.wire.moveTo(dragLayer);
+            }
+            for (let each of grp.customClass.inputPins) {
+                if (each.wire)
+                    each.wire.moveTo(dragLayer);
+            }
+            for (let each of grp.customClass.outputPins) {
+                for (let aWire of each.wire) {
+                    aWire.moveTo(dragLayer);
+                }
+            }
+            wireLayer.draw();
+            dragLayer.draw();
+            layer.draw();
+            // try {
+            //     if (layer.hasChildren())
+            //         layer.cache();
+            //     if (wireLayer.hasChildren())
+            //         wireLayer.cache();
+            // }
+            // catch (err) {
+
+            // }
+        })
+        grp.on('dragend', () => {
+            grp.moveTo(layer);
+            for (let each of grp.customClass.execInPins) {
+                for (let aWire of each.wire) {
+                    aWire.moveTo(wireLayer);
+                }
+            }
+            for (let each of grp.customClass.execOutPins) {
+                if (each.wire)
+                    each.wire.moveTo(wireLayer);
+            }
+            for (let each of grp.customClass.inputPins) {
+                if (each.wire)
+                    each.wire.moveTo(wireLayer);
+            }
+            for (let each of grp.customClass.outputPins) {
+                for (let aWire of each.wire) {
+                    aWire.moveTo(wireLayer);
+                }
+            }
+            // layer.clearCache();
+            // wireLayer.clearCache();
+            wireLayer.draw();
+            dragLayer.draw();
+            layer.draw();
+        });
+    },
+    getBorderRect: function (height, width) {
+        let rect = new Konva.Rect({
+            height: height,
+            width: width,
+            fill: 'transparent',
+            stroke: '#dbd8e3',
+            strokeWidth: 0,
+            cornerRadius: 5,
+            name: 'borderbox',
+        });
+        rect.off('click mouseover mouseenter mouseleave');
+        return rect;
+    },
     ProgramNode: class {
         constructor(nodeDescription, location, layer, stage) {
 
@@ -183,6 +270,7 @@ export var Nodes = {
             // this.grp.on('dblclick', (e) => {
             //     console.table(e.currentTarget.customClass);
             // })
+            this.nodeDescription = nodeDescription;
             let relativePosition = placeLocation.bind(stage);
             let maxOfPinsOnEitherSide = Nodes.getPinCounts(nodeDescription);
             let height = maxOfPinsOnEitherSide * 50 + 15;
@@ -190,34 +278,54 @@ export var Nodes = {
             this.grp.position(relativePosition(location));
             let rect = Nodes.getRectBlock(height, width);
             this.grp.add(rect);
-            this.grp.on("mouseenter", (e) => {
+            let borderRect = Nodes.getBorderRect(height, width);
+            let titleLabel = Nodes.getLabel(nodeDescription.nodeTitle, 20, width);
+            this.grp.add(titleLabel.bg);
+            this.grp.add(titleLabel.text);
+            this.grp.add(borderRect);
+
+            this.grp.on("mouseover", (e) => {
                 // console.log(e);
-                // rect.shadowBlur(30);
-                // rect.opacity(0.9);
-                // this.grp.offset({x: 10, y: 10});
-                //  shadowOffset: { x: 15, y: 15 },
-                // this.grp.scale(1.5);
-                // this.grp.filters([Konva.Filters.Grayscale]);
+                // if(shape == this.grp)
+                borderRect.strokeWidth(1);
                 layer.draw();
             });
             this.grp.on("mouseleave", (e) => {
                 // rect.opacity(0.9);
-                // rect.shadowBlur(10);
                 // rect.shadowOffset({ x: 15, y: 15 });
                 // this.grp.scale(1);
                 // this.grp.filters([]);
+                borderRect.strokeWidth(0);
+                layer.draw();
+            });
+            this.grp.on('mousedown', (e) => {
+                rect.shadowBlur(25);
+                // rect.shadowOffset({ x: 25, y: 25 });
                 layer.draw();
             })
-            let titleLabel = Nodes.getLabel(nodeDescription.nodeTitle, 20, width);
-            // console.log(titleLabel.width());
-            this.grp.add(titleLabel.bg);
-            this.grp.add(titleLabel.text);
+            this.grp.on('mouseup', (e) => {
+                rect.shadowBlur(15);
+                // rect.shadowOffset({ x: 15, y: 15 });
+                layer.draw();
+            })
+            /****/
+
+            Nodes.optimizeDrag(this.grp, stage, layer);
+
+            /****/
             // titleLabel.offsetX(titleLabel.width() / 2);
             let inputPinsPlaced = 0, outputPinsPlaced = 0;
             this.execInPins = [];
             if (nodeDescription.execIn == true) {
                 let execInPin = Nodes.getExecPin(true, 'exec-in-0', layer);
                 execInPin.position({ x: 7, y: 44 });
+                if (nodeDescription.pinExecInId == null) {
+                    execInPin.id(`${execInPin._id}`);
+                }
+                else {
+                    execInPin.id(nodeDescription.pinExecInId);
+                }
+                this.nodeDescription.pinExecInId = execInPin.id();
                 this.grp.add(execInPin);
                 let tmp = {
                     thisNode: execInPin,
@@ -226,6 +334,7 @@ export var Nodes = {
                 this.execInPins.push(tmp);
                 inputPinsPlaced = 1;
             }
+
             let X = nodeDescription.nodeTitle.split(" ");
             this.type = {
                 isGetSet: (X[0] == 'Get' || X[0] == 'Set'),
@@ -236,6 +345,13 @@ export var Nodes = {
                 Object.keys(nodeDescription.execOut).forEach((value, index) => {
                     let execOutPin = Nodes.getExecPin(false, `exec-out-${index}`, layer);
                     execOutPin.position({ x: width - 7, y: 44 + index * 39 });
+                    if (nodeDescription.execOut[value].pinExecOutId == null) {
+                        execOutPin.id(`${execOutPin._id}`);
+                    }
+                    else {
+                        execOutPin.id(nodeDescription.execOut[value].pinExecOutId);
+                    }
+                    this.nodeDescription.execOut[value].pinExecOutId = execOutPin.id();
                     this.grp.add(execOutPin);
                     if (nodeDescription.execOut[value].execOutTitle) {
                         let exLabel = Nodes.getExecOutTitle(nodeDescription.execOut[value].execOutTitle);
@@ -256,12 +372,20 @@ export var Nodes = {
                 Object.keys(nodeDescription.inputs).forEach((value, index) => {
                     let inputPin = Nodes.getInputPin(true, `inp-${index}`, nodeDescription.inputs[value].dataType, layer);
                     inputPin.position({ x: 7, y: 44 + 39 * inputPinsPlaced });
+                    if (nodeDescription.inputs[value].pinInId == null) {
+                        inputPin.id(`${inputPin._id}`);
+                    }
+                    else {
+                        inputPin.id(nodeDescription.inputs[value].pinInId);
+                    }
+                    this.nodeDescription.inputs[value].pinInId = inputPin.id();
                     // iprect.position({ x: 28, y: 44 + 39 * inputPinsPlaced - 2 });
                     let iprect = null;
                     let iplabel = Nodes.getInputLabel(nodeDescription.inputs[value].inputTitle, nodeDescription.inputs[value].dataType);
                     iplabel.position({ x: 28, y: 44 + 39 * inputPinsPlaced - 4 });
                     if (nodeDescription.inputs[value].isInputBoxRequired !== false) {
-                        iprect = new InputBox(stage, layer, nodeDescription.inputs[value].dataType, this.grp, { x: 28, y: 44 + 39 * inputPinsPlaced - 2 }, colorMap, inputPin, iplabel, inputPinsPlaced);
+                        // console.log(nodeDescription.inputs, this.nodeDescription.inputs);
+                        iprect = new InputBox(stage, layer, nodeDescription.inputs[value].dataType, this.grp, { x: 28, y: 44 + 39 * inputPinsPlaced - 2 }, colorMap, inputPin, iplabel, inputPinsPlaced, nodeDescription.inputs[value], this.nodeDescription.inputs[value]);
                         iplabel.position({ x: 28, y: 44 + 39 * inputPinsPlaced - 14 });
                     }
                     this.grp.add(iplabel);
@@ -283,6 +407,13 @@ export var Nodes = {
                 Object.keys(nodeDescription.outputs).forEach((value, index) => {
                     let outputPin = Nodes.getInputPin(false, `out-${index}`, nodeDescription.outputs[value].dataType, layer);
                     outputPin.position({ x: width - 7, y: 44 + 39 * outputPinsPlaced });
+                    if (nodeDescription.outputs[value].pinOutId == null) {
+                        outputPin.id(`${outputPin._id}`);
+                    }
+                    else {
+                        outputPin.id(nodeDescription.outputs[value].pinOutId);
+                    }
+                    nodeDescription.outputs[value].pinOutId = outputPin.id();
                     this.grp.add(outputPin);
                     let outLabel = Nodes.getInputLabel(nodeDescription.outputs[value].outputTitle, nodeDescription.outputs[value].dataType);
                     outLabel.position({ x: width - 65, y: 44 + 39 * outputPinsPlaced - 4 })
@@ -299,7 +430,8 @@ export var Nodes = {
             // this.grp.cache();
             layer.add(this.grp);
             layer.draw();
-            console.log(JSON.parse(JSON.stringify(this.grp)));
+            layer.draw();
+            // console.log(JSON.parse(JSON.stringify(this.grp)));
         }
     },
 
@@ -307,31 +439,37 @@ export var Nodes = {
 
 
 
-    CreateNode: function (type, location, layer, stage, isGetSet, dataType) {
+    CreateNode: function (type, location, layer, stage, isGetSet, dataType, defValue) {
         let nodeDescription = {};
         if (type == 'Begin') {
             nodeDescription.nodeTitle = 'Begin';
             nodeDescription.execIn = false;
-            nodeDescription.execOut = {
-                execOut0: {
-                    execOutTitle: null,
-                }
-            };
+            nodeDescription.pinExecInId = null,
+                nodeDescription.execOut = {
+                    execOut0: {
+                        execOutTitle: null,
+                        pinExecOutId: null,
+                    }
+                };
             nodeDescription.rows = 2;
             nodeDescription.colums = 10;
         }
         if (type == 'Print') {
             nodeDescription.nodeTitle = 'Print';
             nodeDescription.execIn = true;
-            nodeDescription.execOut = {
-                execOut0: {
-                    execOutTitle: null,
-                },
-            }
+            nodeDescription.pinExecInId = null,
+                nodeDescription.execOut = {
+                    execOut0: {
+                        execOutTitle: null,
+                        pinExecOutId: null,
+                    },
+                }
             nodeDescription.inputs = {
                 input0: {
                     inputTitle: 'Value',
                     dataType: 'Data',
+                    defValue: 'hello',
+                    pinInId: null,
                 }
             }
             nodeDescription.rows = 3;
@@ -340,18 +478,23 @@ export var Nodes = {
         if (type == 'Branch') {
             nodeDescription.nodeTitle = 'Branch';
             nodeDescription.execIn = true;
-            nodeDescription.execOut = {
-                execOut0: {
-                    execOutTitle: '       True',
-                },
-                execOut1: {
-                    execOutTitle: '       False',
+            nodeDescription.pinExecInId = null,
+                nodeDescription.execOut = {
+                    execOut0: {
+                        execOutTitle: '       True',
+                        pinExecOutId: null,
+                    },
+                    execOut1: {
+                        execOutTitle: '       False',
+                        pinExecOutId: null,
+                    }
                 }
-            }
             nodeDescription.inputs = {
                 input0: {
                     inputTitle: 'Bool',
                     dataType: 'Boolean',
+                    defValue: true,
+                    pinInId: null,
                 }
             }
             nodeDescription.rows = 3;
@@ -363,16 +506,21 @@ export var Nodes = {
                 input0: {
                     inputTitle: 'ValueA',
                     dataType: 'Number',
+                    defValue: 0,
+                    pinInId: null,
                 },
                 input1: {
                     inputTitle: 'ValueB',
                     dataType: 'Number',
+                    defValue: 0,
+                    pinInId: null,
                 }
             }
             nodeDescription.outputs = {
                 output0: {
                     outputTitle: ' Result',
                     dataType: 'Number',
+                    pinOutId: null,
                 }
             }
             nodeDescription.rows = 2;
@@ -384,16 +532,21 @@ export var Nodes = {
                 input0: {
                     inputTitle: 'ValueA',
                     dataType: 'Number',
+                    defValue: 1,
+                    pinInId: null,
                 },
                 input1: {
                     inputTitle: 'ValueB',
                     dataType: 'Number',
+                    defValue: 2,
+                    pinInId: null,
                 }
             }
             nodeDescription.outputs = {
                 output0: {
                     outputTitle: ' Result',
                     dataType: 'Number',
+                    pinOutId: null,
                 }
             }
             nodeDescription.rows = 2;
@@ -405,16 +558,21 @@ export var Nodes = {
                 input0: {
                     inputTitle: 'ValueA',
                     dataType: 'Number',
+                    defValue: 0,
+                    pinInId: null,
                 },
                 input1: {
                     inputTitle: 'ValueB',
                     dataType: 'Number',
+                    defValue: 0,
+                    pinInId: null,
                 }
             }
             nodeDescription.outputs = {
                 output0: {
                     outputTitle: ' Result',
                     dataType: 'Number',
+                    pinOutId: null,
                 }
             }
             nodeDescription.rows = 2;
@@ -426,16 +584,21 @@ export var Nodes = {
                 input0: {
                     inputTitle: 'ValueA',
                     dataType: 'Number',
+                    defValue: 1,
+                    pinInId: null,
                 },
                 input1: {
                     inputTitle: 'ValueB',
                     dataType: 'Number',
+                    defValue: 1,
+                    pinInId: null,
                 }
             }
             nodeDescription.outputs = {
                 output0: {
                     outputTitle: ' Result',
                     dataType: 'Number',
+                    pinOutId: null,
                 }
             }
             nodeDescription.rows = 2;
@@ -447,16 +610,21 @@ export var Nodes = {
                 input0: {
                     inputTitle: 'ValueA',
                     dataType: 'Number',
+                    defValue: 1,
+                    pinInId: null,
                 },
                 input1: {
                     inputTitle: 'ValueB',
                     dataType: 'Number',
+                    defValue: 1,
+                    pinInId: null,
                 }
             }
             nodeDescription.outputs = {
                 output0: {
                     outputTitle: ' Result',
                     dataType: 'Number',
+                    pinOutId: null,
                 }
             }
             nodeDescription.rows = 2;
@@ -468,12 +636,15 @@ export var Nodes = {
                 input0: {
                     inputTitle: 'ValueA',
                     dataType: 'Number',
+                    defValue: 1,
+                    pinInId: null,
                 },
             }
             nodeDescription.outputs = {
                 output0: {
                     outputTitle: ' Result',
                     dataType: 'Number',
+                    pinOutId: null,
                 }
             }
             nodeDescription.rows = 2;
@@ -485,12 +656,15 @@ export var Nodes = {
                 input0: {
                     inputTitle: 'ValueA',
                     dataType: 'Number',
+                    defValue: 1,
+                    pinInId: null,
                 },
             }
             nodeDescription.outputs = {
                 output0: {
                     outputTitle: ' Result',
                     dataType: 'Number',
+                    pinOutId: null,
                 }
             }
             nodeDescription.rows = 2;
@@ -500,18 +674,24 @@ export var Nodes = {
         if (type == 'While') {
             nodeDescription.nodeTitle = 'While';
             nodeDescription.execIn = true;
+            nodeDescription.pinExecInId = null;
             nodeDescription.inputs = {
                 input0: {
                     inputTitle: 'Bool',
-                    dataType: 'Boolean'
+                    dataType: 'Boolean',
+                    defValue: false,
+                    pinInId: null,
                 },
             }
             nodeDescription.execOut = {
                 execOut0: {
                     execOutTitle: 'Loop Body',
+                    pinExecOutId: null,
                 },
                 execOut1: {
                     execOutTitle: 'Completed',
+                    pinExecOutId: null,
+
                 }
             }
             nodeDescription.rows = 2;
@@ -523,19 +703,22 @@ export var Nodes = {
             nodeDescription.inputs = {
                 input0: {
                     inputTitle: 'ValueA',
-                    dataType: 'Boolean'
-
+                    dataType: 'Boolean',
+                    defValue: true,
+                    pinInId: null,
                 },
                 input1: {
                     inputTitle: 'ValueB',
-                    dataType: 'Boolean'
-
+                    dataType: 'Boolean',
+                    defValue: true,
+                    pinInId: null,
                 }
             }
             nodeDescription.outputs = {
                 output0: {
                     outputTitle: ' Result',
-                    dataType: 'Boolean'
+                    dataType: 'Boolean',
+                    pinOutId: null,
                 }
             }
             nodeDescription.rows = 2;
@@ -546,19 +729,22 @@ export var Nodes = {
             nodeDescription.inputs = {
                 input0: {
                     inputTitle: 'ValueA',
-                    dataType: 'Boolean'
-
+                    dataType: 'Boolean',
+                    defValue: true,
+                    pinInId: null,
                 },
                 input1: {
                     inputTitle: 'ValueB',
-                    dataType: 'Boolean'
-
+                    dataType: 'Boolean',
+                    defValue: true,
+                    pinInId: null,
                 }
             }
             nodeDescription.outputs = {
                 output0: {
                     outputTitle: ' Result',
-                    dataType: 'Boolean'
+                    dataType: 'Boolean',
+                    pinOutId: null,
                 }
             }
             nodeDescription.rows = 2;
@@ -569,19 +755,22 @@ export var Nodes = {
             nodeDescription.inputs = {
                 input0: {
                     inputTitle: 'ValueA',
-                    dataType: 'Boolean'
-
+                    dataType: 'Boolean',
+                    defValue: true,
+                    pinInId: null,
                 },
                 input1: {
                     inputTitle: 'ValueB',
-                    dataType: 'Boolean'
-
+                    dataType: 'Boolean',
+                    defValue: true,
+                    pinInId: null,
                 }
             }
             nodeDescription.outputs = {
                 output0: {
                     outputTitle: ' Result',
-                    dataType: 'Boolean'
+                    dataType: 'Boolean',
+                    pinOutId: null,
                 }
             }
             nodeDescription.rows = 2;
@@ -592,19 +781,22 @@ export var Nodes = {
             nodeDescription.inputs = {
                 input0: {
                     inputTitle: 'ValueA',
-                    dataType: 'Number'
-
+                    dataType: 'Number',
+                    defValue: 1,
+                    pinInId: null,
                 },
                 input1: {
                     inputTitle: 'ValueB',
-                    dataType: 'Number'
-
+                    dataType: 'Number',
+                    defValue: 1,
+                    pinInId: null,
                 }
             }
             nodeDescription.outputs = {
                 output0: {
                     outputTitle: ' Result',
-                    dataType: 'Number'
+                    dataType: 'Number',
+                    pinOutId: null,
                 }
             }
             nodeDescription.rows = 2;
@@ -615,19 +807,22 @@ export var Nodes = {
             nodeDescription.inputs = {
                 input0: {
                     inputTitle: 'ValueA',
-                    dataType: 'Number'
-
+                    dataType: 'Number',
+                    defValue: 1,
+                    pinInId: null,
                 },
                 input1: {
                     inputTitle: 'ValueB',
-                    dataType: 'Number'
-
+                    dataType: 'Number',
+                    defValue: 1,
+                    pinInId: null,
                 }
             }
             nodeDescription.outputs = {
                 output0: {
                     outputTitle: ' Result',
-                    dataType: 'Number'
+                    dataType: 'Number',
+                    pinOutId: null,
                 }
             }
             nodeDescription.rows = 2;
@@ -638,19 +833,22 @@ export var Nodes = {
             nodeDescription.inputs = {
                 input0: {
                     inputTitle: 'ValueA',
-                    dataType: 'Number'
-
+                    dataType: 'Number',
+                    defValue: 1,
+                    pinInId: null,
                 },
                 input1: {
                     inputTitle: 'ValueB',
-                    dataType: 'Number'
-
+                    dataType: 'Number',
+                    defValue: 1,
+                    pinInId: null,
                 }
             }
             nodeDescription.outputs = {
                 output0: {
                     outputTitle: ' Result',
-                    dataType: 'Number'
+                    dataType: 'Number',
+                    pinOutId: null,
                 }
             }
             nodeDescription.rows = 2;
@@ -661,19 +859,22 @@ export var Nodes = {
             nodeDescription.inputs = {
                 input0: {
                     inputTitle: 'ValueA',
-                    dataType: 'Number'
-
+                    dataType: 'Number',
+                    defValue: 1,
+                    pinInId: null,
                 },
                 input1: {
                     inputTitle: 'ValueB',
-                    dataType: 'Number'
-
+                    dataType: 'Number',
+                    defValue: 1,
+                    pinInId: null,
                 }
             }
             nodeDescription.outputs = {
                 output0: {
                     outputTitle: ' Result',
-                    dataType: 'Number'
+                    dataType: 'Number',
+                    pinOutId: null,
                 }
             }
             nodeDescription.rows = 2;
@@ -685,12 +886,15 @@ export var Nodes = {
                 input0: {
                     inputTitle: 'Value',
                     dataType: 'Number',
+                    defValue: 0,
+                    pinInId: null,
                 },
             }
             nodeDescription.outputs = {
                 output0: {
                     outputTitle: ' Result',
-                    dataType: 'Number'
+                    dataType: 'Number',
+                    pinOutId: null,
                 }
             }
             nodeDescription.rows = 2;
@@ -699,31 +903,38 @@ export var Nodes = {
         if (type == "Swap") {
             nodeDescription.nodeTitle = 'Swap';
             nodeDescription.execIn = true,
-                nodeDescription.inputs = {
-                    input0: {
-                        inputTitle: 'ValueA',
-                        dataType: 'Data',
-                        isInputBoxRequired: false,
-                    },
-                    input1: {
-                        inputTitle: 'ValueB',
-                        dataType: 'Data',
-                        isInputBoxRequired: false,
-                    }
+                nodeDescription.pinExecInId = null;
+            nodeDescription.inputs = {
+                input0: {
+                    inputTitle: 'ValueA',
+                    dataType: 'Data',
+                    isInputBoxRequired: false,
+                    pinInId: null,
+                },
+                input1: {
+                    inputTitle: 'ValueB',
+                    dataType: 'Data',
+                    isInputBoxRequired: false,
+                    pinInId: null,
                 }
+            }
             nodeDescription.outputs = {
                 output0: {
                     outputTitle: 'ValueA',
-                    dataType: 'Data'
+                    dataType: 'Data',
+                    pinOutId: null,
                 },
                 output1: {
                     outputTitle: 'ValueB',
-                    dataType: 'Data'
+                    dataType: 'Data',
+                    pinOutId: null,
+
                 }
             }
             nodeDescription.execOut = {
                 execOut0: {
                     execOutTitle: null,
+                    pinExecOutId: null,
                 },
             }
             nodeDescription.rows = 2;
@@ -734,19 +945,23 @@ export var Nodes = {
             nodeDescription.inputs = {
                 input0: {
                     inputTitle: 'ValueA',
-                    dataType: 'Data'
+                    dataType: 'Data',
+                    defValue: 0,
+                    pinInId: null,
 
                 },
                 input1: {
                     inputTitle: 'ValueB',
-                    dataType: 'Data'
-
+                    dataType: 'Data',
+                    defValue: 0,
+                    pinInId: null,
                 }
             }
             nodeDescription.outputs = {
                 output0: {
                     outputTitle: ' Result',
-                    dataType: 'Boolean'
+                    dataType: 'Boolean',
+                    pinOutId: null,
                 }
             }
             nodeDescription.rows = 2;
@@ -757,19 +972,22 @@ export var Nodes = {
             nodeDescription.inputs = {
                 input0: {
                     inputTitle: 'ValueA',
-                    dataType: 'Number'
-
+                    dataType: 'Number',
+                    defValue: 0,
+                    pinInId: null,
                 },
                 input1: {
                     inputTitle: 'ValueB',
-                    dataType: 'Number'
-
+                    dataType: 'Number',
+                    defValue: 1,
+                    pinInId: null,
                 }
             }
             nodeDescription.outputs = {
                 output0: {
                     outputTitle: ' Result',
-                    dataType: 'Boolean'
+                    dataType: 'Boolean',
+                    pinOutId: null,
                 }
             }
             nodeDescription.rows = 2;
@@ -780,19 +998,22 @@ export var Nodes = {
             nodeDescription.inputs = {
                 input0: {
                     inputTitle: 'ValueA',
-                    dataType: 'Number'
-
+                    dataType: 'Number',
+                    defValue: 0,
+                    pinInId: null,
                 },
                 input1: {
                     inputTitle: 'ValueB',
-                    dataType: 'Number'
-
+                    dataType: 'Number',
+                    defValue: 1,
+                    pinInId: null,
                 }
             }
             nodeDescription.outputs = {
                 output0: {
                     outputTitle: ' Result',
-                    dataType: 'Boolean'
+                    dataType: 'Boolean',
+                    pinOutId: null,
                 }
             }
             nodeDescription.rows = 2;
@@ -803,19 +1024,22 @@ export var Nodes = {
             nodeDescription.inputs = {
                 input0: {
                     inputTitle: 'ValueA',
-                    dataType: 'Number'
-
+                    dataType: 'Number',
+                    defValue: 0,
+                    pinInId: null,
                 },
                 input1: {
                     inputTitle: 'ValueB',
-                    dataType: 'Number'
-
+                    dataType: 'Number',
+                    defValue: 1,
+                    pinInId: null,
                 }
             }
             nodeDescription.outputs = {
                 output0: {
                     outputTitle: ' Result',
-                    dataType: 'Boolean'
+                    dataType: 'Boolean',
+                    pinOutId: null,
                 }
             }
             nodeDescription.rows = 2;
@@ -826,19 +1050,22 @@ export var Nodes = {
             nodeDescription.inputs = {
                 input0: {
                     inputTitle: 'ValueA',
-                    dataType: 'Number'
-
+                    dataType: 'Number',
+                    defValue: 0,
+                    pinInId: null,
                 },
                 input1: {
                     inputTitle: 'ValueB',
-                    dataType: 'Number'
-
+                    dataType: 'Number',
+                    defValue: 1,
+                    pinInId: null,
                 }
             }
             nodeDescription.outputs = {
                 output0: {
                     outputTitle: ' Result',
-                    dataType: 'Boolean'
+                    dataType: 'Boolean',
+                    pinOutId: null,
                 }
             }
             nodeDescription.rows = 2;
@@ -850,35 +1077,49 @@ export var Nodes = {
                 input0: {
                     inputTitle: 'Value',
                     dataType: 'Boolean',
+                    defValue: false,
+                    pinInId: null,
                 },
             }
             nodeDescription.outputs = {
                 output0: {
                     outputTitle: ' Result',
-                    dataType: 'Boolean'
+                    dataType: 'Boolean',
+                    pinOutId: null,
                 }
             }
             nodeDescription.rows = 2;
             nodeDescription.colums = 10;
         }
         if (isGetSet == "Set") {
+            let defaultValueByType = {
+                "Number": 0,
+                "Boolean": true,
+                "String": 'Hello',
+                "Array": [],
+            }
             nodeDescription.nodeTitle = type;
             nodeDescription.execIn = true;
+            nodeDescription.pinExecInId = null;
             nodeDescription.execOut = {
                 execOut0: {
                     execOutTitle: null,
+                    pinExecOutId: null,
                 },
             }
             nodeDescription.inputs = {
                 input0: {
                     inputTitle: 'Value',
                     dataType: dataType,
+                    defValue: defaultValueByType[dataType],
+                    pinInId: null,
                 },
             }
             nodeDescription.outputs = {
                 output0: {
                     outputTitle: ' Value',
                     dataType: dataType,
+                    pinOutId: null,
                 }
             }
             nodeDescription.rows = 2;
@@ -890,6 +1131,7 @@ export var Nodes = {
                 output0: {
                     outputTitle: ' Value',
                     dataType: dataType,
+                    pinOutId: null,
                 }
             }
             nodeDescription.rows = 2;
@@ -900,8 +1142,8 @@ export var Nodes = {
             nodeDescription.outputs = {
                 output0: {
                     outputTitle: ' Rand',
-                    dataType: 'Number'
-
+                    dataType: 'Number',
+                    pinOutId: null,
                 }
             }
             nodeDescription.rows = 2;
@@ -909,33 +1151,43 @@ export var Nodes = {
         }
         if (type == 'For') {
             nodeDescription.nodeTitle = 'For';
+            nodeDescription.pinExecInId = null;
             nodeDescription.execIn = true;
             nodeDescription.execOut = {
                 execOut0: {
                     execOutTitle: 'Loop Body',
+                    pinExecOutId: null,
                 },
                 execOut1: {
                     execOutTitle: 'Completed',
+                    pinExecOutId: null,
                 }
             }
             nodeDescription.inputs = {
                 input0: {
                     inputTitle: 'From',
-                    dataType: 'Number'
+                    dataType: 'Number',
+                    defValue: 0,
+                    pinInId: null,
                 },
                 input1: {
                     inputTitle: 'To(Ex)',
-                    dataType: 'Number'
+                    dataType: 'Number',
+                    defValue: 10,
+                    pinInId: null,
                 },
                 input2: {
                     inputTitle: 'Incr',
-                    dataType: 'Number'
+                    dataType: 'Number',
+                    defValue: 1,
+                    pinInId: null,
                 }
             }
             nodeDescription.outputs = {
                 output0: {
                     outputTitle: ' Index',
-                    dataType: 'Number'
+                    dataType: 'Number',
+                    pinOutId: null,
                 }
             }
             nodeDescription.rows = 2;
@@ -944,6 +1196,7 @@ export var Nodes = {
         if (type == "Break") {
             nodeDescription.nodeTitle = 'Break';
             nodeDescription.execIn = true;
+            nodeDescription.pinExecInId = null;
             nodeDescription.rows = 2;
             nodeDescription.colums = 10;
         }
@@ -954,12 +1207,14 @@ export var Nodes = {
                     inputTitle: 'Array',
                     dataType: 'Array',
                     isInputBoxRequired: false,
+                    pinInId: null,
                 },
             }
             nodeDescription.outputs = {
                 output0: {
                     outputTitle: ' Value',
-                    dataType: 'Number'
+                    dataType: 'Number',
+                    pinOutId: null,
                 }
             }
             nodeDescription.rows = 2;
@@ -972,12 +1227,14 @@ export var Nodes = {
                     inputTitle: 'Array',
                     dataType: 'Array',
                     isInputBoxRequired: false,
+                    pinInId: null,
                 },
             }
             nodeDescription.outputs = {
                 output0: {
                     outputTitle: ' Result',
-                    dataType: 'Boolean'
+                    dataType: 'Boolean',
+                    pinOutId: null,
                 }
             }
             nodeDescription.rows = 2;
@@ -990,12 +1247,14 @@ export var Nodes = {
                     inputTitle: 'Array',
                     dataType: 'Array',
                     isInputBoxRequired: false,
+                    pinInId: null,
                 },
             }
             nodeDescription.outputs = {
                 output0: {
                     outputTitle: ' Front',
-                    dataType: 'Data'
+                    dataType: 'Data',
+                    pinOutId: null,
                 }
             }
             nodeDescription.rows = 2;
@@ -1008,12 +1267,14 @@ export var Nodes = {
                     inputTitle: 'Array',
                     dataType: 'Array',
                     isInputBoxRequired: false,
+                    pinInId: null,
                 },
             }
             nodeDescription.outputs = {
                 output0: {
                     outputTitle: ' Back',
-                    dataType: 'Data'
+                    dataType: 'Data',
+                    pinOutId: null,
                 }
             }
             nodeDescription.rows = 2;
@@ -1025,17 +1286,21 @@ export var Nodes = {
                 input0: {
                     inputTitle: 'Pos',
                     dataType: 'Number',
+                    defValue: 0,
+                    pinInId: null,
                 },
                 input1: {
                     inputTitle: 'Array',
                     dataType: 'Array',
                     isInputBoxRequired: false,
+                    pinInId: null,
                 },
             }
             nodeDescription.outputs = {
                 output0: {
                     outputTitle: ' Value',
-                    dataType: 'Data'
+                    dataType: 'Data',
+                    pinOutId: null,
                 }
             }
             nodeDescription.rows = 2;
@@ -1044,30 +1309,40 @@ export var Nodes = {
         if (type == 'SetByPos') {
             nodeDescription.nodeTitle = 'SetByPos';
             nodeDescription.execIn = true;
+            nodeDescription.pinExecInId = null;
             nodeDescription.execOut = {
                 execOut0: {
                     execOutTitle: null,
+                    pinExecOutId: null,
                 },
             }
             nodeDescription.inputs = {
                 input0: {
                     inputTitle: 'Pos',
                     dataType: 'Number',
+                    defValue: 0,
+                    pinInId: null,
                 },
                 input1: {
                     inputTitle: 'Value',
                     dataType: 'Data',
+                    defValue: 1,
+                    pinInId: null,
+
                 },
                 input2: {
                     inputTitle: 'Array',
                     dataType: 'Array',
                     isInputBoxRequired: false,
+                    pinInId: null,
+
                 },
             }
             nodeDescription.outputs = {
                 output0: {
                     outputTitle: ' Value',
-                    dataType: 'Data'
+                    dataType: 'Data',
+                    pinOutId: null,
                 }
             }
             nodeDescription.rows = 4;
@@ -1076,30 +1351,38 @@ export var Nodes = {
         if (type == 'Insert') {
             nodeDescription.nodeTitle = 'Insert';
             nodeDescription.execIn = true;
+            nodeDescription.pinExecInId = null;
             nodeDescription.execOut = {
                 execOut0: {
                     execOutTitle: null,
+                    pinExecOutId: null,
                 },
             }
             nodeDescription.inputs = {
                 input0: {
                     inputTitle: 'Pos',
                     dataType: 'Number',
+                    defValue: 0,
+                    pinInId: null,
                 },
                 input1: {
                     inputTitle: 'Value',
                     dataType: 'Data',
+                    defValue: 1,
+                    pinInId: null,
                 },
                 input2: {
                     inputTitle: 'Array',
                     dataType: 'Array',
                     isInputBoxRequired: false,
+                    pinInId: null,
                 },
             }
             nodeDescription.outputs = {
                 output0: {
                     outputTitle: ' Array',
-                    dataType: 'Array'
+                    dataType: 'Array',
+                    pinOutId: null,
                 }
             }
             nodeDescription.rows = 4;
@@ -1108,26 +1391,32 @@ export var Nodes = {
         if (type == 'PushBack') {
             nodeDescription.nodeTitle = 'PushBack';
             nodeDescription.execIn = true;
+            nodeDescription.pinExecInId = null;
             nodeDescription.execOut = {
                 execOut0: {
                     execOutTitle: null,
+                    pinExecOutId: null,
                 },
             }
             nodeDescription.inputs = {
                 input0: {
                     inputTitle: 'Value',
                     dataType: 'Data',
+                    defValue: 1,
+                    pinInId: null,
                 },
                 input1: {
                     inputTitle: 'Array',
                     dataType: 'Array',
                     isInputBoxRequired: false,
+                    pinInId: null,
                 },
             }
             nodeDescription.outputs = {
                 output0: {
                     outputTitle: ' Array',
-                    dataType: 'Array'
+                    dataType: 'Array',
+                    pinOutId: null,
                 }
             }
             nodeDescription.rows = 2;
@@ -1136,26 +1425,32 @@ export var Nodes = {
         if (type == 'PushFront') {
             nodeDescription.nodeTitle = 'PushFront';
             nodeDescription.execIn = true;
+            nodeDescription.pinExecInId = null;
             nodeDescription.execOut = {
                 execOut0: {
                     execOutTitle: null,
+                    pinExecOutId: null,
                 },
             }
             nodeDescription.inputs = {
                 input0: {
                     inputTitle: 'Value',
                     dataType: 'Data',
+                    defValue: 1,
+                    pinInId: null,
                 },
                 input1: {
                     inputTitle: 'Array',
                     dataType: 'Array',
                     isInputBoxRequired: false,
+                    pinInId: null,
                 },
             }
             nodeDescription.outputs = {
                 output0: {
                     outputTitle: ' Array',
-                    dataType: 'Array'
+                    dataType: 'Array',
+                    pinOutId: null,
                 }
             }
             nodeDescription.rows = 2;
@@ -1164,9 +1459,11 @@ export var Nodes = {
         if (type == 'PopBack') {
             nodeDescription.nodeTitle = 'PopBack';
             nodeDescription.execIn = true;
+            nodeDescription.pinExecInId = null;
             nodeDescription.execOut = {
                 execOut0: {
                     execOutTitle: null,
+                    pinExecOutId: null,
                 },
             }
             nodeDescription.inputs = {
@@ -1174,12 +1471,14 @@ export var Nodes = {
                     inputTitle: 'Array',
                     dataType: 'Array',
                     isInputBoxRequired: false,
+                    pinInId: null,
                 },
             }
             nodeDescription.outputs = {
                 output0: {
                     outputTitle: ' Array',
-                    dataType: 'Array'
+                    dataType: 'Array',
+                    pinOutId: null,
                 }
             }
             nodeDescription.rows = 2;
@@ -1188,9 +1487,11 @@ export var Nodes = {
         if (type == 'PopFront') {
             nodeDescription.nodeTitle = 'PopFront';
             nodeDescription.execIn = true;
+            nodeDescription.pinExecInId = null;
             nodeDescription.execOut = {
                 execOut0: {
                     execOutTitle: null,
+                    pinExecOutId: null,
                 },
             }
             nodeDescription.inputs = {
@@ -1198,12 +1499,14 @@ export var Nodes = {
                     inputTitle: 'Array',
                     dataType: 'Array',
                     isInputBoxRequired: false,
+                    pinInId: null,
                 },
             }
             nodeDescription.outputs = {
                 output0: {
                     outputTitle: ' Array',
-                    dataType: 'Array'
+                    dataType: 'Array',
+                    pinOutId: null,
                 }
             }
             nodeDescription.rows = 2;

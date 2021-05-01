@@ -1,44 +1,48 @@
-import {deleteWire} from '../Delete/delete.js'
-import {colorMap} from '../ColorMap/colorMap.js'
+import { deleteWire, deleteHalfWire } from '../Delete/delete.js'
+import { colorMap } from '../ColorMap/colorMap.js'
+let placeLocation = function (location, stage) {
+    return {
+        x: (location.x - stage.x()) / stage.scaleX(),
+        y: (location.y - stage.y()) / stage.scaleY()
+    };
+}
 export var Wiring = {
-    placeLocation: function (location, stage) {
-        return {
-            x: (location.x - stage.x()) / stage.scaleX(),
-            y: (location.y - stage.y()) / stage.scaleY()
-        };
-    },
     enableWiring: function (stage, layer) {
         let currentPinType = null;
         let currentPinDataType = null;
-        function isValidMatch(pinType, targetPinDataType){
-            if((currentPinType == 'exec-out' && pinType == 'exec-in') || (currentPinType == 'exec-in' && pinType == 'exec-out'))
+        function isValidMatch(pinType, targetPinDataType) {
+            if ((currentPinType == 'exec-out' && pinType == 'exec-in') || (currentPinType == 'exec-in' && pinType == 'exec-out'))
                 return true;
-            if((currentPinType == 'outp' && pinType == 'inp') || (currentPinType == 'inp' && pinType == 'outp'))
-            {
-                if(currentPinDataType == targetPinDataType || targetPinDataType == 'Data' || currentPinDataType == 'Data')
+            if ((currentPinType == 'outp' && pinType == 'inp') || (currentPinType == 'inp' && pinType == 'outp')) {
+                if (currentPinDataType == targetPinDataType || targetPinDataType == 'Data' || currentPinDataType == 'Data')
                     return true;
             }
             return false;
         }
         let isWiring = false;
         let src = null;
-        let target = null;
-        let templayer2 = new Konva.Layer();
+        let dest = null;
+        let wireLayer = new Konva.Layer({
+            id: 'wireLayer',
+        });
+        
         let drawWire = null;
         let potentialTarget = null;
         let dir = 0;
         let wireColor = null;
-        stage.add(templayer2);
+        let originPreOccupied = null;
+        stage.add(wireLayer);
+        wireLayer.zIndex(0);
         stage.on('mousedown', (e) => {
             if (e.target.name() == 'pin' && e.evt.button == 0) {
                 src = e.target;
                 currentPinType = e.target.attrs.pinType;
                 currentPinDataType = e.target.attrs.pinDataType;
-                dir = (currentPinType == 'exec-out' || currentPinType == 'outp') ? 1: -1;
+                dir = (currentPinType == 'exec-out' || currentPinType == 'outp') ? 1 : -1;
                 src.getParent().draggable(false);
                 isWiring = true;
-                let srcLoc = this.placeLocation(src.getAbsolutePosition(), stage);
-                let destLoc = this.placeLocation(stage.getPointerPosition(), stage); 
+                let srcLoc = placeLocation(src.getAbsolutePosition(), stage);
+                let destLoc = placeLocation(stage.getPointerPosition(), stage);
                 wireColor = e.target.attrs.stroke;
                 drawWire = new Konva.Line({
                     strokeWidth: 2,
@@ -46,104 +50,62 @@ export var Wiring = {
                     hitStrokeWidth: 0,
                     src: null,
                     dest: null,
+                    wireOrigin: src,
                     name: "isConnection",
                     bezier: true,
                 });
+                // console.log(src.attrs.fill);
+                originPreOccupied = !(src.attrs.fill == '' || src.attrs.fill == 'transparent');
+                src.fire('wiringstart',
+                    {
+                        type: 'wiringstart',
+                        target: src,
+                    });
                 setWirePoints(destLoc, srcLoc, dir, drawWire);
-                templayer2.add(drawWire);
-                templayer2.draw();
+                wireLayer.add(drawWire);
+                wireLayer.draw();
             }
         });
         stage.on('mouseup', (e) => {
             if (src && src.name() == 'pin' && e.evt.button == 0) {
+                // console.log(originPreOccupied);
+                deleteHalfWire(drawWire, originPreOccupied);
                 if (e.target && src && e.target.name() == 'pin' && src != e.target && src.getParent() !== e.target.getParent() && isValidMatch(e.target.attrs.pinType, e.target.attrs.pinDataType)) {
-                    target = e.target;
-                    let srcLoc = this.placeLocation(src.getAbsolutePosition(), stage);
-                    let destLoc = this.placeLocation(target.getAbsolutePosition(), stage);
-                    setWirePoints(destLoc, srcLoc, dir, drawWire);
-                    drawWire.setAttr('src', src);
-                    drawWire.setAttr('dest', target);
-                    let lineClone = drawWire.clone();
-                    layer.add(lineClone);
-                    swapDestAndSrcIfOutOfOrder(lineClone);
-                    if(lineClone.attrs.src.attrs.pinType == 'exec-out')
-                    {
-                        let tmpA = lineClone.attrs.src.id().split('-');
-                        removePreviousWireIfExistOfExecOutType(lineClone, tmpA);
-                        lineClone.attrs.src.getParent().customClass.execOutPins[parseInt(tmpA[tmpA.length - 1])].wire = lineClone;
-                    }
-                    if(lineClone.attrs.src.attrs.pinType == 'outp')
-                    {
-                        let tmpA = lineClone.attrs.src.id().split('-');
-                        lineClone.attrs.src.getParent().customClass.outputPins[parseInt(tmpA[tmpA.length - 1])].wire.push(lineClone);
-                    }
-                    if(lineClone.attrs.dest.attrs.pinType == 'exec-in')
-                    {
-                        lineClone.attrs.dest.getParent().customClass.execInPins[0].wire.push(lineClone);
-                    }
-                    if(lineClone.attrs.dest.attrs.pinType == 'inp')
-                    {
-                        let tmpA = lineClone.attrs.dest.id().split('-');
-                        removePreviousWireIfExistOfOutputType(lineClone, tmpA);
-                        lineClone.attrs.dest.getParent().customClass.inputPins[parseInt(tmpA[tmpA.length - 1])].wire = lineClone;
-                    }
-                    wireColorCorrection(lineClone);
-                    lineClone.attrs.src.getParent().on('dragmove', (e)=>{
-                        let sLoc = this.placeLocation(lineClone.attrs.src.getAbsolutePosition(), stage);
-                        let dLoc = this.placeLocation(lineClone.attrs.dest.getAbsolutePosition(), stage);
-                        setWirePoints(dLoc, sLoc, 1, lineClone);
-                        layer.draw();
-                    });
-                    lineClone.attrs.dest.getParent().on('dragmove', (e)=>{
-                        let sLoc = this.placeLocation(lineClone.attrs.src.getAbsolutePosition(), stage);
-                        let dLoc = this.placeLocation(lineClone.attrs.dest.getAbsolutePosition(), stage);
-                        setWirePoints(dLoc, sLoc, 1, lineClone);
-                        layer.draw();
-                    });
-                    lineClone.attrs.dest.fire(
-                        'wireconnected',
-                        {
-                            type: 'wireconnected',
-                            target: lineClone.attrs.dest,
-                        }
-                    );
-                    lineClone.attrs.src.fire(
-                        'wireconnected',
-                        {
-                            type: 'wireconnected',
-                            target: lineClone.attrs.src,
-                        }
-                    );
-                    layer.draw();
+                    dest = e.target;
+                    // let connectionWire = drawWire.clone();
+
+                    addConnectionWire(dest, src, stage, dir, wireLayer);
                 }
                 src.getParent().draggable(true);
                 src = null;
+                originPreOccupied = false;
+                dest = null;
                 isWiring = false;
-                drawWire.destroy();
                 dir = 0;
                 drawWire = null;
                 currentPinType = null;
                 currentPinDataType = null;
                 wireColor = null;
-                templayer2.draw();
+                wireLayer.draw();
+                layer.draw();
             }
         });
         // stage.on('mouseover', (e) => {
         //     if (e.target && src && e.target.name() == 'pin' && src != e.target && src.getParent() !== e.target.getParent() && isValidMatch(e.target.attrs.pinType, e.target.attrs.pinDataType)) {
         //         potentialTarget = e.target;
-        //         let srcLoc = this.placeLocation(src.getAbsolutePosition(), stage);
-        //         let destLoc = this.placeLocation(stage.getPointerPosition(), stage);
+        //         let srcLoc = placeLocation(src.getAbsolutePosition(), stage);
+        //         let destLoc = placeLocation(stage.getPointerPosition(), stage);
         //         setWirePoints(destLoc, srcLoc, dir, drawWire);
-        //         templayer2.draw();
+        //         wireLayer.draw();
         //     }
         //     else potentialTarget = null;
         // });
         stage.on('mousemove', (e) => {
             if (isWiring) {
-                let srcLoc = this.placeLocation(src.getAbsolutePosition(), stage);
-                let destLoc = this.placeLocation(stage.getPointerPosition(), stage);
+                let srcLoc = placeLocation(src.getAbsolutePosition(), stage);
+                let destLoc = placeLocation(stage.getPointerPosition(), stage);
                 setWirePoints(destLoc, srcLoc, dir, drawWire);
-                templayer2.draw();
+                wireLayer.draw();
             }
         })
 
@@ -151,9 +113,75 @@ export var Wiring = {
 
 }
 
+export function addConnectionWire(dest, src, stage, dir, wireLayer) {
+    let connectionWire = new Konva.Line({
+        strokeWidth: 2,
+        stroke: dest.attrs.stroke,
+        hitStrokeWidth: 0,
+        src: null,
+        dest: null,
+        name: "isConnection",
+        bezier: true,
+    });
+    let srcLoc = placeLocation(src.getAbsolutePosition(), stage);
+    let destLoc = placeLocation(dest.getAbsolutePosition(), stage);
+    connectionWire.setAttr('src', src);
+    connectionWire.setAttr('dest', dest);
+    swapDestAndSrcIfOutOfOrder(connectionWire);
+    setWirePoints(destLoc, srcLoc, dir, connectionWire);
+    wireLayer.add(connectionWire);
+    connectionWire.zIndex(0);
+    if (connectionWire.attrs.src.attrs.pinType == 'exec-out') {
+        let tmpA = connectionWire.attrs.src.attrs.helper.split('-');
+        removePreviousWireIfExistOfExecOutType(connectionWire, tmpA);
+        connectionWire.attrs.src.getParent().customClass.execOutPins[parseInt(tmpA[tmpA.length - 1])].wire = connectionWire;
+    }
+    if (connectionWire.attrs.src.attrs.pinType == 'outp') {
+        let tmpA = connectionWire.attrs.src.attrs.helper.split('-');
+        connectionWire.attrs.src.getParent().customClass.outputPins[parseInt(tmpA[tmpA.length - 1])].wire.push(connectionWire);
+    }
+    if (connectionWire.attrs.dest.attrs.pinType == 'exec-in') {
+        connectionWire.attrs.dest.getParent().customClass.execInPins[0].wire.push(connectionWire);
+    }
+    if (connectionWire.attrs.dest.attrs.pinType == 'inp') {
+        let tmpA = connectionWire.attrs.dest.attrs.helper.split('-');
+        removePreviousWireIfExistOfOutputType(connectionWire, tmpA);
+        connectionWire.attrs.dest.getParent().customClass.inputPins[parseInt(tmpA[tmpA.length - 1])].wire = connectionWire;
+    }
+    wireColorCorrection(connectionWire);
+    let dragLayer = stage.findOne('#dragLayer');
+    connectionWire.attrs.src.getParent().on('dragmove', (e) => {
+        let sLoc = placeLocation(connectionWire.attrs.src.getAbsolutePosition(), stage);
+        let dLoc = placeLocation(connectionWire.attrs.dest.getAbsolutePosition(), stage);
+        setWirePoints(dLoc, sLoc, 1, connectionWire);
+        dragLayer.draw();
+    });
+    connectionWire.attrs.dest.getParent().on('dragmove', (e) => {
+        let sLoc = placeLocation(connectionWire.attrs.src.getAbsolutePosition(), stage);
+        let dLoc = placeLocation(connectionWire.attrs.dest.getAbsolutePosition(), stage);
+        setWirePoints(dLoc, sLoc, 1, connectionWire);
+        dragLayer.draw();
+    });
+    connectionWire.attrs.dest.fire(
+        'wireconnected',
+        {
+            type: 'wireconnected',
+            target: connectionWire.attrs.dest,
+        }
+    );
+    connectionWire.attrs.src.fire(
+        'wireconnected',
+        {
+            type: 'wireconnected',
+            target: connectionWire.attrs.src,
+        }
+    );
+    wireLayer.draw();
+}
+
 function setWirePoints(destLoc, srcLoc, dir, wire) {
     let len = (destLoc.x - srcLoc.x) / 2;
-    len = dir * Math.abs(len);
+    len = dir * (Math.abs(len));
     let mid1 = {
         x: srcLoc.x + len,
         y: srcLoc.y
@@ -165,37 +193,37 @@ function setWirePoints(destLoc, srcLoc, dir, wire) {
     wire.points([srcLoc.x, srcLoc.y, mid1.x, mid1.y, mid2.x, mid2.y, destLoc.x, destLoc.y]);
 }
 
-function swapDestAndSrcIfOutOfOrder(lineClone) {
-    if (lineClone.attrs.dest.attrs.pinType == 'exec-out' || lineClone.attrs.dest.attrs.pinType == 'outp') {
-        let tmp = lineClone.attrs.src;
-        lineClone.attrs.src = lineClone.attrs.dest;
-        lineClone.attrs.dest = tmp;
+function swapDestAndSrcIfOutOfOrder(connectionWire) {
+    if (connectionWire.attrs.dest.attrs.pinType == 'exec-out' || connectionWire.attrs.dest.attrs.pinType == 'outp') {
+        let tmp = connectionWire.attrs.src;
+        connectionWire.attrs.src = connectionWire.attrs.dest;
+        connectionWire.attrs.dest = tmp;
     }
 }
 
-function wireColorCorrection(lineClone) {
-    let srcColor = lineClone.attrs.src.attrs.stroke;
-    let destColor = lineClone.attrs.dest.attrs.stroke;
+function wireColorCorrection(connectionWire) {
+    let srcColor = connectionWire.attrs.src.attrs.stroke;
+    let destColor = connectionWire.attrs.dest.attrs.stroke;
     if (srcColor != destColor) {
         if (srcColor != colorMap['Data']) {
-            lineClone.attrs.stroke = srcColor;
+            connectionWire.attrs.stroke = srcColor;
         }
         else {
-            lineClone.attrs.stroke = destColor;
+            connectionWire.attrs.stroke = destColor;
         }
     }
 }
 
-function removePreviousWireIfExistOfOutputType(lineClone, tmpA) {
-    if (lineClone.attrs.dest.getParent().customClass.inputPins[parseInt(tmpA[tmpA.length - 1])].wire) {
-        let wireToBeRemoved = lineClone.attrs.dest.getParent().customClass.inputPins[parseInt(tmpA[tmpA.length - 1])].wire;
+function removePreviousWireIfExistOfOutputType(connectionWire, tmpA) {
+    if (connectionWire.attrs.dest.getParent().customClass.inputPins[parseInt(tmpA[tmpA.length - 1])].wire) {
+        let wireToBeRemoved = connectionWire.attrs.dest.getParent().customClass.inputPins[parseInt(tmpA[tmpA.length - 1])].wire;
         deleteWire(wireToBeRemoved); //from Delete.js
     }
 }
 
-function removePreviousWireIfExistOfExecOutType(lineClone, tmpA) {
-    if (lineClone.attrs.src.getParent().customClass.execOutPins[parseInt(tmpA[tmpA.length - 1])].wire != null) {
-        let wireToBeRemoved = lineClone.attrs.src.getParent().customClass.execOutPins[parseInt(tmpA[tmpA.length - 1])].wire;
+function removePreviousWireIfExistOfExecOutType(connectionWire, tmpA) {
+    if (connectionWire.attrs.src.getParent().customClass.execOutPins[parseInt(tmpA[tmpA.length - 1])].wire != null) {
+        let wireToBeRemoved = connectionWire.attrs.src.getParent().customClass.execOutPins[parseInt(tmpA[tmpA.length - 1])].wire;
         deleteWire(wireToBeRemoved); //from Delete.js
     }
 }

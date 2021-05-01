@@ -1,11 +1,12 @@
+import {variableList} from '../Variable/variable.js'
 export var VSToJS = class {
-    constructor(stage, layer, variables, isRunOrCode) {
+    constructor(stage, layer, isRunOrCode) {
         this.script = '';
         this.nodeCount = 0;
         this.isRunOrCode = isRunOrCode;
-        for (let variable in variables) {
+        for (let variable of variableList.variables) {
             // console.log(variable);
-            this.script += `let ${variables[variable].name} = ${variables[variable].value};`;
+            this.script += `let ${variable.name} = ${variable.value};`;
         }
         let begin = this.getBegin(stage);
         if (begin) {
@@ -15,6 +16,7 @@ export var VSToJS = class {
                 if (this.isRunOrCode == "Run") {
                     document.getElementById("console-window").classList.toggle("hidden", false);
                     let codeDoc = document.getElementById("console").contentWindow.document;
+                    console.log("run");
                     codeDoc.open();
                     codeDoc.writeln(
                         `<!DOCTYPE html>\n
@@ -40,7 +42,7 @@ export var VSToJS = class {
                     }
                     catch(err){
                         console.log("Error");
-                        console.log(err);
+                        console.log(\`\${err}\`);
                     }
                     </script>
                     </html>

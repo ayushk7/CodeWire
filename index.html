@@ -14,7 +14,7 @@
 <body>
     <div class="main">
         <div id="left-panel">
-            <div id="create-variables" class="border-bottom border-light pb-5">
+            <div id="create-variables" class="pb-5">
                 <div class="input-group pt-5 ps-5 pe-5 input-group-lg">
                     <span class="input-group-text">Select Variable Type</span>
                     <select class="form-select" id="variable-data-type">
@@ -30,15 +30,19 @@
                 </div>
                 <div class="input-group input-group-lg pt-5 ps-5 pe-5" id="number-default-form">
                     <span class="input-group-text">Default Value</span>
-                    <input type="text" class="form-control" placeholder="Default" title="enter number" id="number-default-value" value=0>
+                    <input type="text" class="form-control" placeholder="Default" title="enter number"
+                        id="number-default-value" value=0>
                 </div>
                 <div class="input-group input-group-lg pt-5 ps-5 pe-5 hidden" id="string-default-form">
                     <span class="input-group-text">Default Value</span>
-                    <input type="text" class="form-control" placeholder="Default" title="enter string" id="string-default-value" value=0>
+                    <input type="text" class="form-control" placeholder="Default" title="enter string"
+                        id="string-default-value" value=0>
                 </div>
                 <div class="input-group input-group-lg pt-5 ps-5 pe-5 hidden" id="array-default-form">
                     <span class="input-group-text">Default Value</span>
-                    <input type="text" class="form-control" placeholder="Default" title="enter array values in [1, 2, 3, 4] or ['Love', 'Shove', 'Dove'] or [true, false, true] etc format"id="array-default-value" value=[]>
+                    <input type="text" class="form-control" placeholder="Default"
+                        title="enter array values in [1, 2, 3, 4] or ['Love', 'Shove', 'Dove'] or [true, false, true] etc format"
+                        id="array-default-value" value=[]>
                 </div>
                 <div class="input-group pt-5 ps-5 pe-5 input-group-lg hidden" id="bool-default-form">
                     <span class="input-group-text">Default Value</span>
@@ -47,7 +51,7 @@
                         <option value=false>False</option>
                     </select>
                 </div>
-                <button type="button" class="btn btn-outline-light btn-lg mx-auto mt-5" style="display: block;"
+                <button type="button" class="icon" style="margin: auto; margin-top: 30px;"
                     id="create-btn">Create</button>
             </div>
             <div class="variableList">
@@ -72,14 +76,50 @@
         </button>
         <a href="https://github.com/ayushk7/CodeWire" target="_blank" style="text-decoration: none;">
             <button class="icon" id="Github">
-            Github
+                Github
             </button>
         </a>
         <button class="icon" id="Console">
             Console
         </button>
+        <button class="icon" id="import">
+            Import
+        </button>
+        <button class="icon" id="export">
+            Export
+            <a id="exportAnchorElem" style="display:none"></a>
+        </button>
+        <button class="icon" id="save">
+            Save
+        </button>
 
     </div>
+    <div id="import-menu" class="sidebox hidden">
+        <button id="cross-upload-cross" class="cross">
+            <div>+</div>
+        </button>
+        <div class="sidebox-flex">
+            <div style="font-size: 1.2rem; color: white; padding: 10px; margin-top: 10px; text-align: justify"><span style="color: tomato;">Warning:</span> Export Current File If Not Exported</div>
+            <div class="#button-wrap">
+                <label for="upload-json" class="icon">JSON</label>
+                <input id="upload-json" type="file">
+            </div>
+            <button id="import-btn" class="icon">Import</button>
+        </div>
+    </div>
+    <div id="save-menu" class="sidebox hidden">
+        <div class="sidebox-flex">
+            <div style="font-size: 1.2rem; color: white; padding: 10px; text-align: center;">*Previous Script Found On The Browser. Do You Want To Reload It ?</div>
+            <button id="load-btn" class="icon">Load</button>
+            <button id="load-cancel-btn" class="icon">No</button>
+        </div>
+    </div>
+    <div id="saving" class="sidebox hidden">
+        <div class="sidebox-flex">
+            <div style="font-size: 1.2rem; color: white; padding: 10px; text-align: center;">Saving...</div>
+        </div>
+    </div>
+
     <div id="context-menu" class="hidden">
         <div class="context-menu-items">Begin</div>
         <div class="context-menu-items">Print</div>
@@ -93,7 +133,7 @@
         <div class="context-menu-items">Subtract</div>
         <div class="context-menu-items">Multiply</div>
         <div class="context-menu-items">Divide</div>
-        <div class="context-menu-items">Modulo</div>        
+        <div class="context-menu-items">Modulo</div>
         <div class="context-menu-items">Random</div>
         <div class="context-menu-items">Ceil</div>
         <div class="context-menu-items">Floor</div>
@@ -125,23 +165,22 @@
         <div class="context-menu-items">PushFront</div>
         <div class="context-menu-items">PopFront</div>
         <div class="context-menu-items">Insert</div>
-        <div class="context-menu-items">isEmpty</div>        
+        <div class="context-menu-items">isEmpty</div>
         <hr>
     </div>
     <input type="number" name="number-ip" id="number-ip" class="ipn" title="Enter Number">
-    <input type="text" name="string-ip" id="string-ip" class="ips" title="if(string) then enter with 'quotes' ">
+    <input type="text" name="string-ip" id="string-ip" class="ips"
+        title="if(string) then enter with 'quotes' or &quot;double quotes&quot;">
     <input type="text" name="array-ip" id="array-ip" class="ips" title="enter array in [1, 2, 3, 4] format">
     <select class="ipb" id="bool-ip" title="select value">
         <option value=true selected>true</option>
         <option value=false>false</option>
     </select>
-    
+
     <div class="hidden" id="console-window">
-        <div class="top-bar">
-            <button id="cross">
+        <button id="cross-console" class="cross">
             <div>+</div>
-            </button>
-        </div>
+        </button>
         <iframe id="console">
         </iframe>
     </div>

@@ -1,7 +1,8 @@
 import {colorMap} from '../ColorMap/colorMap.js'
+import {variableList} from '../Variable/variable.js'
 export class leftPanel {
     constructor() {
-        this.variables = {};
+        this.variablesNameList = {};
         let createVariableForm = document.getElementById("create-variables");
         let forms = {
             numberForm: document.getElementById("number-default-form"),
@@ -52,7 +53,7 @@ export class leftPanel {
             if (variableName.length == 0) {
                 alert("Variable Name Can't be empty!");
             }
-            else if (this.variables[variableName]) {
+            else if (this.variablesNameList[variableName]) {
                 alert("Variable Already Exist");
             }
             else {
@@ -72,24 +73,13 @@ export class leftPanel {
                     value = formInputsField.arrayFormField.value.toString();
                 }
                 if (value == 0 || value) {
-                    this.variables[variableName] = {
+                    let variable = {
                         name: variableName,
                         dataType: document.getElementById("variable-data-type").value,
                         value: value,
                     };
-                    let el = `<li id=${this.variables[variableName].dataType}-${variableName} class="list-group-item mt-2 ms-5 me-5 p-2 ps-3 rounded" style="font-size:15px; border: ${colorMap[this.variables[variableName].dataType]} 2px solid; color: white; background: transparent;">${variableName}
-            </li>`;
-            //<button type="button" class="btn btn-outline-danger position-absolute end-0 me-1"">Delete</button>
-                    document.getElementById("variable-list").innerHTML += el;
-                    // <div class="context-menu-items">GetRandom</div>
-                    document.getElementById("context-menu").innerHTML += `<div class="context-menu-items" data-datatype=${this.variables[variableName].dataType}>Set ${variableName}</div>`;
-                    document.getElementById("context-menu").innerHTML += `<div class="context-menu-items" data-datatype=${this.variables[variableName].dataType}>Get ${variableName}</div>`;
-
-                    // document.querySelector(`#${variables[variableName].dataType}-${variableName} button`).addEventListener("click", (e) => {
-                    //     // variables.remove(`${variables[variableName].da}`)
-                    //     console.log(e.target.parentElement.innerHTML);
-                    //     document.querySelector(`#${variables[variableName].dataType}-${variableName}`).remove();
-                    // })
+                    this.variablesNameList[variableName] = variableName;
+                    variableList.addVariable(variable);
                 }
                 else {
                     alert("Value Can't Be empty");

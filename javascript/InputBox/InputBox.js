@@ -1,6 +1,6 @@
 
 export var InputBox = class{
-    constructor(stage, layer, type, grp, position, colorMap, inputPin, iplabel, inputPinsPlaced)
+    constructor(stage, layer, type, grp, position, colorMap, inputPin, iplabel, inputPinsPlaced, defValueContainer, defValueContainerForSave)
     {
         let rect = new Konva.Rect({
             width: (type == 'Boolean') ? 50 : 50,
@@ -27,22 +27,22 @@ export var InputBox = class{
         let defaultValue = null;
         if(type == "Number")
         {
-            defaultValue = 0;
+            defaultValue = defValueContainer.defValue;
             htmlInputBox = document.getElementById("number-ip");
         }
         else if(type == "Boolean")
         {
-            defaultValue = true;
+            defaultValue = defValueContainer.defValue;
             htmlInputBox = document.getElementById("bool-ip");
         }
         else if(type == "Array")
         {
-            defaultValue = [];
+            defaultValue = defValueContainer.defValue;
             htmlInputBox = document.getElementById("array-ip");
         }
         else
         {
-            defaultValue = 0;
+            defaultValue = `'${defValueContainer.defValue}'`;
             htmlInputBox = document.getElementById("string-ip");            
             // getComputedStyle(html)
         }
@@ -75,6 +75,7 @@ export var InputBox = class{
             if(this.focused)
             {
                 text.text(htmlInputBox.value);
+                defValueContainerForSave.defValue = htmlInputBox.value;
             }
         });
         inputPin.on("wireconnected", (e) => {
