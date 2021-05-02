@@ -117,12 +117,21 @@ export function addConnectionWire(dest, src, stage, dir, wireLayer) {
     let connectionWire = new Konva.Line({
         strokeWidth: 2,
         stroke: dest.attrs.stroke,
-        hitStrokeWidth: 0,
+        hitStrokeWidth: 15,
         src: null,
         dest: null,
         name: "isConnection",
         bezier: true,
     });
+    connectionWire.on('mouseover', (e) => {
+        connectionWire.strokeWidth(5);
+        wireLayer.draw();
+        // console.log('mouseover wire');
+    });
+    connectionWire.on('mouseleave', (e) => {
+        connectionWire.strokeWidth(2);
+        wireLayer.draw();
+    })
     let srcLoc = placeLocation(src.getAbsolutePosition(), stage);
     let destLoc = placeLocation(dest.getAbsolutePosition(), stage);
     connectionWire.setAttr('src', src);

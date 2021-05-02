@@ -1,6 +1,7 @@
 import { Nodes } from '../Nodes/nodes.js'
 import { addConnectionWire } from '../Wiring/Wiring.js'
 import { variableList } from '../Variable/variable.js'
+import {showAlert, vscriptOnLoad} from '../main/alertBox.js'
 function writeError(err, msg) {
     document.getElementById("console-window").classList.toggle("hidden", false);
     let codeDoc = document.getElementById("console").contentWindow.document;
@@ -71,10 +72,12 @@ export class Export {
         });
     }
 }
-function refresh(layer, wireLayer) {
+export function refresh(layer, wireLayer) {
     layer.destroyChildren();
     wireLayer.destroyChildren();
     variableList.deleteAllVariables();
+    layer.draw();
+    wireLayer.draw();
 }
 
 export class Import {
@@ -121,29 +124,48 @@ export class Save {
                 wireData: wireData,
             }
             localStorage.setItem('lastLoadWireScriptJSON', JSON.stringify(exportScript));
-            document.getElementById("saving").classList.toggle("hidden", false);
-            document.getElementById("import-menu").classList.toggle("hidden", true);
-            document.getElementById("save-menu").classList.toggle("hidden", true);
+            let savingWindow = document.getElementById("saving");
+            // let importMenu = document.getElementById("import-menu");
+            [...document.getElementsByClassName("sidebox")].forEach(value => {
+                if (value !== savingWindow) {
+                    value.classList.toggle("hidden", true);
+                }
+                else {
+                    value.classList.toggle("hidden", false);
+                }
+            })
             setTimeout(() => {
-                document.getElementById("saving").classList.toggle("hidden", true);
-            }, 300)
+                savingWindow.classList.toggle("hidden", true);
+            }, 600);
 
         });
         window.addEventListener("load", () => {
             // console.log("loaded");
-            document.getElementById("saving").classList.toggle("hidden", true);
-            document.getElementById("import-menu").classList.toggle("hidden", true);
-            if (localStorage.getItem('lastLoadWireScriptJSON') && localStorage.getItem('lastLoadWireScriptJSON') != "{\"variables\":[],\"nodesData\":[],\"wireData\":[]}") {
-                document.getElementById("save-menu").classList.toggle("hidden", false);
-                document.getElementById("load-btn").onclick = function(){
-                    new Import(stage, layer, wireLayer, localStorage.getItem('lastLoadWireScriptJSON'));
-                    document.getElementById("save-menu").classList.toggle("hidden", true);
-                }
-                document.getElementById("load-cancel-btn").onclick = function(){
-                    document.getElementById("save-menu").classList.toggle("hidden", true);
-                }
-            }
+            prompLastSave(stage, layer, wireLayer);
         })
+    }
+}
+
+export function prompLastSave(stage, layer, wireLayer) {
+    let saveMenu = document.getElementById("save-menu");
+    [...document.getElementsByClassName("sidebox")].forEach(value => {
+        value.classList.toggle("hidden", true);
+    });
+    // document.getElementById("saving").classList.toggle("hidden", true);
+    // document.getElementById("import-menu").classList.toggle("hidden", true);
+    if (localStorage.getItem('lastLoadWireScriptJSON') && localStorage.getItem('lastLoadWireScriptJSON') != "{\"variables\":[],\"nodesData\":[],\"wireData\":[]}") {
+        saveMenu.classList.toggle("hidden", false);
+        document.getElementById("load-btn").onclick = function () {
+            new Import(stage, layer, wireLayer, localStorage.getItem('lastLoadWireScriptJSON'));
+            saveMenu.classList.toggle("hidden", true);
+        };
+        document.getElementById("load-cancel-btn").onclick = function () {
+            saveMenu.classList.toggle("hidden", true);
+        };
+    }
+    else{
+        vscriptOnLoad(stage);
+        showAlert('No Previous Save Was Found');
     }
 }
 

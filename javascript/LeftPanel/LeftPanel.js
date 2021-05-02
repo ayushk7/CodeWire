@@ -1,5 +1,6 @@
 import {colorMap} from '../ColorMap/colorMap.js'
 import {variableList} from '../Variable/variable.js'
+import {showAlert} from '../main/alertBox.js'
 export class leftPanel {
     constructor() {
         // this.variablesNameList = {};
@@ -51,10 +52,10 @@ export class leftPanel {
         document.getElementById("create-btn").addEventListener("click", () => {
             let variableName = document.getElementById("variable-name").value;
             if (variableName.length == 0) {
-                alert("Variable Name Can't be empty!");
+                showAlert("Variable Name Can't be empty!");
             }
             else if (variableList.variables.some(value => value.name == variableName)) {
-                alert("Variable Already Exist");
+                showAlert("Variable Already Exist");
             }
             else {
                 let value;
@@ -67,7 +68,7 @@ export class leftPanel {
                 }
                 else if(type == "String"){
                     value = formInputsField.stringFormField.value.toString();
-                    value = `"${value}"`;
+                    value = `'${value}'`;
                 }
                 else if(type == "Array"){
                     value = formInputsField.arrayFormField.value.toString();
@@ -82,7 +83,7 @@ export class leftPanel {
                     variableList.addVariable(variable);
                 }
                 else {
-                    alert("Value Can't Be empty");
+                    showAlert("Value Can't Be empty");
                 }
             }
         });

@@ -35,13 +35,14 @@ class VariableList {
         // console.log(set, get);
         document.getElementById("context-menu").appendChild(get);
         document.getElementById("context-menu").appendChild(set);
-        ContextMenu.addEventToCtxMenyItems(set);
-        ContextMenu.addEventToCtxMenyItems(get);
+        ContextMenu.addEventToCtxMenuItems(set);
+        ContextMenu.addEventToCtxMenuItems(get);
         this.variablesElements.push(set);
         this.variablesElements.push(get)
     }
     deleteAllVariables()
     {
+        this.variables = [];
         document.getElementById("variable-list").innerHTML = '';
         this.variablesElements.forEach((elem, index) => {
                 elem.remove();

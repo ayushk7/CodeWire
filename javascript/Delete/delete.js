@@ -9,41 +9,12 @@ export var Delete = {
                 let aWire = e.target;
                 deleteWire(aWire);
                 let wireLayer = stage.findOne('#wireLayer');
-                wireLayer.draw();
-                layer.draw();
+                stage.draw();
+
             }
             else if (e.target !== stage && e.target.getParent().name() == "aProgramNodeGroup" && ctrlIsPressed) {
                 // console.log(e);
-                let node = e.target.getParent();
-                for (let each of node.customClass.execInPins) {
-                    let len = each.wire.length;
-                    for (let i = 0; i < len; i++) {
-                        if (each.wire[0]) { deleteWire(each.wire[0]); }
-                    }
-                }
-                for (let each of node.customClass.execOutPins) {
-                    if (each.wire) {
-                        deleteWire(each.wire);
-                        each.wire = null;
-                    }
-                }
-                for (let each of node.customClass.inputPins) {
-                    if (each.wire) {
-                        deleteWire(each.wire);
-                        each.wire = null;
-                    }
-                }
-                for (let each of node.customClass.outputPins) {
-                    let len = each.wire.length;
-                    for (let i = 0; i < len; i++) {
-                        if (each.wire[0]) { deleteWire(each.wire[0]); }
-                    }
-                }
-                // console.log(e.target.getParent());
-                e.target.getParent().destroy();
-                layer.draw();
-                let wireLayer = stage.findOne('#wireLayer');
-                wireLayer.draw();
+                deleteProgramNode(e, layer, stage);
 
             }
         });
@@ -55,10 +26,9 @@ export var Delete = {
                 let wireArray = wireLayer.find(".isConnection");
                 wireArray.forEach(wire => {
                     wire.strokeWidth(5);
-                    wire.hitStrokeWidth(10);
+                    // wire.hitStrokeWidth(10);
                 });
-                wireLayer.draw();
-                layer.draw();
+                stage.draw();
             }
         });
         stage.container().addEventListener("keyup", (e) => {
@@ -67,17 +37,49 @@ export var Delete = {
             if (e.code == "ControlLeft") {
                 let wireArray = wireLayer.find(".isConnection");
                 wireArray.forEach(wire => {
-                    wire.hitStrokeWidth(0);
+                    // wire.hitStrokeWidth(0);
                     wire.strokeWidth(2);
                 });
                 // layer.toggleHitCanvas();
-                wireLayer.draw();
-                layer.draw();
+                stage.draw();
                 ctrlIsPressed = false;
             }
         })
     }
 }
+export function deleteProgramNode(e, layer, stage) {
+    let node = e.target.getParent();
+    for (let each of node.customClass.execInPins) {
+        let len = each.wire.length;
+        for (let i = 0; i < len; i++) {
+            if (each.wire[0]) { deleteWire(each.wire[0]); }
+        }
+    }
+    for (let each of node.customClass.execOutPins) {
+        if (each.wire) {
+            deleteWire(each.wire);
+            each.wire = null;
+        }
+    }
+    for (let each of node.customClass.inputPins) {
+        if (each.wire) {
+            deleteWire(each.wire);
+            each.wire = null;
+        }
+    }
+    for (let each of node.customClass.outputPins) {
+        let len = each.wire.length;
+        for (let i = 0; i < len; i++) {
+            if (each.wire[0]) { deleteWire(each.wire[0]); }
+        }
+    }
+    // console.log(e.target.getParent());
+    e.target.getParent().destroy();
+    let wireLayer = stage.findOne('#wireLayer');
+    stage.draw();
+
+}
+
 export function deleteWire(aWire) {
     let lineClone = aWire;
     // console.log(lineClone);
@@ -139,8 +141,9 @@ export function deleteWire(aWire) {
         );
     }
     lineClone.destroy();
+    
 }
-export function deleteHalfWire(lineClone, originPreOccupied){
+export function deleteHalfWire(lineClone, originPreOccupied) {
 
     lineClone.attrs.wireOrigin.fire(
         'wireremoved',

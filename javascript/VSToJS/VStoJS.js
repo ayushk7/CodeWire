@@ -1,4 +1,5 @@
-import {variableList} from '../Variable/variable.js'
+import { variableList } from '../Variable/variable.js'
+import {showAlert} from '../main/alertBox.js'
 export var VSToJS = class {
     constructor(stage, layer, isRunOrCode) {
         this.script = '';
@@ -12,11 +13,11 @@ export var VSToJS = class {
         if (begin) {
             try {
                 this.coreAlgorithm(begin);
-                console.log(this.script);
+                // console.log(this.script);
                 if (this.isRunOrCode == "Run") {
                     document.getElementById("console-window").classList.toggle("hidden", false);
                     let codeDoc = document.getElementById("console").contentWindow.document;
-                    console.log("run");
+                    // console.log("run");
                     codeDoc.open();
                     codeDoc.writeln(
                         `<!DOCTYPE html>\n
@@ -96,13 +97,18 @@ export var VSToJS = class {
                 );
             }
         }
-        else {
-            alert("include begin node");
-        }
     }
     getBegin(stage) {
-        let X = stage.findOne("#Begin");
-        return X;
+        let X = stage.find("#Begin");
+        if(X.length == 0)
+        {
+            showAlert("Include Begin Node");
+        }
+        else if(X.length > 1)
+        {
+            showAlert("Multiple Begin Nodes");
+        }
+        else return X[0];
     }
     getExecOut(node) {
         let X = [];
@@ -113,15 +119,11 @@ export var VSToJS = class {
         // console.log(X);
         return X;
     }
-    getSrcOutputPinNumber(grp, aNodeWire)
-    {
+    getSrcOutputPinNumber(grp, aNodeWire) {
         let c = 0;
-        for(let eachPin of grp.customClass.outputPins)
-        {
-            for(let aWire of eachPin.wire)
-            {
-                if(aWire === aNodeWire)
-                {
+        for (let eachPin of grp.customClass.outputPins) {
+            for (let aWire of eachPin.wire) {
+                if (aWire === aNodeWire) {
                     return c;
                 }
             }
@@ -135,6 +137,7 @@ export var VSToJS = class {
                 X.push({ node: aNode.wire.attrs.src.getParent(), isWire: true, srcOutputPinNumber: this.getSrcOutputPinNumber(aNode.wire.attrs.src.getParent(), aNode.wire) });
             }
             else {
+                // console.log(aNode.textBox);
                 X.push({ node: aNode.textBox.textBox.text(), isWire: false, srcOutputPinNumber: null });
             }
         }
@@ -439,12 +442,12 @@ export var VSToJS = class {
             case "Insert": {
                 expr = `(${this.handleInputs(inputPins[2])})`;
             }
-            break;
-            case "Swap":{
+                break;
+            case "Swap": {
                 expr = `(${this.handleInputs(inputPins[inputNode.srcOutputPinNumber])})`;
             }
-            break;
-            case "For":{
+                break;
+            case "For": {
                 expr = `(i${inputNode.node._id})`;
             }
         }

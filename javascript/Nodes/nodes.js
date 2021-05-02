@@ -468,7 +468,7 @@ export var Nodes = {
                 input0: {
                     inputTitle: 'Value',
                     dataType: 'Data',
-                    defValue: 'hello',
+                    defValue: "'hello'",
                     pinInId: null,
                 }
             }
@@ -1095,7 +1095,7 @@ export var Nodes = {
             let defaultValueByType = {
                 "Number": 0,
                 "Boolean": true,
-                "String": 'Hello',
+                "String": "'hello'",
                 "Array": [],
             }
             nodeDescription.nodeTitle = type;

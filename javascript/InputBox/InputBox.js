@@ -40,9 +40,13 @@ export var InputBox = class{
             defaultValue = defValueContainer.defValue;
             htmlInputBox = document.getElementById("array-ip");
         }
-        else
+        else 
         {
-            defaultValue = `'${defValueContainer.defValue}'`;
+            // let x = 3;
+            if(type == "String")
+            {defaultValue = `${defValueContainer.defValue}`;}
+            else
+            {defaultValue = `${defValueContainer.defValue}`;}
             htmlInputBox = document.getElementById("string-ip");            
             // getComputedStyle(html)
         }

@@ -14,9 +14,11 @@
 <body>
     <div class="main">
         <div id="left-panel">
+            <div class="icon2" style="width: 80%; font-size: 1.6rem; margin:2rem 1rem 0 1rem" id="create-ariable">Create
+                Variables</div>
             <div id="create-variables" class="pb-5">
-                <div class="input-group pt-5 ps-5 pe-5 input-group-lg">
-                    <span class="input-group-text">Select Variable Type</span>
+                <div class="input-group pt-3 ps-5 pe-5 input-group-lg">
+                    <div class="icon2">Type</div>
                     <select class="form-select" id="variable-data-type">
                         <option value="Number" selected>Number</option>
                         <option value="Boolean">Boolean</option>
@@ -24,37 +26,37 @@
                         <option value="Array">Array</option>
                     </select>
                 </div>
-                <div class="input-group input-group-lg pt-5 ps-5 pe-5">
-                    <span class="input-group-text">Variable Name</span>
+                <div class="input-group input-group-lg pt-3 ps-5 pe-5">
+                    <div class="icon2">Name</div>
                     <input type="text" class="form-control" placeholder="Name" id="variable-name">
                 </div>
-                <div class="input-group input-group-lg pt-5 ps-5 pe-5" id="number-default-form">
-                    <span class="input-group-text">Default Value</span>
+                <div class="input-group input-group-lg pt-3 ps-5 pe-5" id="number-default-form">
+                    <div class="icon2">Value</div>
                     <input type="text" class="form-control" placeholder="Default" title="enter number"
                         id="number-default-value" value=0>
                 </div>
-                <div class="input-group input-group-lg pt-5 ps-5 pe-5 hidden" id="string-default-form">
-                    <span class="input-group-text">Default Value</span>
+                <div class="input-group input-group-lg pt-3 ps-5 pe-5 hidden" id="string-default-form">
+                    <div class="icon2">Value</div>
                     <input type="text" class="form-control" placeholder="Default" title="enter string"
-                        id="string-default-value" value=0>
+                        id="string-default-value" value=hello>
                 </div>
-                <div class="input-group input-group-lg pt-5 ps-5 pe-5 hidden" id="array-default-form">
-                    <span class="input-group-text">Default Value</span>
+                <div class="input-group input-group-lg pt-3 ps-5 pe-5 hidden" id="array-default-form">
+                    <div class="icon2">Value</div>
                     <input type="text" class="form-control" placeholder="Default"
                         title="enter array values in [1, 2, 3, 4] or ['Love', 'Shove', 'Dove'] or [true, false, true] etc format"
                         id="array-default-value" value=[]>
                 </div>
-                <div class="input-group pt-5 ps-5 pe-5 input-group-lg hidden" id="bool-default-form">
-                    <span class="input-group-text">Default Value</span>
+                <div class="input-group pt-3 ps-5 pe-5 input-group-lg hidden" id="bool-default-form">
+                    <div class="icon2">Value</div>
                     <select class="form-select" id="bool-default-value">
                         <option value=true selected>True</option>
                         <option value=false>False</option>
                     </select>
                 </div>
-                <button type="button" class="icon" style="margin: auto; margin-top: 30px;"
+                <button type="button" class="icon" style="margin: auto; margin-top: 15px;"
                     id="create-btn">Create</button>
             </div>
-            <div class="variableList">
+            <div class="variableList" style="width: 100%;">
                 <ul class="list-group list-group-flush" id="variable-list">
                 </ul>
             </div>
@@ -89,6 +91,15 @@
             Export
             <a id="exportAnchorElem" style="display:none"></a>
         </button>
+        <button class="icon" id="starter">
+            Starter
+        </button>
+        <button class="icon" id="refresh">
+            Refresh
+        </button>
+        <button class="icon" id="reload">
+            Reload
+        </button>
         <button class="icon" id="save">
             Save
         </button>
@@ -99,7 +110,8 @@
             <div>+</div>
         </button>
         <div class="sidebox-flex">
-            <div style="font-size: 1.2rem; color: white; padding: 10px; margin-top: 10px; text-align: justify"><span style="color: tomato;">Warning:</span> Export Current File If Not Exported</div>
+            <div style="font-size: 1.2rem; color: white; padding: 10px; margin-top: 10px; text-align: center"><span
+                    style="color: tomato;">Warning:</span> Export Current File If Not Exported</div>
             <div class="#button-wrap">
                 <label for="upload-json" class="icon">JSON</label>
                 <input id="upload-json" type="file">
@@ -109,7 +121,8 @@
     </div>
     <div id="save-menu" class="sidebox hidden">
         <div class="sidebox-flex">
-            <div style="font-size: 1.2rem; color: white; padding: 10px; text-align: center;">*Previous Script Found On The Browser. Do You Want To Reload It ?</div>
+            <div style="font-size: 1.2rem; color: white; padding: 10px; text-align: center;"><span
+                    style="color: yellowgreen;">Save Found:</span> Reload Last Save?</div>
             <button id="load-btn" class="icon">Load</button>
             <button id="load-cancel-btn" class="icon">No</button>
         </div>
@@ -119,58 +132,79 @@
             <div style="font-size: 1.2rem; color: white; padding: 10px; text-align: center;">Saving...</div>
         </div>
     </div>
-
-    <div id="context-menu" class="hidden">
-        <div class="context-menu-items">Begin</div>
-        <div class="context-menu-items">Print</div>
-        <hr>
-        <div class="context-menu-items" title="if/else">Branch</div>
-        <div class="context-menu-items">While</div>
-        <div class="context-menu-items">For</div>
-        <div class="context-menu-items">Break</div>
-        <hr>
-        <div class="context-menu-items">Add</div>
-        <div class="context-menu-items">Subtract</div>
-        <div class="context-menu-items">Multiply</div>
-        <div class="context-menu-items">Divide</div>
-        <div class="context-menu-items">Modulo</div>
-        <div class="context-menu-items">Random</div>
-        <div class="context-menu-items">Ceil</div>
-        <div class="context-menu-items">Floor</div>
-        <hr>
-        <div class="context-menu-items">Swap</div>
-        <div class="context-menu-items">Equals</div>
-        <div class="context-menu-items">LessEq</div>
-        <div class="context-menu-items">Less</div>
-        <div class="context-menu-items">GreaterEq</div>
-        <div class="context-menu-items">Greater</div>
-        <hr>
-        <div class="context-menu-items">AND</div>
-        <div class="context-menu-items">OR</div>
-        <div class="context-menu-items">XOR</div>
-        <div class="context-menu-items">NEG</div>
-        <hr>
-        <div class="context-menu-items" title="bitwise operators">bAND</div>
-        <div class="context-menu-items" title="bitwise operators">bOR</div>
-        <div class="context-menu-items" title="bitwise operators">bXOR</div>
-        <div class="context-menu-items" title="bitwise operators">bNEG</div>
-        <hr>
-        <div class="context-menu-items">Length</div>
-        <div class="context-menu-items">Front</div>
-        <div class="context-menu-items">Back</div>
-        <div class="context-menu-items">GetByPos</div>
-        <div class="context-menu-items">SetByPos</div>
-        <div class="context-menu-items">PushBack</div>
-        <div class="context-menu-items">PopBack</div>
-        <div class="context-menu-items">PushFront</div>
-        <div class="context-menu-items">PopFront</div>
-        <div class="context-menu-items">Insert</div>
-        <div class="context-menu-items">isEmpty</div>
-        <hr>
+    <div id="alert-box" class="sidebox hidden">
+        <div class="sidebox-flex">
+            <div style="font-size: 1.2rem; color: white; padding: 10px; margin-top: 10px; text-align: center"><span
+                    style="color: tomato;">Alert:</span> Export Current File If Not Exported</div>
+            <button id="alert-ok-btn" class="icon">OK</button>
+        </div>
+    </div>
+    <div id="refresh-box" class="sidebox hidden">
+        <div class="sidebox-flex">
+            <div style="font-size: 1.2rem; color: white; padding: 10px; margin-top: 10px; text-align: center"><span
+                    style="color: tomato;">Alert:</span> Current Scipt Will Be Lost Unless Exported</div>
+            <button id="refresh-btn" class="icon">Refresh</button>
+            <button id="refresh-cancel-btn" class="icon">Cancel</button>
+        </div>
+    </div>
+    <div id="delete-ctx-container" class="icon hidden">
+        <div>Delete</div>
+        <div style="font-size: xx-small;">Ctrl+LMB</div>
+    </div>
+    <div id="ctx-menu-container" class="hidden">
+        <input type="text" id="ctx-search-bar" placeholder="Search...">
+        <div id="context-menu">
+            <div class="context-menu-items">Begin</div>
+            <div class="context-menu-items">Print</div>
+            <hr>
+            <div class="context-menu-items" title="if/else">Branch</div>
+            <div class="context-menu-items">While</div>
+            <div class="context-menu-items">For</div>
+            <div class="context-menu-items">Break</div>
+            <hr>
+            <div class="context-menu-items">Add</div>
+            <div class="context-menu-items">Subtract</div>
+            <div class="context-menu-items">Multiply</div>
+            <div class="context-menu-items">Divide</div>
+            <div class="context-menu-items">Modulo</div>
+            <div class="context-menu-items">Random</div>
+            <div class="context-menu-items">Ceil</div>
+            <div class="context-menu-items">Floor</div>
+            <hr>
+            <div class="context-menu-items">Swap</div>
+            <div class="context-menu-items">Equals</div>
+            <div class="context-menu-items">Less</div>
+            <div class="context-menu-items">LessEq</div>
+            <div class="context-menu-items">Greater</div>
+            <div class="context-menu-items">GreaterEq</div>
+            <hr>
+            <div class="context-menu-items">AND</div>
+            <div class="context-menu-items">OR</div>
+            <div class="context-menu-items">XOR</div>
+            <div class="context-menu-items">NEG</div>
+            <hr>
+            <div class="context-menu-items" title="bitwise operators">bAND</div>
+            <div class="context-menu-items" title="bitwise operators">bOR</div>
+            <div class="context-menu-items" title="bitwise operators">bXOR</div>
+            <div class="context-menu-items" title="bitwise operators">bNEG</div>
+            <hr>
+            <div class="context-menu-items">Length</div>
+            <div class="context-menu-items">Front</div>
+            <div class="context-menu-items">Back</div>
+            <div class="context-menu-items">GetByPos</div>
+            <div class="context-menu-items">SetByPos</div>
+            <div class="context-menu-items">PushBack</div>
+            <div class="context-menu-items">PopBack</div>
+            <div class="context-menu-items">PushFront</div>
+            <div class="context-menu-items">PopFront</div>
+            <div class="context-menu-items">Insert</div>
+            <div class="context-menu-items">isEmpty</div>
+            <hr>
+        </div>
     </div>
     <input type="number" name="number-ip" id="number-ip" class="ipn" title="Enter Number">
     <input type="text" name="string-ip" id="string-ip" class="ips"
-        title="if(string) then enter with 'quotes' or &quot;double quotes&quot;">
+        title="if(string) then enter with single 'quotes' only with no special character inbetween">
     <input type="text" name="array-ip" id="array-ip" class="ips" title="enter array in [1, 2, 3, 4] format">
     <select class="ipb" id="bool-ip" title="select value">
         <option value=true selected>true</option>
