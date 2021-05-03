@@ -70,19 +70,19 @@ export var ContextMenu = {
             if (e.target === stage) {
                 let availY = stage.getContainer().getBoundingClientRect().height - e.evt.clientY;
                 let offY = 0, offX = 0;
-                if (availY <= 250) {
-                    offY = -250;
+                if (availY <= 260) {
+                    offY = -260;
                 }
                 let availX = stage.getContainer().getBoundingClientRect().width - e.evt.clientX;
                 if (availX <= 250) {
                     offX = -250;
                 }
-                toggleContextMenu([e.evt.clientX + offX - 10, e.evt.clientY + offY - 5], true);
+                toggleContextMenu([e.evt.clientX + offX, e.evt.clientY + offY], true);
             }
             else {
 
                 toggleDeleteCtxMenu([e.evt.clientX - 130, e.evt.clientY - 35], true);
-                console.log("xx");
+                // console.log("xx");
                 deleteCtxMenu.onclick = function () {
                     // console.log("x");
                     // console.log(e);
