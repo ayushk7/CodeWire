@@ -21,7 +21,7 @@ export var AppStage = {
             };
             var newScale = oldScale;
             var checkScale = e.evt.deltaY > 0 ? oldScale / AppStage.zoomScale : oldScale * AppStage.zoomScale;
-            if (checkScale > 0.4 && checkScale < 1.6) {
+            if (checkScale > 0.175 && checkScale < 1.6) {
                 newScale = checkScale;
             }
             // console.log(stage.x() + pointer.x + " " + stage.y() + pointer.y)
@@ -31,21 +31,22 @@ export var AppStage = {
                 x: pointer.x - mousePointTo.x * newScale,
                 y: pointer.y - mousePointTo.y * newScale,
             };
-            stage.container().style.backgroundSize = `${stage.scaleX() * 100 * 0.04}%`;
+            stage.container().style.backgroundSize = `${stage.scaleX() * 10}rem ${stage.scaleY() * 10}rem`;
             stage.position(newPos);
             stage.batchDraw();
             stage.container().style.backgroundPosition = `${stage.position().x}px ${stage.position().y}px`;
+            // console.log(stage.scaleX());
         });
         stage.container().tabIndex = 1;
         stage.container().focus();
 
         stage.on('mousedown', function (e) {
-            if (e.target === stage && e.evt.button == 1) {
+            if (e.target === stage && (e.evt.button == 0 || e.evt.button == 1)) {
                 stage.draggable(true);
             }
         });
         stage.on('mouseup', function (e) {
-            if (e.evt.button == 1) {
+            if (e.evt.button == 0 || e.evt.button == 1) {
                 stage.draggable(false);
             }
         });

@@ -40,9 +40,11 @@ html{
   /* border: #f0f0f0 solid 7px; */
   /* border-left: #f0f0f0 solid 3px; */
   background-color: 	#26282b;
-  background-image: url("images/sqq1.png");
+  /* background-image: url("images/sqq1.png"); */
+  background-image: linear-gradient(rgb(92, 92, 92) .1rem, transparent .1rem), linear-gradient(90deg, rgb(92, 92, 92) .1rem, transparent .1rem);
+background-size: 10rem 10rem;
   background-position: 0px 0px;
-  background-size: 4%;
+  /* background-size: 4%; */
   z-index: -2;
   /* background-blend-mode:difference; */
   /* background-repeat:initial; */
@@ -155,6 +157,24 @@ html{
   color: white;
   user-select: none;
 }
+.icon3{
+  /* width: 60px;
+  padding: 30px;
+  height: 30px;
+  padding-top: 20px;
+  padding-bottom: 20px; */
+  display: flex;
+  align-items:center;
+  justify-content: center;
+  font-size: 1.2rem;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  outline: none;
+  border: none;
+  background-color: transparent;
+  z-index: 10;
+  color: white;
+  user-select: none;
+}
 .ipn, .ips{
   display:none;
   position: absolute;
@@ -166,7 +186,10 @@ html{
   opacity: 0.8;
   outline: none;
   font-size: 10px;
-  caret-color: red;
+  /* caret-color: red; */
+  background-color:#19214e;
+  color: white;
+  border: none;
   /* transform: scaleY(2); */
 }
 .ipb{
@@ -182,6 +205,10 @@ html{
   transform-origin: top left;
   opacity: 0.8;
   outline: none;
+  background-color:#19214e;
+  color: white;
+  border: none;
+
 }
 
 
@@ -339,5 +366,20 @@ input[type="file"] {
   align-items:center;
   flex-direction: column;
   width: 125px !important;
+}
+
+.left-panel-variable{
+  width: 80%;
+  font-size: 1.6rem;
+  margin:2rem 1rem 0 1rem;
+  background: transparent !important;
+  color: white !important;
+}
+.variableList{
+  display: flex;
+  width: 100%;
+  /* align-items: flex-start; */
+  flex-direction: column-reverse;
+  justify-content: flex-end;
 }
 

@@ -204,7 +204,7 @@ export var VSToJS = class {
                     for(let ${forVar} = (${this.handleInputs(inputPins[0])}); ${forVar} < (${this.handleInputs(inputPins[1])}); ${forVar} += (${this.handleInputs(inputPins[2])})){\n
                         __loop__control__${node._id}++; 
                         if(__loop__control__${node._id} > 100000){
-                            console.log("The program is taking too long in your program  !!Breaking");
+                            console.log("The program is taking too long !!Breaking");
                             break;
                         }
                         `;
@@ -228,7 +228,7 @@ export var VSToJS = class {
                                      while(${this.handleInputs(inputPins[0])}){ 
                                          __loop__control__${node._id}++; 
                                         if(__loop__control__${node._id} > 100000){
-                                            console.log("The program is taking too long in your program  !!Breaking");
+                                            console.log("The program is taking too long !!Breaking");
                                             break;
                                         }
                                         \n`;
