@@ -487,7 +487,7 @@ export var Nodes = {
                     execOut1: {
                         execOutTitle: '       False',
                         pinExecOutId: null,
-                    }
+                    },
                 }
             nodeDescription.inputs = {
                 input0: {
@@ -617,6 +617,32 @@ export var Nodes = {
                     inputTitle: 'ValueB',
                     dataType: 'Number',
                     defValue: 1,
+                    pinInId: null,
+                }
+            }
+            nodeDescription.outputs = {
+                output0: {
+                    outputTitle: ' Result',
+                    dataType: 'Number',
+                    pinOutId: null,
+                }
+            }
+            nodeDescription.rows = 2;
+            nodeDescription.colums = 10;
+        }
+        if (type == 'Power') {
+            nodeDescription.nodeTitle = 'Power';
+            nodeDescription.inputs = {
+                input0: {
+                    inputTitle: 'ValueA',
+                    dataType: 'Number',
+                    defValue: 2,
+                    pinInId: null,
+                },
+                input1: {
+                    inputTitle: 'ValueB',
+                    dataType: 'Number',
+                    defValue: 2,
                     pinInId: null,
                 }
             }
@@ -1259,6 +1285,40 @@ export var Nodes = {
             }
             nodeDescription.rows = 2;
             nodeDescription.colums = 10;
+        }
+        if (type == 'Sort(Numbers)') {
+            nodeDescription.nodeTitle = 'Sort(Numbers)';
+            nodeDescription.execIn = true;
+            nodeDescription.pinExecInId = null;
+            nodeDescription.execOut = {
+                execOut0: {
+                    execOutTitle: null,
+                    pinExecOutId: null,
+                },
+            }
+            nodeDescription.inputs = {
+                input0: {
+                    inputTitle: 'Array',
+                    dataType: 'Array',
+                    isInputBoxRequired: false,
+                    pinInId: null,
+                },
+                input1: {
+                    inputTitle: 'Incre',
+                    dataType: 'Boolean',
+                    pinInId: null,
+                    defValue: true,
+                },
+            }
+            nodeDescription.outputs = {
+                output0: {
+                    outputTitle: ' Array',
+                    dataType: 'Array',
+                    pinOutId: null,
+                }
+            }
+            nodeDescription.rows = 2;
+            nodeDescription.colums = 12;
         }
         if (type == 'Back') {
             nodeDescription.nodeTitle = 'Back';

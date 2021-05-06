@@ -4,6 +4,20 @@ import {showAlert} from '../main/alertBox.js'
 export class leftPanel {
     constructor() {
         // this.variablesNameList = {};
+        document.getElementById("slide-left-panel").addEventListener("click", () => {
+            document.getElementById("left-panel").classList.toggle("closed-left-panel");
+            document.getElementById("slide-left-panel").children[0].classList.toggle("slider-icon-closed");
+        });
+        document.getElementById("list-of-variables").addEventListener("click", () => {
+            // console.log("clicked");
+            // document.getElementById("list-of-variables-down-icon").classList.toggle("list-of-variables-down-icon-closed");
+            document.getElementById("list-of-variables-content").classList.toggle("hidden");
+            document.getElementById("list-of-variables-down-icon").classList.toggle("left-panel-tab-arrow-up");
+        });
+        document.getElementById("add-variables").addEventListener("click", () => {
+            document.getElementById("add-variables-content").classList.toggle("hidden");
+            document.getElementById("add-variables-plus-icon").classList.toggle("left-panel-tab-arrow-up");
+        });
         let createVariableForm = document.getElementById("create-variables");
         let forms = {
             numberForm: document.getElementById("number-default-form"),
@@ -81,6 +95,8 @@ export class leftPanel {
                     };
                     // this.variablesNameList[variableName] = variableName;
                     variableList.addVariable(variable);
+                    document.getElementById("list-of-variables-content").classList.toggle("hidden", false);
+                    document.getElementById("list-of-variables-down-icon").classList.toggle("left-panel-tab-arrow-up", false);
                 }
                 else {
                     showAlert("Value Can't Be empty");

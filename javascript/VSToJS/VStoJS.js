@@ -1,5 +1,5 @@
 import { variableList } from '../Variable/variable.js'
-import {showAlert} from '../main/alertBox.js'
+import { showAlert } from '../main/alertBox.js'
 export var VSToJS = class {
     constructor(stage, layer, isRunOrCode) {
         this.script = '';
@@ -7,7 +7,7 @@ export var VSToJS = class {
         this.isRunOrCode = isRunOrCode;
         for (let variable of variableList.variables) {
             // console.log(variable);
-            this.script += `let ${variable.name} = ${variable.value};`;
+            this.script += `let ${variable.name} = ${variable.value};\n`;
         }
         let begin = this.getBegin(stage);
         if (begin) {
@@ -51,28 +51,6 @@ export var VSToJS = class {
                     );
                     codeDoc.close();
                 }
-                else {
-                    document.getElementById("console-window").classList.toggle("hidden", false);
-                    let codeDoc = document.getElementById("console").contentWindow.document;
-                    codeDoc.open();
-                    codeDoc.writeln(
-                        `<!DOCTYPE html>\n
-                    <style>
-                        html{
-                            color: white;
-                            margin: 20;
-                        }
-                    </style>
-                    <body>
-                    <code>
-                    ${this.script}
-                    </code>
-                    </body>
-                    </html>
-                    `
-                    );
-                    codeDoc.close();
-                }
             }
             catch (err) {
                 document.getElementById("console-window").classList.toggle("hidden", false);
@@ -100,12 +78,10 @@ export var VSToJS = class {
     }
     getBegin(stage) {
         let X = stage.find("#Begin");
-        if(X.length == 0)
-        {
+        if (X.length == 0) {
             showAlert("Include Begin Node");
         }
-        else if(X.length > 1)
-        {
+        else if (X.length > 1) {
             showAlert("Multiple Begin Nodes");
         }
         else return X[0];
@@ -167,7 +143,7 @@ export var VSToJS = class {
                 case "Print": {
                     // if (this.isRunOrCode == "Code") {
                     if (inputPins.length)
-                        this.script += `console.log(${this.handleInputs(inputPins[0])});
+                        this.script += `console.log(${this.handleInputs(inputPins[0])});\n
                          `;
                     for (let each of execOutPins) {
                         this.coreAlgorithm(each);
@@ -200,13 +176,8 @@ export var VSToJS = class {
                     break;
                 case "For": {
                     let forVar = `i${node._id}`;
-                    this.script += `let __loop__control__${node._id} = 0;
-                    for(let ${forVar} = (${this.handleInputs(inputPins[0])}); ${forVar} < (${this.handleInputs(inputPins[1])}); ${forVar} += (${this.handleInputs(inputPins[2])})){\n
-                        __loop__control__${node._id}++; 
-                        if(__loop__control__${node._id} > 100000){
-                            console.log("The program is taking too long !!Breaking");
-                            break;
-                        }
+                    this.script += `for(let ${forVar} = (${this.handleInputs(inputPins[0])}); ${forVar} < (${this.handleInputs(inputPins[1])}); ${forVar} += (${this.handleInputs(inputPins[2])})){\n
+                        
                         `;
                     let hasBody = false;
                     if (node.customClass.execOutPins[0].wire) {
@@ -224,14 +195,7 @@ export var VSToJS = class {
                 }
                     break;
                 case "While": {
-                    this.script += `let __loop__control__${node._id} = 0;
-                                     while(${this.handleInputs(inputPins[0])}){ 
-                                         __loop__control__${node._id}++; 
-                                        if(__loop__control__${node._id} > 100000){
-                                            console.log("The program is taking too long !!Breaking");
-                                            break;
-                                        }
-                                        \n`;
+                    this.script += ` while(${this.handleInputs(inputPins[0])}){\n`;
                     let hasBody = false;
                     if (node.customClass.execOutPins[0].wire) {
                         this.coreAlgorithm(execOutPins[0]);
@@ -296,6 +260,15 @@ export var VSToJS = class {
                     }
                 }
                     break;
+                case "Sort(Numbers)":{
+                    this.script += `
+                        (${this.handleInputs(inputPins[1])}) ? ${this.handleInputs(inputPins[0])}.sort((a, b) => a-b) : ${this.handleInputs(inputPins[0])}.sort((a, b) => b-a)\n;
+                    `;
+                    if (node.customClass.execOutPins[0].wire) {
+                        this.coreAlgorithm(execOutPins[0]);
+                    }
+                }
+                break;
             }
         }
     }
@@ -306,7 +279,7 @@ export var VSToJS = class {
         }
         let inputPins = this.getInputPins(inputNode.node);
         if (inputNode.node.customClass.type.isGetSet) {
-            return `(${inputNode.node.customClass.type.typeOfNode.slice(4)})`;
+            return `${inputNode.node.customClass.type.typeOfNode.slice(4)}`;
         }
         // if (inputNode.node.customClass.type.isFor) {
         //     return `(i${inputNode.node.customClass.type.isFor})`;
@@ -329,6 +302,10 @@ export var VSToJS = class {
                 expr = `(${this.handleInputs(inputPins[0])} / ${this.handleInputs(inputPins[1])})`;
             }
                 break;
+            case "Power": {
+                expr = `Math.pow(${this.handleInputs(inputPins[0])}, ${this.handleInputs(inputPins[1])})`;
+            }
+                break;
             case "Modulo": {
                 expr = `(${this.handleInputs(inputPins[0])} % ${this.handleInputs(inputPins[1])})`;
             }
@@ -338,11 +315,11 @@ export var VSToJS = class {
             }
                 break;
             case "Ceil": {
-                expr = `(Math.ceil(${this.handleInputs(inputPins[0])}))`;
+                expr = `Math.ceil(${this.handleInputs(inputPins[0])})`;
             }
                 break;
             case "Floor": {
-                expr = `Math.floor((${this.handleInputs(inputPins[0])}))`;
+                expr = `Math.floor(${this.handleInputs(inputPins[0])})`;
             }
                 break;
             case "OR": {
@@ -370,11 +347,11 @@ export var VSToJS = class {
             }
                 break;
             case "bNEG": {
-                expr = `~(${this.handleInputs(inputPins[0])})`;
+                expr = `~${this.handleInputs(inputPins[0])}`;
             }
                 break;
             case "Random": {
-                expr = `(Math.random())`;
+                expr = `Math.random()`;
             }
 
                 break;
@@ -399,16 +376,16 @@ export var VSToJS = class {
             }
                 break;
             case "Length": {
-                expr = `(${this.handleInputs(inputPins[0])}.length)`;
+                expr = `${this.handleInputs(inputPins[0])}.length`;
             }
                 break;
             case "GetByPos": {
                 // console.log("GetByPos");
-                expr = `(${this.handleInputs(inputPins[1])}[${this.handleInputs(inputPins[0])}])`;
+                expr = `${this.handleInputs(inputPins[1])}[${this.handleInputs(inputPins[0])}]`;
             }
                 break;
             case "SetByPos": {
-                expr = `(${this.handleInputs(inputPins[2])}[${this.handleInputs(inputPins[0])}])`;
+                expr = `${this.handleInputs(inputPins[2])}[${this.handleInputs(inputPins[0])}]`;
             }
                 break;
             case "isEmpty": {
@@ -416,40 +393,46 @@ export var VSToJS = class {
             }
                 break;
             case "PushBack": {
-                expr = `(${this.handleInputs(inputPins[1])})`;
+                expr = `${this.handleInputs(inputPins[1])}`;
             }
                 break;
             case "PushFront": {
-                expr = `(${this.handleInputs(inputPins[1])})`;
+                expr = `${this.handleInputs(inputPins[1])}`;
             }
                 break;
             case "PopBack": {
-                expr = `(${this.handleInputs(inputPins[0])})`;
+                expr = `${this.handleInputs(inputPins[0])}`;
             }
                 break;
             case "PopFront": {
-                expr = `(${this.handleInputs(inputPins[0])})`;
+                expr = `${this.handleInputs(inputPins[0])}`;
             }
                 break;
             case "Front": {
-                expr = `(${this.handleInputs(inputPins[0])}[0])`;
+                expr = `${this.handleInputs(inputPins[0])}[0]`;
             }
                 break;
             case "Back": {
-                expr = `(${this.handleInputs(inputPins[0])}[${this.handleInputs(inputPins[0])}.length - 1])`;
+                expr = `${this.handleInputs(inputPins[0])}[${this.handleInputs(inputPins[0])}.length - 1]`;
             }
                 break;
             case "Insert": {
-                expr = `(${this.handleInputs(inputPins[2])})`;
+                expr = `${this.handleInputs(inputPins[2])}`;
             }
                 break;
             case "Swap": {
-                expr = `(${this.handleInputs(inputPins[inputNode.srcOutputPinNumber])})`;
+                expr = `${this.handleInputs(inputPins[inputNode.srcOutputPinNumber])}`;
             }
                 break;
             case "For": {
-                expr = `(i${inputNode.node._id})`;
+                expr = `i${inputNode.node._id}`;
             }
+            break;
+            case "Sort(Numbers)": {
+                expr = `${this.handleInputs(inputPins[0])}`;
+                console.log("hello");
+            }
+            break;
         }
         return expr;
     }

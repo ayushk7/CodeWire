@@ -44,8 +44,10 @@ class VariableList {
         li.id =  `${variable.dataType}-${variable.name}`;
         li.classList.toggle('list-group-item', true);
         li.classList.toggle('left-panel-variable', true);
-        li.style.borderWidth = `0 0 0 2px`;
+        li.style.borderWidth = `0 0 2px 2px`;
         li.style.borderStyle = 'solid';
+        li.style.margin = '1rem';
+        li.style.backgroundColor = `${colorMap[variable.dataType]}`;
         li.style.borderColor = `${colorMap[variable.dataType]}`;
         let text = document.createTextNode(`${variable.name}`);
         li.appendChild(text);

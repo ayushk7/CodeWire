@@ -8,6 +8,7 @@ import { VSToJS } from '../VSToJS/VStoJS.js'
 import { Delete } from '../Delete/delete.js'
 import { Export, Import, Save, prompLastSave } from '../SaveAndLoad/SaveAndLoad.js'
 import { showAlert, prompRefreshOrStarter } from './alertBox.js'
+import { refresh } from '../VSToJS/liveCode.js'
 // var width = window.innerWidth;
 // var height = window.innerHeight;
 let stage = AppStage.getStage(document.getElementById("container").clientWidth, document.getElementById("container").clientHeight, 'container');
@@ -39,7 +40,9 @@ let panel = new leftPanel();
 layer.draw();
 document.getElementById("Run").addEventListener("click", (e) => {
     try {
-        new VSToJS(stage, layer, "Run");
+        let script = new VSToJS(stage, layer, "Run").script;
+        // let script = new VSToJS(stage, layer, "live-code-refresh").script;
+        refresh(script);
     }
     catch (err) {
 
@@ -109,9 +112,27 @@ document.getElementById("import").addEventListener("click", () => {
         }
     });
 })
-document.getElementById("Code").addEventListener("click", () => {
-    new VSToJS(stage, layer, "Code");
+document.getElementById("live-code-refresh").addEventListener("click", () => {
+    let script = new VSToJS(stage, layer, "live-code-refresh").script;
+    refresh(script);
+}
+);
+document.onkeydown = (e) => {
+    // e.preventDefault();
+    if (e.code == 'KeyQ' && e.ctrlKey) {
+        let script = new VSToJS(stage, layer, "live-code-refresh").script;
+        refresh(script);
+    }
+}
+document.getElementById("live-code-arrow").addEventListener("click", () => {
+    document.getElementById("live-code-container").classList.toggle("live-code-closed");
+    document.getElementById("live-code-arrow").classList.toggle("live-code-arrow-clicked");
 });
+document.getElementById("Code").addEventListener("click", () => {
+    document.getElementById("live-code-container").classList.toggle("live-code-closed");
+    document.getElementById("live-code-refresh").click();
+    document.getElementById("live-code-arrow").classList.toggle("live-code-arrow-clicked");
+})
 document.getElementById("Console").addEventListener("click", (e) => {
     document.getElementById("console-window").classList.toggle("hidden");
 })
@@ -126,44 +147,9 @@ document.getElementById("reload").addEventListener("click", (e) => {
 });
 
 document.getElementById("refresh").addEventListener("click", (e) => {
-    prompRefreshOrStarter("refresh" , stage);
+    prompRefreshOrStarter("refresh", stage);
 });
 document.getElementById("starter").addEventListener("click", (e) => {
     prompRefreshOrStarter("starter", stage);
 })
-
-document.getElementById("Tutorial").addEventListener("click", (e) => {
-    document.getElementById("console-window").classList.toggle("hidden", false);
-    let codeDoc = document.getElementById("console").contentWindow.document;
-    codeDoc.open();
-    codeDoc.writeln(
-        `<!DOCTYPE html>\n
-                    <style>
-                        html{
-                            color: white;
-                            margin: 20;
-                        }
-                    </style>
-                    <body>
-                    <code>
-                    <ol>
-                    <li>Include Begin Node By Right Click And Select Begin</li>
-                    <li>Include Other In The Same Way</li>
-                    <li>Use Left Panel To create New Variable</li>
-                    <li>New variable is added into the right click menu</li>
-                    <li>Hold middle mouse button To Pan</li>
-                    <li>Use Scroll Wheel To Zoom in and out</li>
-                    <li>Hold left Ctrl and click the node or the wire to delete it</li>
-                    <li>White wire between two arrow terminals is used for execution flow</li>
-                    <li>Colored wire is used for input/outputs</li>
-                    <li>Click Code to get Javascript native code</li>
-                    </ol>
-                    </code>
-                    </body>
-                    </html>
-                    `
-    );
-    codeDoc.close();
-}
-);
 

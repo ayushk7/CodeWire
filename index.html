@@ -9,60 +9,91 @@
     <link rel="stylesheet" href="style.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
+    <script src="https://kit.fontawesome.com/337dc27142.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="./javascript/Dependencies/CodeMirror/codemirror.css">
+    <link rel="stylesheet" href="./javascript/Dependencies/CodeMirror/material.css">
+
 </head>
 
 <body>
     <div class="main">
         <div id="left-panel">
-            <div class="icon3" style="width: 80%; font-size: 1.6rem; margin:2rem 1rem 0 1rem" id="create-ariable">Create
-                Variables</div>
-            <div id="create-variables" class="pb-5">
-                <div class="input-group pt-3 ps-5 pe-5 input-group-lg">
-                    <div class="icon2">Type</div>
-                    <select class="form-select" id="variable-data-type">
-                        <option value="Number" selected>Number</option>
-                        <option value="Boolean">Boolean</option>
-                        <option value="String">String</option>
-                        <option value="Array">Array</option>
-                    </select>
+            <!-- <div>Icons made by <a href="https://www.flaticon.com/authors/google" title="Google">Google</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div> -->
+            <!-- <img src="./images/right-chevron.svg" id="slider"> -->
+            <div class="slider-icon" id="slide-left-panel">
+                <div style="margin-top: 1rem;">
+                    <i class="fas fa-arrow-left"></i>
                 </div>
-                <div class="input-group input-group-lg pt-3 ps-5 pe-5">
-                    <div class="icon2">Name</div>
-                    <input type="text" class="form-control" placeholder="Name" id="variable-name">
-                </div>
-                <div class="input-group input-group-lg pt-3 ps-5 pe-5" id="number-default-form">
-                    <div class="icon2">Value</div>
-                    <input type="text" class="form-control" placeholder="Default" title="enter number"
-                        id="number-default-value" value=0>
-                </div>
-                <div class="input-group input-group-lg pt-3 ps-5 pe-5 hidden" id="string-default-form">
-                    <div class="icon2">Value</div>
-                    <input type="text" class="form-control" placeholder="Default" title="enter string"
-                        id="string-default-value" value=hello>
-                </div>
-                <div class="input-group input-group-lg pt-3 ps-5 pe-5 hidden" id="array-default-form">
-                    <div class="icon2">Value</div>
-                    <input type="text" class="form-control" placeholder="Default"
-                        title="enter array values in [1, 2, 3, 4] or ['Love', 'Shove', 'Dove'] or [true, false, true] etc format"
-                        id="array-default-value" value=[]>
-                </div>
-                <div class="input-group pt-3 ps-5 pe-5 input-group-lg hidden" id="bool-default-form">
-                    <div class="icon2">Value</div>
-                    <select class="form-select" id="bool-default-value">
-                        <option value=true selected>True</option>
-                        <option value=false>False</option>
-                    </select>
-                </div>
-                <button type="button" class="icon" style="margin: auto; margin-top: 15px;"
-                    id="create-btn">Create</button>
             </div>
-            <div class="variableList" style="width: 100%;">
-                <ul class="list-group list-group-flush" id="variable-list">
-                </ul>
+            <div class="left-panel-content">
+                <div id="add-variables" class="left-panel-tab">Add Variable <div id="add-variables-plus-icon"
+                        style="position: absolute; right: 0.7rem;"><i class="fas fa-chevron-down"></i></div>
+                </div>
+                <div id="add-variables-content" class="left-panel-tab-content">
+                    <div id="create-variables" class="pb-5">
+                        <div class="input-group pt-3 ps-5 pe-5 input-group-lg">
+                            <div class="icon2">Type</div>
+                            <select class="form-select" id="variable-data-type">
+                                <option value="Number" selected>Number</option>
+                                <option value="Boolean">Boolean</option>
+                                <option value="String">String</option>
+                                <option value="Array">Array</option>
+                            </select>
+                        </div>
+                        <div class="input-group input-group-lg pt-3 ps-5 pe-5">
+                            <div class="icon2">Name</div>
+                            <input type="text" class="form-control" placeholder="Name" id="variable-name">
+                        </div>
+                        <div class="input-group input-group-lg pt-3 ps-5 pe-5" id="number-default-form">
+                            <div class="icon2">Value</div>
+                            <input type="text" class="form-control" placeholder="Default" title="enter number"
+                                id="number-default-value" value=0>
+                        </div>
+                        <div class="input-group input-group-lg pt-3 ps-5 pe-5 hidden" id="string-default-form">
+                            <div class="icon2">Value</div>
+                            <input type="text" class="form-control" placeholder="Default" title="enter string"
+                                id="string-default-value" value=hello>
+                        </div>
+                        <div class="input-group input-group-lg pt-3 ps-5 pe-5 hidden" id="array-default-form">
+                            <div class="icon2">Value</div>
+                            <input type="text" class="form-control" placeholder="Default"
+                                title="enter array values in [1, 2, 3, 4] or ['Love', 'Shove', 'Dove'] or [true, false, true] etc format"
+                                id="array-default-value" value=[]>
+                        </div>
+                        <div class="input-group pt-3 ps-5 pe-5 input-group-lg hidden" id="bool-default-form">
+                            <div class="icon2">Value</div>
+                            <select class="form-select" id="bool-default-value">
+                                <option value=true selected>True</option>
+                                <option value=false>False</option>
+                            </select>
+                        </div>
+                        <button type="button" class="icon" style="margin: auto; margin-top: 15px;"
+                            id="create-btn">Create</button>
+                    </div>
+                </div>
+                <div id="list-of-variables" class="left-panel-tab">Variable List<div id="list-of-variables-down-icon"
+                        style="position: absolute; right: 0.7rem;"><i class="fas fa-chevron-down"></i></div>
+                </div>
+                <div id="list-of-variables-content" class="left-panel-tab-content">
+                    <div class="variableList" style="width: 100%;">
+                        <ul class="list-group list-group-flush" id="variable-list">
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
         <div id="container">
 
+        </div>
+        <div id="live-code-container" class="live-code-container live-code-closed">
+            <div class="icons-live-code">
+                <div id="live-code-arrow"><i class="fas fa-arrow-left"></i></div>
+                <div id="live-code-refresh" title="Ctrl+Q"><i class="fas fa-sync"></i></div>
+                <h3 style="margin-left: 2rem; color: yellowgreen; transform: translateY(2px);">Live Code</h3>
+            </div>
+            <div id="live-code">
+
+            </div>
         </div>
 
     </div>
@@ -70,19 +101,15 @@
         <button class="icon" id="Run">
             Run
         </button>
-        <button class="icon" id="Tutorial">
-            Tutorial
-        </button>
         <button class="icon" id="Code">
-            Code
+            <span>Code</span>
         </button>
-        <a href="https://github.com/ayushk7/CodeWire" target="_blank" style="text-decoration: none;">
-            <button class="icon" id="Github">
-                Github
-            </button>
-        </a>
+        <button class="icon" id="Github">
+            <a href="https://github.com/ayushk7/CodeWire" target="_blank" style="text-decoration: none;"
+                class="icon">Github</a>
+        </button>
         <button class="icon" id="Console">
-            Console
+            Output
         </button>
         <button class="icon" id="import">
             Import
@@ -105,13 +132,14 @@
         </button>
 
     </div>
+
     <div id="import-menu" class="sidebox hidden">
         <button id="cross-upload-cross" class="cross">
             <div>+</div>
         </button>
         <div class="sidebox-flex">
-            <div style="font-size: 1.2rem; color: white; padding: 10px; margin-top: 10px; text-align: center"><span
-                    style="color: tomato;">Warning:</span> Export Current File If Not Exported</div>
+            <div style="font-size: 1.2rem; color: white; padding: 10px;; text-align: center;"><span
+                    style="color: tomato;">Alert:</span>Current Script Will Be Lost</div>
             <div class="#button-wrap">
                 <label for="upload-json" class="icon">JSON</label>
                 <input id="upload-json" type="file">
@@ -134,15 +162,15 @@
     </div>
     <div id="alert-box" class="sidebox hidden">
         <div class="sidebox-flex">
-            <div style="font-size: 1.2rem; color: white; padding: 10px; margin-top: 10px; text-align: center"><span
-                    style="color: tomato;">Alert:</span> Export Current File If Not Exported</div>
+            <div style="font-size: 1.2rem; color: white; padding: 10px;; text-align: center;"><span
+                    style="color: tomato;">Alert:</span> Export Current script If Not Exported</div>
             <button id="alert-ok-btn" class="icon">OK</button>
         </div>
     </div>
     <div id="refresh-box" class="sidebox hidden">
         <div class="sidebox-flex">
-            <div style="font-size: 1.2rem; color: white; padding: 10px; margin-top: 10px; text-align: center"><span
-                    style="color: tomato;">Alert:</span> Current Scipt Will Be Lost Unless Exported</div>
+            <div style="font-size: 1.2rem; color: white; padding: 10px;; text-align: center;;"><span
+                    style="color: tomato;">Alert:</span> Current Script Will Be Lost</div>
             <button id="refresh-btn" class="icon">Refresh</button>
             <button id="refresh-cancel-btn" class="icon">Cancel</button>
         </div>
@@ -167,6 +195,7 @@
             <div class="context-menu-items">Multiply</div>
             <div class="context-menu-items">Divide</div>
             <div class="context-menu-items">Modulo</div>
+            <div class="context-menu-items">Power</div>
             <div class="context-menu-items">Random</div>
             <div class="context-menu-items">Ceil</div>
             <div class="context-menu-items">Floor</div>
@@ -198,6 +227,7 @@
             <div class="context-menu-items">PushFront</div>
             <div class="context-menu-items">PopFront</div>
             <div class="context-menu-items">Insert</div>
+            <div class="context-menu-items">Sort(Numbers)</div>
             <div class="context-menu-items">isEmpty</div>
             <hr>
         </div>
@@ -222,6 +252,8 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
     crossorigin="anonymous"></script>
+<script src="./javascript/Dependencies/CodeMirror/codemirror.js"></script>
+<script src="./javascript/Dependencies/CodeMirror/javascript/javascript.js"></script>
 <script src="javascript/Dependencies/jquery/jquery.js"></script>
 <script src="./javascript/Dependencies/Konva/konva.min.js"></script>
 <script type="module" src="./javascript/main/main.js"></script>
