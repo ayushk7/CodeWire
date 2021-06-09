@@ -91,6 +91,8 @@ export var VSToJS = class {
         for (let aNode of node.customClass.execOutPins) {
             if (aNode.wire)
                 X.push(aNode.wire.attrs.dest.getParent());
+            else
+                X.push(null);
         }
         // console.log(X);
         return X;
@@ -120,6 +122,7 @@ export var VSToJS = class {
         return X;
     }
     coreAlgorithm(node) {
+        if(node == null) return;
         let execOutPins = this.getExecOut(node);
         let inputPins = this.getInputPins(node);
         // console.log(node.customClass.type);
@@ -147,6 +150,7 @@ export var VSToJS = class {
                          `;
                     for (let each of execOutPins) {
                         this.coreAlgorithm(each);
+
                     }
                     // }
                     // else {
@@ -158,53 +162,52 @@ export var VSToJS = class {
                     // }
                 }
                     break;
-                case "Branch": {
+                case "If/Else": {
                     this.script += `if(${this.handleInputs(inputPins[0])}){\n`;
-                    let ifWasValid = false;
-                    if (node.customClass.execOutPins[0].wire) {
+                    // let ifWasValid = false;
+                    // if (node.customClass.execOutPins[0].wire) {
                         this.coreAlgorithm(execOutPins[0]);
-                        ifWasValid = true;
-                    }
+                        // ifWasValid = true;
+                    // }
                     this.script += `}\n`;
-                    let elseWire = (ifWasValid) ? 1 : 0;
-                    if (node.customClass.execOutPins[1].wire) {
+                    // let elseWire = (ifWasValid) ? 1 : 0;
+                    // if (node.customClass.execOutPins[1].wire) {
                         this.script += `else{\n`;
-                        this.coreAlgorithm(execOutPins[elseWire]);
+                        this.coreAlgorithm(execOutPins[1]);
                         this.script += `}\n`;
-                    }
+                    // }
+                    this.coreAlgorithm(execOutPins[2]);
                 }
                     break;
-                case "For": {
-                    let forVar = `i${node._id}`;
-                    this.script += `for(let ${forVar} = (${this.handleInputs(inputPins[0])}); ${forVar} < (${this.handleInputs(inputPins[1])}); ${forVar} += (${this.handleInputs(inputPins[2])})){\n
-                        
-                        `;
-                    let hasBody = false;
-                    if (node.customClass.execOutPins[0].wire) {
+                case "ForLoop": {
+                    let forVar = `i${node._id}`;   //variable used inside the for loop 
+                    this.script += `for(let ${forVar} = (${this.handleInputs(inputPins[0])}); ${forVar} < (${this.handleInputs(inputPins[1])}); ${forVar} += (${this.handleInputs(inputPins[2])})){\n`;
                         this.coreAlgorithm(execOutPins[0]);
-                        hasBody = true;
-                    }
                     this.script += `}\n`;
-                    if (node.customClass.execOutPins[1].wire) {
-                        this.coreAlgorithm(execOutPins[(hasBody) ? 1 : 0]);
-                    }
+                        this.coreAlgorithm(execOutPins[1]);
+                }
+                    break;
+                case "ForEachLoop": {
+                    let forVar = `i${node._id}`;   //variable used inside the for loop 
+                    this.script += `${this.handleInputs(inputPins[0])}.forEach((value${forVar}, ${forVar}, array${forVar}) => {\n`;
+                    this.coreAlgorithm(execOutPins[0]);
+                    this.script += `});\n`;
+                    this.coreAlgorithm(execOutPins[1]);
                 }
                     break;
                 case "Break": {
                     this.script += `break;\n`;
                 }
                     break;
-                case "While": {
+                case "Continue": {
+                    this.script += `continue;\n`;
+                }
+                    break;
+                case "WhileLoop": {
                     this.script += ` while(${this.handleInputs(inputPins[0])}){\n`;
-                    let hasBody = false;
-                    if (node.customClass.execOutPins[0].wire) {
                         this.coreAlgorithm(execOutPins[0]);
-                        hasBody = true;
-                    }
                     this.script += `}\n`;
-                    if (node.customClass.execOutPins[1].wire) {
-                        this.coreAlgorithm(execOutPins[(hasBody) ? 1 : 0]);
-                    }
+                        this.coreAlgorithm(execOutPins[1]);
                 }
                     break;
                 case "SetByPos": {
@@ -251,10 +254,7 @@ export var VSToJS = class {
                     break;
                 case "Swap": {
                     this.script += `
-                        let __tmp__${node._id} = ${this.handleInputs(inputPins[0])};\n
-                        ${this.handleInputs(inputPins[0])} = ${this.handleInputs(inputPins[1])};\n
-                        ${this.handleInputs(inputPins[1])} = __tmp__${node._id};\n
-                    `;
+                    [${this.handleInputs(inputPins[0])}, ${this.handleInputs(inputPins[1])}] = [${this.handleInputs(inputPins[1])}, ${this.handleInputs(inputPins[0])}];    //swap using array destructuring :) \n`;
                     if (node.customClass.execOutPins[0].wire) {
                         this.coreAlgorithm(execOutPins[0]);
                     }
@@ -350,13 +350,16 @@ export var VSToJS = class {
                 expr = `~${this.handleInputs(inputPins[0])}`;
             }
                 break;
-            case "Random": {
+            case "Random [0,1)": {
                 expr = `Math.random()`;
             }
-
                 break;
             case "Equals": {
-                expr = `(${this.handleInputs(inputPins[0])} == ${this.handleInputs(inputPins[1])})`;
+                expr = `(${this.handleInputs(inputPins[0])} === ${this.handleInputs(inputPins[1])})`;
+            }
+                break;
+            case "Not Equals": {
+                expr = `(${this.handleInputs(inputPins[0])} !== ${this.handleInputs(inputPins[1])})`;
             }
                 break;
             case "LessEq": {
@@ -424,13 +427,34 @@ export var VSToJS = class {
                 expr = `${this.handleInputs(inputPins[inputNode.srcOutputPinNumber])}`;
             }
                 break;
-            case "For": {
+            case "ForLoop": {
                 expr = `i${inputNode.node._id}`;
+            }
+            break;
+            case "ForEachLoop": {
+                expr = ``;
+                if(inputNode.srcOutputPinNumber == 0)
+                    expr = `valuei${inputNode.node._id}`;
+                else if(inputNode.srcOutputPinNumber == 1)
+                    expr = `i${inputNode.node._id}`;
+                else
+                    expr = `arrayi${inputNode.node._id}`;
             }
             break;
             case "Sort(Numbers)": {
                 expr = `${this.handleInputs(inputPins[0])}`;
-                console.log("hello");
+            }
+            break;
+            case "Search": {
+                expr = ``;
+                if(inputNode.srcOutputPinNumber == 0)
+                {
+                    expr = `(${this.handleInputs(inputPins[1])}.find((value) => value === ${this.handleInputs(inputPins[0])}) === ${this.handleInputs(inputPins[0])})`;
+                }
+                else
+                {
+                    expr = `(${this.handleInputs(inputPins[1])}.findIndex((value) => value === ${this.handleInputs(inputPins[0])}))`;
+                }
             }
             break;
         }

@@ -475,8 +475,8 @@ export var Nodes = {
             nodeDescription.rows = 3;
             nodeDescription.colums = 12;
         }
-        if (type == 'Branch') {
-            nodeDescription.nodeTitle = 'Branch';
+        if (type == 'If/Else') {
+            nodeDescription.nodeTitle = 'If/Else';
             nodeDescription.execIn = true;
             nodeDescription.pinExecInId = null,
                 nodeDescription.execOut = {
@@ -486,6 +486,10 @@ export var Nodes = {
                     },
                     execOut1: {
                         execOutTitle: '       False',
+                        pinExecOutId: null,
+                    },
+                    execOut2: {
+                        execOutTitle: '       Done',
                         pinExecOutId: null,
                     },
                 }
@@ -697,8 +701,8 @@ export var Nodes = {
             nodeDescription.colums = 10;
         }
 
-        if (type == 'While') {
-            nodeDescription.nodeTitle = 'While';
+        if (type == 'WhileLoop') {
+            nodeDescription.nodeTitle = 'WhileLoop';
             nodeDescription.execIn = true;
             nodeDescription.pinExecInId = null;
             nodeDescription.inputs = {
@@ -932,13 +936,13 @@ export var Nodes = {
                 nodeDescription.pinExecInId = null;
             nodeDescription.inputs = {
                 input0: {
-                    inputTitle: 'ValueA',
+                    inputTitle: 'Ref1',
                     dataType: 'Data',
                     isInputBoxRequired: false,
                     pinInId: null,
                 },
                 input1: {
-                    inputTitle: 'ValueB',
+                    inputTitle: 'Ref2',
                     dataType: 'Data',
                     isInputBoxRequired: false,
                     pinInId: null,
@@ -946,12 +950,12 @@ export var Nodes = {
             }
             nodeDescription.outputs = {
                 output0: {
-                    outputTitle: 'ValueA',
+                    outputTitle: '  Ref1',
                     dataType: 'Data',
                     pinOutId: null,
                 },
                 output1: {
-                    outputTitle: 'ValueB',
+                    outputTitle: '  Ref2',
                     dataType: 'Data',
                     pinOutId: null,
 
@@ -968,6 +972,33 @@ export var Nodes = {
         }
         if (type == "Equals") {
             nodeDescription.nodeTitle = 'Equals';
+            nodeDescription.inputs = {
+                input0: {
+                    inputTitle: 'ValueA',
+                    dataType: 'Data',
+                    defValue: 0,
+                    pinInId: null,
+
+                },
+                input1: {
+                    inputTitle: 'ValueB',
+                    dataType: 'Data',
+                    defValue: 0,
+                    pinInId: null,
+                }
+            }
+            nodeDescription.outputs = {
+                output0: {
+                    outputTitle: ' Result',
+                    dataType: 'Boolean',
+                    pinOutId: null,
+                }
+            }
+            nodeDescription.rows = 2;
+            nodeDescription.colums = 10;
+        }
+        if (type == "Not Equals") {
+            nodeDescription.nodeTitle = 'Not Equals';
             nodeDescription.inputs = {
                 input0: {
                     inputTitle: 'ValueA',
@@ -1143,7 +1174,7 @@ export var Nodes = {
             }
             nodeDescription.outputs = {
                 output0: {
-                    outputTitle: ' Value',
+                    outputTitle: 'Ref/Val',
                     dataType: dataType,
                     pinOutId: null,
                 }
@@ -1155,7 +1186,7 @@ export var Nodes = {
             nodeDescription.nodeTitle = type;
             nodeDescription.outputs = {
                 output0: {
-                    outputTitle: ' Value',
+                    outputTitle: 'Ref/Val',
                     dataType: dataType,
                     pinOutId: null,
                 }
@@ -1175,8 +1206,8 @@ export var Nodes = {
             nodeDescription.rows = 2;
             nodeDescription.colums = 10;
         }
-        if (type == 'For') {
-            nodeDescription.nodeTitle = 'For';
+        if (type == 'ForLoop') {
+            nodeDescription.nodeTitle = 'ForLoop';
             nodeDescription.pinExecInId = null;
             nodeDescription.execIn = true;
             nodeDescription.execOut = {
@@ -1219,8 +1250,57 @@ export var Nodes = {
             nodeDescription.rows = 2;
             nodeDescription.colums = 12;
         }
+        if (type == 'ForEachLoop') {
+            nodeDescription.nodeTitle = 'ForEachLoop';
+            nodeDescription.pinExecInId = null;
+            nodeDescription.execIn = true;
+            nodeDescription.execOut = {
+                execOut0: {
+                    execOutTitle: 'Loop Body',
+                    pinExecOutId: null,
+                },
+                execOut1: {
+                    execOutTitle: 'Completed',
+                    pinExecOutId: null,
+                }
+            }
+            nodeDescription.inputs = {
+                input0: {
+                    inputTitle: 'Array',
+                    dataType: 'Array',
+                    isInputBoxRequired: false,
+                    pinInId: null,
+                },
+            }
+            nodeDescription.outputs = {
+                output0: {
+                    outputTitle: 'Ref/Value',
+                    dataType: 'Data',
+                    pinOutId: null,
+                },
+                output1: {
+                    outputTitle: ' Index',
+                    dataType: 'Number',
+                    pinOutId: null,
+                },
+                output2: {
+                    outputTitle: ' Array',
+                    dataType: 'Array',
+                    pinOutId: null,
+                }
+            }
+            nodeDescription.rows = 2;
+            nodeDescription.colums = 12;
+        }
         if (type == "Break") {
             nodeDescription.nodeTitle = 'Break';
+            nodeDescription.execIn = true;
+            nodeDescription.pinExecInId = null;
+            nodeDescription.rows = 2;
+            nodeDescription.colums = 10;
+        }
+        if (type == "Continue") {
+            nodeDescription.nodeTitle = 'Continue';
             nodeDescription.execIn = true;
             nodeDescription.pinExecInId = null;
             nodeDescription.rows = 2;
@@ -1358,13 +1438,13 @@ export var Nodes = {
             }
             nodeDescription.outputs = {
                 output0: {
-                    outputTitle: ' Value',
+                    outputTitle: 'Ref/Val',
                     dataType: 'Data',
                     pinOutId: null,
                 }
             }
             nodeDescription.rows = 2;
-            nodeDescription.colums = 10;
+            nodeDescription.colums = 12;
         }
         if (type == 'SetByPos') {
             nodeDescription.nodeTitle = 'SetByPos';
@@ -1400,13 +1480,13 @@ export var Nodes = {
             }
             nodeDescription.outputs = {
                 output0: {
-                    outputTitle: ' Value',
+                    outputTitle: 'Ref/Val',
                     dataType: 'Data',
                     pinOutId: null,
                 }
             }
             nodeDescription.rows = 4;
-            nodeDescription.colums = 10;
+            nodeDescription.colums = 12;
         }
         if (type == 'Insert') {
             nodeDescription.nodeTitle = 'Insert';
@@ -1571,6 +1651,37 @@ export var Nodes = {
             }
             nodeDescription.rows = 2;
             nodeDescription.colums = 10;
+        }
+        if (type == 'Search') {
+            nodeDescription.nodeTitle = 'Search';
+            nodeDescription.inputs = {
+                input0: {
+                    inputTitle: 'Value',
+                    dataType: 'Data',
+                    defValue: 0,
+                    pinInId: null,
+                },
+                input1: {
+                    inputTitle: 'Array',
+                    dataType: 'Array',
+                    isInputBoxRequired: false,
+                    pinInId: null,
+                },
+            }
+            nodeDescription.outputs = {
+                output0: {
+                    outputTitle: ' Found',
+                    dataType: 'Boolean',
+                    pinOutId: null,
+                },
+                output1: {
+                    outputTitle: ' Index',
+                    dataType: 'Number',
+                    pinOutId: null,
+                }
+            }
+            nodeDescription.rows = 2;
+            nodeDescription.colums = 11;
         }
         new this.ProgramNode(nodeDescription, location, layer, stage);
     }

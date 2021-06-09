@@ -53,7 +53,7 @@ background-size: 10rem 10rem;
     top: 0;
     left: 0;
     /* flex: 1; */
-    width: 30rem;
+    width: 25rem;
     height: 100vh;
     background-color: rgba(43, 46, 51, 0.4);
     /* background-color: #2d2d38; */
@@ -410,7 +410,7 @@ input[type="file"] {
   /* transform: scale(1.1); */
 }
 .closed-left-panel{
-  left: -27rem !important;
+  left: -22rem !important;
 }
 .slider-icon div{
   transition: transform 0.5s;
@@ -447,7 +447,7 @@ input[type="file"] {
   color:white;
 }
 .left-panel-tab-arrow-up{
-  transform: rotateZ(180deg) !important;
+  transform: rotateZ(90deg) !important;
   /* content:; */
 }
 .live-code-container{

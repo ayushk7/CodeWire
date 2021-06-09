@@ -4,11 +4,11 @@ import { DragAndDrop } from '../DragAndDrop/DragAndDrop.js'
 import { Wiring } from '../Wiring/Wiring.js'
 import { ContextMenu } from '../ContextMenu/contextMenu.js'
 import { leftPanel } from '../LeftPanel/LeftPanel.js'
-import { VSToJS } from '../VSToJS/VStoJS.js'
+import { VSToJS } from '../VisualScriptToJavascript/VisualScriptToJavascript.js'
 import { Delete } from '../Delete/delete.js'
 import { Export, Import, Save, prompLastSave } from '../SaveAndLoad/SaveAndLoad.js'
 import { showAlert, prompRefreshOrStarter } from './alertBox.js'
-import { refresh } from '../VSToJS/liveCode.js'
+import { refresh } from '../VisualScriptToJavascript/liveCode.js'
 // var width = window.innerWidth;
 // var height = window.innerHeight;
 let stage = AppStage.getStage(document.getElementById("container").clientWidth, document.getElementById("container").clientHeight, 'container');
