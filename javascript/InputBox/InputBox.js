@@ -5,7 +5,7 @@ export var InputBox = class{
         let rect = new Konva.Rect({
             width: (type == 'Boolean') ? 50 : 50,
             height: 14,
-            stroke: colorMap[type],
+            stroke: colorMap['Text'],
             strokeWidth: 1,
         });
         this.focused = false;
@@ -13,7 +13,7 @@ export var InputBox = class{
             text: '',
             fontSize: 11,
             fontFamily: 'Verdana',
-            fill: colorMap[type],
+            fill: colorMap['Text'],
             width: (type == 'Boolean') ? 50 : 50,
             height: 12,
             padding: 2,

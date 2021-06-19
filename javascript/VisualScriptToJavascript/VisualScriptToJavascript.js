@@ -1,8 +1,11 @@
 import { variableList } from '../Variable/variable.js'
 import { showAlert } from '../main/alertBox.js'
+import { BuilInFunctions } from './builtInFunctions.js'
 export var VSToJS = class {
+
     constructor(stage, layer, isRunOrCode) {
         this.script = '';
+        this.builtin_functions = {};
         this.nodeCount = 0;
         this.isRunOrCode = isRunOrCode;
         for (let variable of variableList.variables) {
@@ -122,7 +125,7 @@ export var VSToJS = class {
         return X;
     }
     coreAlgorithm(node) {
-        if(node == null) return;
+        if (node == null) return;
         let execOutPins = this.getExecOut(node);
         let inputPins = this.getInputPins(node);
         // console.log(node.customClass.type);
@@ -138,53 +141,37 @@ export var VSToJS = class {
         else {
             switch (node.customClass.type.typeOfNode) {
                 case "Begin": {
-                    for (let each of execOutPins) {
-                        this.coreAlgorithm(each);
+                    this.coreAlgorithm(execOutPins[0]);
+                    let func_string = '';
+                    for (let each_function in this.builtin_functions) {
+                        func_string = func_string + BuilInFunctions[each_function];
                     }
+                    this.script = func_string + this.script;
                 }
                     break;
                 case "Print": {
-                    // if (this.isRunOrCode == "Code") {
                     if (inputPins.length)
                         this.script += `console.log(${this.handleInputs(inputPins[0])});\n
                          `;
-                    for (let each of execOutPins) {
-                        this.coreAlgorithm(each);
-
-                    }
-                    // }
-                    // else {
-                    //     if (inputPins.length)
-                    //         this.script += `document.write(${this.handleInputs(inputPins[0])} + "<br>");\n`;
-                    //     for (let each of execOutPins) {
-                    //         this.coreAlgorithm(each);
-                    //     }
-                    // }
+                    this.coreAlgorithm(execOutPins[0]);
                 }
                     break;
                 case "If/Else": {
                     this.script += `if(${this.handleInputs(inputPins[0])}){\n`;
-                    // let ifWasValid = false;
-                    // if (node.customClass.execOutPins[0].wire) {
-                        this.coreAlgorithm(execOutPins[0]);
-                        // ifWasValid = true;
-                    // }
+                    this.coreAlgorithm(execOutPins[0]);
                     this.script += `}\n`;
-                    // let elseWire = (ifWasValid) ? 1 : 0;
-                    // if (node.customClass.execOutPins[1].wire) {
-                        this.script += `else{\n`;
-                        this.coreAlgorithm(execOutPins[1]);
-                        this.script += `}\n`;
-                    // }
+                    this.script += `else{\n`;
+                    this.coreAlgorithm(execOutPins[1]);
+                    this.script += `}\n`;
                     this.coreAlgorithm(execOutPins[2]);
                 }
                     break;
                 case "ForLoop": {
                     let forVar = `i${node._id}`;   //variable used inside the for loop 
                     this.script += `for(let ${forVar} = (${this.handleInputs(inputPins[0])}); ${forVar} < (${this.handleInputs(inputPins[1])}); ${forVar} += (${this.handleInputs(inputPins[2])})){\n`;
-                        this.coreAlgorithm(execOutPins[0]);
+                    this.coreAlgorithm(execOutPins[0]);
                     this.script += `}\n`;
-                        this.coreAlgorithm(execOutPins[1]);
+                    this.coreAlgorithm(execOutPins[1]);
                 }
                     break;
                 case "ForEachLoop": {
@@ -205,70 +192,78 @@ export var VSToJS = class {
                     break;
                 case "WhileLoop": {
                     this.script += ` while(${this.handleInputs(inputPins[0])}){\n`;
-                        this.coreAlgorithm(execOutPins[0]);
+                    this.coreAlgorithm(execOutPins[0]);
                     this.script += `}\n`;
-                        this.coreAlgorithm(execOutPins[1]);
+                    this.coreAlgorithm(execOutPins[1]);
                 }
                     break;
                 case "SetByPos": {
                     this.script += `${this.handleInputs(inputPins[2])}[${this.handleInputs(inputPins[0])}] = ${this.handleInputs(inputPins[1])};\n`;
-                    if (node.customClass.execOutPins[0].wire) {
-                        this.coreAlgorithm(execOutPins[0]);
-                    }
+                    this.coreAlgorithm(execOutPins[0]);
                 }
                     break;
                 case "PushBack": {
                     this.script += `${this.handleInputs(inputPins[1])}.push(${this.handleInputs(inputPins[0])});\n`;
-                    if (node.customClass.execOutPins[0].wire) {
-                        this.coreAlgorithm(execOutPins[0]);
-                    }
+                    this.coreAlgorithm(execOutPins[0]);
                 }
                     break;
                 case "PushFront": {
                     this.script += `${this.handleInputs(inputPins[1])}.unshift(${this.handleInputs(inputPins[0])});\n`;
-                    if (node.customClass.execOutPins[0].wire) {
-                        this.coreAlgorithm(execOutPins[0]);
-                    }
+                    this.coreAlgorithm(execOutPins[0]);
                 }
                     break;
                 case "PopBack": {
                     this.script += `${this.handleInputs(inputPins[0])}.pop();\n`;
-                    if (node.customClass.execOutPins[0].wire) {
-                        this.coreAlgorithm(execOutPins[0]);
-                    }
+                    this.coreAlgorithm(execOutPins[0]);
                 }
                     break;
                 case "PopFront": {
                     this.script += `${this.handleInputs(inputPins[0])}.shift();\n`;
-                    if (node.customClass.execOutPins[0].wire) {
-                        this.coreAlgorithm(execOutPins[0]);
-                    }
+                    this.coreAlgorithm(execOutPins[0]);
                 }
                     break;
                 case "Insert": {
                     this.script += `${this.handleInputs(inputPins[2])}.splice(${this.handleInputs(inputPins[0])}, 0, ${this.handleInputs(inputPins[1])});\n`;
-                    if (node.customClass.execOutPins[0].wire) {
-                        this.coreAlgorithm(execOutPins[0]);
-                    }
+                    this.coreAlgorithm(execOutPins[0]);
+                }
+                    break;
+                case "Reverse": {
+                    this.script += `${this.handleInputs(inputPins[0])}.reverse();
+                    `;
+                    this.coreAlgorithm(execOutPins[0]);
                 }
                     break;
                 case "Swap": {
                     this.script += `
                     [${this.handleInputs(inputPins[0])}, ${this.handleInputs(inputPins[1])}] = [${this.handleInputs(inputPins[1])}, ${this.handleInputs(inputPins[0])}];    //swap using array destructuring :) \n`;
-                    if (node.customClass.execOutPins[0].wire) {
-                        this.coreAlgorithm(execOutPins[0]);
-                    }
+                    this.coreAlgorithm(execOutPins[0]);
                 }
                     break;
-                case "Sort(Numbers)":{
+                case "Sort(Num)": {
                     this.script += `
-                        (${this.handleInputs(inputPins[1])}) ? ${this.handleInputs(inputPins[0])}.sort((a, b) => a-b) : ${this.handleInputs(inputPins[0])}.sort((a, b) => b-a)\n;
+                        (${this.handleInputs(inputPins[1])}) ? ${this.handleInputs(inputPins[0])}.sort((a, b) => a-b) : ${this.handleInputs(inputPins[0])}.sort((a, b) => b-a);\n
                     `;
-                    if (node.customClass.execOutPins[0].wire) {
-                        this.coreAlgorithm(execOutPins[0]);
-                    }
+                    this.coreAlgorithm(execOutPins[0]);
                 }
-                break;
+                    break;
+                case "HttpRequest": {
+                    this.builtin_functions = { ...this.builtin_functions, fetch_data: true };
+                    this.script += `
+                        fetch_data(${this.handleInputs(inputPins[0])})
+                            .then((json_data${node._id}) => {
+                                `;
+                    this.coreAlgorithm(execOutPins[0]);
+                    this.script += `
+                            })
+                            .catch((err) => {
+                                `
+                    this.coreAlgorithm(execOutPins[1]);
+                    this.script += `
+                            });
+                    `;
+                    this.coreAlgorithm(execOutPins[2]);
+                }
+                    break;
             }
         }
     }
@@ -395,6 +390,10 @@ export var VSToJS = class {
                 expr = `(${this.handleInputs(inputPins[0])}.length == (0))`;
             }
                 break;
+            case "Reverse": {
+                expr = `${this.handleInputs(inputPins[0])}`;
+            }
+                break;
             case "PushBack": {
                 expr = `${this.handleInputs(inputPins[1])}`;
             }
@@ -430,33 +429,70 @@ export var VSToJS = class {
             case "ForLoop": {
                 expr = `i${inputNode.node._id}`;
             }
-            break;
+                break;
             case "ForEachLoop": {
                 expr = ``;
-                if(inputNode.srcOutputPinNumber == 0)
+                if (inputNode.srcOutputPinNumber == 0)
                     expr = `valuei${inputNode.node._id}`;
-                else if(inputNode.srcOutputPinNumber == 1)
+                else if (inputNode.srcOutputPinNumber == 1)
                     expr = `i${inputNode.node._id}`;
                 else
                     expr = `arrayi${inputNode.node._id}`;
             }
-            break;
-            case "Sort(Numbers)": {
+                break;
+            case "Sort(Num)": {
                 expr = `${this.handleInputs(inputPins[0])}`;
             }
-            break;
+                break;
+            case "Max(Array)": {
+                expr = `Math.max(...${this.handleInputs(inputPins[0])})`;
+            }
+                break;
+            case "Min(Array)": {
+                expr = `Math.min(...${this.handleInputs(inputPins[0])})`;
+            }
+                break;
+            case "Max(Num)": {
+                expr = `Math.max(${this.handleInputs(inputPins[0])}, ${this.handleInputs(inputPins[1])})`;
+            }
+                break;
+            case "Min(Num)": {
+                expr = `Math.min(${this.handleInputs(inputPins[0])}, ${this.handleInputs(inputPins[1])})`;
+            }
+                break;
             case "Search": {
                 expr = ``;
-                if(inputNode.srcOutputPinNumber == 0)
-                {
+                if (inputNode.srcOutputPinNumber == 0) {
                     expr = `(${this.handleInputs(inputPins[1])}.find((value) => value === ${this.handleInputs(inputPins[0])}) === ${this.handleInputs(inputPins[0])})`;
                 }
-                else
-                {
+                else {
                     expr = `(${this.handleInputs(inputPins[1])}.findIndex((value) => value === ${this.handleInputs(inputPins[0])}))`;
                 }
             }
-            break;
+                break;
+            case "BinarySearch(Num)": {
+                expr = ``;
+                if (inputNode.srcOutputPinNumber == 0) {
+                    this.builtin_functions = { ...this.builtin_functions, binary_search_exist: true };
+                    expr = `binary_search_exist(${this.handleInputs(inputPins[1])}, ${this.handleInputs(inputPins[0])})`;
+                }
+                else if (inputNode.srcOutputPinNumber == 1) {
+                    this.builtin_functions = { ...this.builtin_functions, lower_bound: true };
+                    expr = `lower_bound(${this.handleInputs(inputPins[1])}, ${this.handleInputs(inputPins[0])})`;
+                }
+                else {
+                    this.builtin_functions = { ...this.builtin_functions, upper_bound: true };
+                    expr = `upper_bound(${this.handleInputs(inputPins[1])}, ${this.handleInputs(inputPins[0])})`;
+                }
+            }
+                break;
+            case "HttpRequest": {
+                expr = `json_data${inputNode.node._id}`;
+            }
+                break;
+            case "GetByName(JSON)":{
+                expr = `${this.handleInputs(inputPins[0])}[${this.handleInputs(inputPins[1])}]`;
+            }
         }
         return expr;
     }

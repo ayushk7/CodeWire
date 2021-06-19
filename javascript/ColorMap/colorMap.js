@@ -1,10 +1,25 @@
 export const colorMap = {
-    'Number': '#00ffff',
-    'String': '#f8a94d',
-    'Boolean': '#ff6363',
+    'Number': '#00d0fa',
+    'String': '#ed1a95',
+    'Boolean': '#f30909',
     'Array' : '#ccff33', 
-    'Data': '#ffffd1',
+    'Data': '#ff7900',
     'MainLabel': '#ffffff',
     'MainLabelBox': '#3282b8',
-    'MainBox': '#3c415c', 
+    // 'MainLabelBox': '#7209b7',
+    'MainBox': '#3c415c',
+    // 'MainBox': '#413D65', 
+    'Text': '#ffffff',
+    'Logic': '#7209b7',
+    'Get': '#008000',
+    'Math': '#ae2012',
+    'Func': '#0353a4',
+    'Begin': '#d8572a',
+    'Print' : '#bc4749'
 };
+
+
+//red: #ae2012
+//green: #008000
+//blue: #0353a4
+//violet: #7209b7
