@@ -74,8 +74,8 @@ export var ContextMenu = {
                     offY = -260;
                 }
                 let availX = stage.getContainer().getBoundingClientRect().width - e.evt.clientX;
-                if (availX <= 250) {
-                    offX = -250;
+                if (availX <= 200) {
+                    offX = -200;
                 }
                 toggleContextMenu([e.evt.clientX + offX, e.evt.clientY + offY], true);
             }

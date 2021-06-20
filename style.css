@@ -76,7 +76,7 @@ background-size: 10rem 10rem;
   }
   #ctx-menu-container{
     position: absolute;
-    width: 250px;
+    width: 200px;
     height: 250px;
     /* overflow: hidden; */
     z-index: 20;
@@ -92,7 +92,7 @@ background-size: 10rem 10rem;
     background-color: rgb(230, 221, 221, 0.3);
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
-    caret-color: #ff4000;
+    caret-color: white;
     color: white;
     border-radius:0;
   }
