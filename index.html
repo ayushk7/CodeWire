@@ -74,7 +74,7 @@
                 <div id="list-of-variables" class="left-panel-tab">Variable List<div id="list-of-variables-down-icon"
                         style="position: absolute; right: 0.7rem; transition: 0.1s;"><i class="fas fa-chevron-down"></i></div>
                 </div>
-                <div id="list-of-variables-content" class="left-panel-tab-content">
+                <div id="list-of-variables-content" class="left-panel-tab-content" style="width: 90%;">
                     <div class="variableList" style="width: 100%;">
                         <ul class="list-group list-group-flush" id="variable-list">
                         </ul>
@@ -175,9 +175,15 @@
             <button id="refresh-cancel-btn" class="icon">Cancel</button>
         </div>
     </div>
-    <div id="delete-ctx-container" class="icon hidden">
+    <div id="delete-ctx-container" class="context-menu-items hidden">
         <div>Delete</div>
         <div style="font-size: xx-small;">Ctrl+LMB</div>
+    </div>
+    <div id="get-set-ctx-menu-container" class="hidden">
+        <div id="get-set-ctx-menu">
+            <div class="context-menu-items" data-isGetOrSet="Get">Get</div>
+            <div class="context-menu-items" data-isGetOrSet="Set">Set</div>
+        </div>
     </div>
     <div id="ctx-menu-container" class="hidden">
         <input type="text" id="ctx-search-bar" placeholder="Search...">

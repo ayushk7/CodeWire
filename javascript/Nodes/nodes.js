@@ -1293,7 +1293,7 @@ export var Nodes = {
                 "Number": 0,
                 "Boolean": true,
                 "String": "'hello'",
-                "Array": [],
+                "Array": '[]',
             }
             nodeDescription.nodeTitle = type;
             nodeDescription.execIn = true;

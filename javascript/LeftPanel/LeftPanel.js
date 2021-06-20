@@ -1,6 +1,6 @@
-import {colorMap} from '../ColorMap/colorMap.js'
-import {variableList} from '../Variable/variable.js'
-import {showAlert} from '../main/alertBox.js'
+import { colorMap } from '../ColorMap/colorMap.js'
+import { variableList } from '../Variable/variable.js'
+import { showAlert } from '../main/alertBox.js'
 export class leftPanel {
     constructor() {
         // this.variablesNameList = {};
@@ -35,29 +35,25 @@ export class leftPanel {
         variableDataTypeForm.addEventListener("input", (e) => {
             let dataType = variableDataTypeForm.value;
             if (dataType == "Number") {
-                for(let each in forms)
-                {
+                for (let each in forms) {
                     forms[each].classList.toggle("hidden", true);
                 }
                 forms.numberForm.classList.toggle("hidden", false);
             }
-            else if(dataType == "String"){
-                for(let each in forms)
-                {
+            else if (dataType == "String") {
+                for (let each in forms) {
                     forms[each].classList.toggle("hidden", true);
                 }
                 forms.stringForm.classList.toggle("hidden", false);
             }
-            else if(dataType == "Boolean"){
-                for(let each in forms)
-                {
+            else if (dataType == "Boolean") {
+                for (let each in forms) {
                     forms[each].classList.toggle("hidden", true);
                 }
                 forms.boolForm.classList.toggle("hidden", false);
             }
-            else if(dataType == "Array"){
-                for(let each in forms)
-                {
+            else if (dataType == "Array") {
+                for (let each in forms) {
                     forms[each].classList.toggle("hidden", true);
                 }
                 forms.arrayForm.classList.toggle("hidden", false);
@@ -78,14 +74,28 @@ export class leftPanel {
                     value = formInputsField.boolFormField.value;
                 }
                 else if (type == "Number") {
-                    value = formInputsField.numberFormField.value.toString();
+                    if (formInputsField.numberFormField.value.length === 0) {
+                        showAlert("Variable Value Can't be empty");
+                    }
+                    else
+                        value = formInputsField.numberFormField.value.toString();
                 }
-                else if(type == "String"){
-                    value = formInputsField.stringFormField.value.toString();
-                    value = `'${value}'`;
+                else if (type == "String") {
+                    if (formInputsField.stringFormField.value.length === 0) {
+                        showAlert("Variable Value Can't be empty");
+                    }
+                    else {
+                        value = formInputsField.stringFormField.value.toString();
+                        value = `'${value}'`;
+                    }
                 }
-                else if(type == "Array"){
-                    value = formInputsField.arrayFormField.value.toString();
+                else if (type == "Array") {
+                    if (formInputsField.arrayFormField.value.length === 0) {
+                        showAlert("Variable Value Can't be empty");
+                    }
+                    else {
+                        value = formInputsField.arrayFormField.value.toString();
+                    }
                 }
                 if (value == 0 || value) {
                     let variable = {

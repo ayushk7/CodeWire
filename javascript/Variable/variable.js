@@ -44,13 +44,26 @@ class VariableList {
         li.id =  `${variable.dataType}-${variable.name}`;
         li.classList.toggle('list-group-item', true);
         li.classList.toggle('left-panel-variable', true);
-        li.style.borderWidth = `0 0 2px 2px`;
+        li.style.width = "100%";
+        li.style.borderWidth = `2px 2px 2px 2px`;
         li.style.borderStyle = 'solid';
         li.style.margin = '1rem';
-        li.style.backgroundColor = `${colorMap[variable.dataType]}`;
+        li.style.boxShadow = `inset 0px 0px 5px ${colorMap[variable.dataType]}`;
+        li.style.backgroundColor = `transparent`;
         li.style.borderColor = `${colorMap[variable.dataType]}`;
+        li.setAttribute("draggable", "true");
         let text = document.createTextNode(`${variable.name}`);
         li.appendChild(text);
+        li.addEventListener('mouseover', (e) => {
+            li.style.boxShadow = `inset 0px 0px 30px ${colorMap[variable.dataType]}`;
+        });
+        li.addEventListener('mouseleave', (e) => {
+            li.style.boxShadow = `inset 0px 0px 5px ${colorMap[variable.dataType]}`;
+        });
+        li.addEventListener("dragstart", (e) =>{
+            e.dataTransfer.setData("variableName", `${variable.name}`);
+            e.dataTransfer.setData("dataType", `${variable.dataType}`);
+        });
         return li;
         // return `<li id=${variable.dataType}-${variable.name} class="list-group-item mt-2 ms-5 me-5 p-2 ps-3 rounded" style="font-size:15px; border: ${colorMap[variable.dataType]} 2px solid; color: white; background: transparent;">${variable.name}
         //     </li>`;
