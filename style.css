@@ -39,6 +39,7 @@ html{
   /* border: #f0f0f0 solid 7px; */
   /* border-left: #f0f0f0 solid 3px; */
   background-color: 	#26282b;
+  /* background-color: #b3b3b3; */
   /* background-image: url("images/sqq1.png"); */
   background-image: linear-gradient(rgb(92, 92, 92) .1rem, transparent .1rem), linear-gradient(90deg, rgb(92, 92, 92) .1rem, transparent .1rem);
 background-size: 10rem 10rem;

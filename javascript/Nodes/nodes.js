@@ -483,6 +483,103 @@ export var Nodes = {
             nodeDescription.rows = 3;
             nodeDescription.colums = 12;
         }
+        if (type == 'Alert') {
+            nodeDescription.nodeTitle = 'Alert';
+            nodeDescription.execIn = true;
+            nodeDescription.pinExecInId = null;
+            nodeDescription.execOut = {
+                execOut0: {
+                    execOutTitle: null,
+                    pinExecOutId: null,
+                    outOrder: 0,
+                },
+            }
+            nodeDescription.inputs = {
+                input0: {
+                    inputTitle: 'Value',
+                    dataType: 'Data',
+                    defValue: "'hello'",
+                    pinInId: null,
+                }
+            }
+            nodeDescription.color = 'Print';
+            nodeDescription.rows = 3;
+            nodeDescription.colums = 12;
+        }
+        if (type == 'Confirm') {
+            nodeDescription.nodeTitle = 'Confirm';
+            nodeDescription.execIn = true;
+            nodeDescription.pinExecInId = null;
+            nodeDescription.execOut = {
+                execOut0: {
+                    execOutTitle: null,
+                    pinExecOutId: null,
+                    outOrder: 0,
+                },
+            }
+            nodeDescription.inputs = {
+                input0: {
+                    inputTitle: 'Message',
+                    dataType: 'String',
+                    defValue: "'Ok'",
+                    pinInId: null,
+                }
+            }
+            nodeDescription.outputs = {
+                output0: {
+                    outputTitle: 'Ok?',
+                    dataType: 'Boolean',
+                    pinOutId: null,
+                    outOrder: 1,
+                }
+            }
+            nodeDescription.color = 'Print';
+            nodeDescription.rows = 3;
+            nodeDescription.colums = 12;
+        }
+        if (type == 'Prompt') {
+            nodeDescription.nodeTitle = 'Prompt';
+            nodeDescription.execIn = true;
+            nodeDescription.pinExecInId = null;
+            nodeDescription.execOut = {
+                execOut0: {
+                    execOutTitle: null,
+                    pinExecOutId: null,
+                    outOrder: 0,
+                },
+            }
+            nodeDescription.inputs = {
+                input0: {
+                    inputTitle: 'Message',
+                    dataType: 'String',
+                    defValue: "'Ok'",
+                    pinInId: null,
+                },
+                input1: {
+                    inputTitle: 'Default',
+                    dataType: 'String',
+                    defValue: "'Yes'",
+                    pinInId: null,
+                },
+            }
+            nodeDescription.outputs = {
+                output0: {
+                    outputTitle: 'Ok?',
+                    dataType: 'Boolean',
+                    pinOutId: null,
+                    outOrder: 1,
+                },
+                output1: {
+                    outputTitle: 'Value',
+                    dataType: 'String',
+                    pinOutId: null,
+                    outOrder: 2,
+                },
+            }
+            nodeDescription.color = 'Print';
+            nodeDescription.rows = 3;
+            nodeDescription.colums = 12;
+        }
         if (type == 'If/Else') {
             nodeDescription.nodeTitle = 'If/Else';
             nodeDescription.execIn = true;
@@ -2026,6 +2123,37 @@ export var Nodes = {
                 output0: {
                     outputTitle: 'JSON',
                     dataType: 'Data',
+                    pinOutId: null,
+                    outOrder: 1,
+                },
+            }
+            nodeDescription.color = 'Func';
+            nodeDescription.rows = 2;
+            nodeDescription.colums = 12;
+        }
+        if (type == 'NewWindow') {
+            nodeDescription.nodeTitle = 'NewWindow';
+            nodeDescription.execIn = true;
+            nodeDescription.pinExecInId = null;
+            nodeDescription.execOut = {
+                execOut0: {
+                    execOutTitle: null,
+                    pinExecOutId: null,
+                    outOrder: 0,
+                },
+            }
+            nodeDescription.inputs = {
+                input0: {
+                    inputTitle: 'URL',
+                    dataType: 'String',
+                    defValue: "'link'",
+                    pinInId: null,
+                },
+            }
+            nodeDescription.outputs = {
+                output0: {
+                    outputTitle: 'Success?',
+                    dataType: 'Boolean',
                     pinOutId: null,
                     outOrder: 1,
                 },

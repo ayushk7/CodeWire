@@ -34,6 +34,7 @@ export var VSToJS = class {
                     <p id="myLog"></p>
                     </body>
                     <script>
+                    window.parent = null;
                     window.console = {
                         log: function(str){
                           var node = document.createElement("div");
@@ -150,9 +151,35 @@ export var VSToJS = class {
                 }
                     break;
                 case "Print": {
-                    if (inputPins.length)
-                        this.script += `console.log(${this.handleInputs(inputPins[0])});\n
-                         `;
+                    this.script += `console.log(${this.handleInputs(inputPins[0])});\n
+                     `;
+                    this.coreAlgorithm(execOutPins[0]);
+                }
+                    break;
+                case "Alert": {
+                    this.script += `alert(${this.handleInputs(inputPins[0])});\n
+                    `;
+                    this.coreAlgorithm(execOutPins[0]);
+                }
+                    break;
+                case "Confirm": {
+                    this.builtin_functions = { ...this.builtin_functions, _confirm: true };
+                    this.script += `let _confirm_answer${node._id} = _confirm(${this.handleInputs(inputPins[0])});\n
+                    `;
+                    this.coreAlgorithm(execOutPins[0]);
+                }
+                    break;
+                case "Prompt": {
+                    this.builtin_functions = { ...this.builtin_functions, _prompt: true };
+                    this.script += `let [_prompt_ok${node._id}, _prompt_value${node._id}] = _prompt(${this.handleInputs(inputPins[0])}, ${this.handleInputs(inputPins[1])});\n
+                        `;
+                    this.coreAlgorithm(execOutPins[0]);
+                }
+                    break;
+                case "NewWindow": {
+                    this.builtin_functions = { ...this.builtin_functions, _newWindow: true };
+                    this.script += `let _window_opened${node._id} = _newWindow(${this.handleInputs(inputPins[0])});\n
+                        `;
                     this.coreAlgorithm(execOutPins[0]);
                 }
                     break;
@@ -490,9 +517,28 @@ export var VSToJS = class {
                 expr = `json_data${inputNode.node._id}`;
             }
                 break;
-            case "GetByName(JSON)":{
+            case "GetByName(JSON)": {
                 expr = `${this.handleInputs(inputPins[0])}[${this.handleInputs(inputPins[1])}]`;
             }
+                break;
+            case "Confirm": {
+                expr = `_confirm_answer${inputNode.node._id}`;
+            }
+                break;
+            case "NewWindow": {
+                expr = `_window_opened${inputNode.node._id}`;
+            }
+                break;
+            case "Prompt": {
+                expr = ``;
+                if (inputNode.srcOutputPinNumber == 0) {
+                    expr = `_prompt_ok${inputNode.node._id}`;
+                }
+                else {
+                    expr = `_prompt_value${inputNode.node._id}`;
+                }
+            }
+                break;
         }
         return expr;
     }

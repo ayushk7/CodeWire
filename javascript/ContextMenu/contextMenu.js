@@ -142,17 +142,14 @@ export var ContextMenu = {
 
         stage.getContainer().addEventListener('dragenter', (e) => {
             e.preventDefault();
-            console.log("enter");
             e.stopPropagation();
         });
         stage.getContainer().addEventListener('dragover', (e) => {
             e.preventDefault();
-            // console.log("over");
             e.stopPropagation();
         });
         stage.getContainer().addEventListener('drop', (e) => {
             e.preventDefault();
-            console.log(e);
             if (e.dataTransfer.getData("variableName")) {
                 toggleGetSetCtxMenu([e.clientX, e.clientY], true);
                 draggedVariableInfo = {
@@ -162,7 +159,6 @@ export var ContextMenu = {
             }
             e.stopPropagation();
         });
-
     }
 }
 

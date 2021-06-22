@@ -3,6 +3,11 @@ import { variableList } from '../Variable/variable.js'
 import { showAlert } from '../main/alertBox.js'
 export class leftPanel {
     constructor() {
+        let isBooleanValid = false;
+        let isNumberValid = false;
+        let isStringValid = false;
+        let isArrayValid = false;
+
         // this.variablesNameList = {};
         document.getElementById("slide-left-panel").addEventListener("click", () => {
             document.getElementById("left-panel").classList.toggle("closed-left-panel");
@@ -72,32 +77,28 @@ export class leftPanel {
                 let type = document.getElementById("variable-data-type").value;
                 if (type == "Boolean") {
                     value = formInputsField.boolFormField.value;
+                    isBooleanValid = true;
                 }
                 else if (type == "Number") {
-                    if (formInputsField.numberFormField.value.length === 0) {
-                        showAlert("Variable Value Can't be empty");
-                    }
-                    else
+                    if (formInputsField.numberFormField.value.length !== 0) {
                         value = formInputsField.numberFormField.value.toString();
+                        isNumberValid = true;
+                    }
                 }
                 else if (type == "String") {
-                    if (formInputsField.stringFormField.value.length === 0) {
-                        showAlert("Variable Value Can't be empty");
-                    }
-                    else {
+                    if (formInputsField.stringFormField.value.length !== 0) {
                         value = formInputsField.stringFormField.value.toString();
                         value = `'${value}'`;
+                        isStringValid = true;
                     }
                 }
                 else if (type == "Array") {
-                    if (formInputsField.arrayFormField.value.length === 0) {
-                        showAlert("Variable Value Can't be empty");
-                    }
-                    else {
+                    if (formInputsField.arrayFormField.value.length !== 0 && formInputsField.arrayFormField.value[0] == '[' && formInputsField.arrayFormField.value[formInputsField.arrayFormField.value.length - 1] == ']') {
                         value = formInputsField.arrayFormField.value.toString();
+                        isArrayValid = true;
                     }
                 }
-                if (value == 0 || value) {
+                if (isBooleanValid || isNumberValid || isStringValid || isArrayValid) {
                     let variable = {
                         name: variableName,
                         dataType: document.getElementById("variable-data-type").value,
@@ -107,9 +108,11 @@ export class leftPanel {
                     variableList.addVariable(variable);
                     document.getElementById("list-of-variables-content").classList.toggle("hidden", false);
                     document.getElementById("list-of-variables-down-icon").classList.toggle("left-panel-tab-arrow-up", false);
+                    isBooleanValid = isNumberValid = isStringValid = isArrayValid = false;
                 }
                 else {
-                    showAlert("Value Can't Be empty");
+                    showAlert("Empty/Invalid Input");
+                    isBooleanValid = isNumberValid = isStringValid = isArrayValid = false;
                 }
             }
         });
