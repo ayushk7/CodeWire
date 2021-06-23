@@ -345,7 +345,7 @@ export var VSToJS = class {
                 expr = `~${this.handleInputs(inputPins[0])}`;
             }
                 break;
-            case "Random [0,1)": {
+            case "Random": {
                 expr = `Math.random()`;
             }
                 break;

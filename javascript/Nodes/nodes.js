@@ -1301,7 +1301,7 @@ export var Nodes = {
             nodeDescription.nodeTitle = 'Random';
             nodeDescription.outputs = {
                 output0: {
-                    outputTitle: 'Rand',
+                    outputTitle: 'Random[0,1)',
                     dataType: 'Number',
                     pinOutId: null,
                 }
