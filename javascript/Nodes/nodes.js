@@ -1441,7 +1441,7 @@ export var Nodes = {
             nodeDescription.nodeTitle = 'Random';
             nodeDescription.outputs = {
                 output0: {
-                    outputTitle: 'Rand',
+                    outputTitle: 'Random[0,1)',
                     dataType: 'Number',
                     pinOutId: null,
                     outOrder: 0,
@@ -2058,7 +2058,7 @@ export var Nodes = {
             }
             nodeDescription.outputs = {
                 output0: {
-                    outputTitle: 'Index',
+                    outputTitle: 'MaxValue',
                     dataType: 'Number',
                     pinOutId: null,
                     outOrder: 0,
@@ -2080,7 +2080,7 @@ export var Nodes = {
             }
             nodeDescription.outputs = {
                 output0: {
-                    outputTitle: 'Index',
+                    outputTitle: 'MinValue',
                     dataType: 'Number',
                     pinOutId: null,
                     outOrder: 0,

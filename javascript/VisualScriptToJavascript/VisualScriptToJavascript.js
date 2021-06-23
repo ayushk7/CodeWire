@@ -143,11 +143,18 @@ export var VSToJS = class {
             switch (node.customClass.type.typeOfNode) {
                 case "Begin": {
                     this.coreAlgorithm(execOutPins[0]);
-                    let func_string = '';
+                    let func_string = `/////////CodeWire Functions Space Begins/////////////
+                    
+                    `;
                     for (let each_function in this.builtin_functions) {
                         func_string = func_string + BuilInFunctions[each_function];
                     }
+                    func_string += `
+                    /////////CodeWire Functions Space Ends/////////////
+                    //\n//\n/////////Generated JS Code Space Begins/////////////
+                    `;
                     this.script = func_string + this.script;
+                    this.script += `\n/////////Generated JS Code Space Ends/////////////`;
                 }
                     break;
                 case "Print": {
@@ -372,7 +379,7 @@ export var VSToJS = class {
                 expr = `~${this.handleInputs(inputPins[0])}`;
             }
                 break;
-            case "Random [0,1)": {
+            case "Random": {
                 expr = `Math.random()`;
             }
                 break;
