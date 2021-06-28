@@ -35,6 +35,7 @@ export var VSToJS = class {
                     </body>
                     <script>
                     window.parent = null;
+                    window.top = null;
                     window.console = {
                         log: function(str){
                           var node = document.createElement("div");
@@ -183,7 +184,7 @@ export var VSToJS = class {
                     this.coreAlgorithm(execOutPins[0]);
                 }
                     break;
-                case "NewWindow": {
+                case "OpenWindow": {
                     this.builtin_functions = { ...this.builtin_functions, _newWindow: true };
                     this.script += `let _window_opened${node._id} = _newWindow(${this.handleInputs(inputPins[0])});\n
                         `;
@@ -296,6 +297,18 @@ export var VSToJS = class {
                             });
                     `;
                     this.coreAlgorithm(execOutPins[2]);
+                }
+                    break;
+                case "StrToArray": {
+                    this.script += `let strArray${node._id} = ${this.handleInputs(inputPins[0])}.split('');
+                    `;
+                    this.coreAlgorithm(execOutPins[0]);
+                }
+                    break;
+                case "ArrayToStr": {
+                    this.script += `let arrayStr${node._id} = ${this.handleInputs(inputPins[0])}.join('');
+                        `;
+                    this.coreAlgorithm(execOutPins[0]);
                 }
                     break;
             }
@@ -532,7 +545,7 @@ export var VSToJS = class {
                 expr = `_confirm_answer${inputNode.node._id}`;
             }
                 break;
-            case "NewWindow": {
+            case "OpenWindow": {
                 expr = `_window_opened${inputNode.node._id}`;
             }
                 break;
@@ -544,6 +557,14 @@ export var VSToJS = class {
                 else {
                     expr = `_prompt_value${inputNode.node._id}`;
                 }
+            }
+                break;
+            case "StrToArray": {
+                expr = `strArray${inputNode.node._id}`;
+            }
+                break;
+            case "ArrayToStr": {
+                expr = `arrayStr${inputNode.node._id}`;
             }
                 break;
         }
