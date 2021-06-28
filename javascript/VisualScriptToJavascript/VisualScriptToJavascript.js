@@ -34,6 +34,8 @@ export var VSToJS = class {
                     <p id="myLog"></p>
                     </body>
                     <script>
+                    window.parent = null;
+                    window.top = null;
                     window.console = {
                         log: function(str){
                           var node = document.createElement("div");
@@ -142,17 +144,50 @@ export var VSToJS = class {
             switch (node.customClass.type.typeOfNode) {
                 case "Begin": {
                     this.coreAlgorithm(execOutPins[0]);
-                    let func_string = '';
+                    let func_string = `/////////CodeWire Functions Space Begins/////////////
+                    
+                    `;
                     for (let each_function in this.builtin_functions) {
                         func_string = func_string + BuilInFunctions[each_function];
                     }
+                    func_string += `
+                    /////////CodeWire Functions Space Ends/////////////
+                    //\n//\n/////////Generated JS Code Space Begins/////////////
+                    `;
                     this.script = func_string + this.script;
+                    this.script += `\n/////////Generated JS Code Space Ends/////////////`;
                 }
                     break;
                 case "Print": {
-                    if (inputPins.length)
-                        this.script += `console.log(${this.handleInputs(inputPins[0])});\n
-                         `;
+                    this.script += `console.log(${this.handleInputs(inputPins[0])});\n
+                     `;
+                    this.coreAlgorithm(execOutPins[0]);
+                }
+                    break;
+                case "Alert": {
+                    this.script += `alert(${this.handleInputs(inputPins[0])});\n
+                    `;
+                    this.coreAlgorithm(execOutPins[0]);
+                }
+                    break;
+                case "Confirm": {
+                    this.builtin_functions = { ...this.builtin_functions, _confirm: true };
+                    this.script += `let _confirm_answer${node._id} = _confirm(${this.handleInputs(inputPins[0])});\n
+                    `;
+                    this.coreAlgorithm(execOutPins[0]);
+                }
+                    break;
+                case "Prompt": {
+                    this.builtin_functions = { ...this.builtin_functions, _prompt: true };
+                    this.script += `let [_prompt_ok${node._id}, _prompt_value${node._id}] = _prompt(${this.handleInputs(inputPins[0])}, ${this.handleInputs(inputPins[1])});\n
+                        `;
+                    this.coreAlgorithm(execOutPins[0]);
+                }
+                    break;
+                case "OpenWindow": {
+                    this.builtin_functions = { ...this.builtin_functions, _newWindow: true };
+                    this.script += `let _window_opened${node._id} = _newWindow(${this.handleInputs(inputPins[0])});\n
+                        `;
                     this.coreAlgorithm(execOutPins[0]);
                 }
                     break;
@@ -262,6 +297,18 @@ export var VSToJS = class {
                             });
                     `;
                     this.coreAlgorithm(execOutPins[2]);
+                }
+                    break;
+                case "StrToArray": {
+                    this.script += `let strArray${node._id} = ${this.handleInputs(inputPins[0])}.split('');
+                    `;
+                    this.coreAlgorithm(execOutPins[0]);
+                }
+                    break;
+                case "ArrayToStr": {
+                    this.script += `let arrayStr${node._id} = ${this.handleInputs(inputPins[0])}.join('');
+                        `;
+                    this.coreAlgorithm(execOutPins[0]);
                 }
                     break;
             }
@@ -490,9 +537,36 @@ export var VSToJS = class {
                 expr = `json_data${inputNode.node._id}`;
             }
                 break;
-            case "GetByName(JSON)":{
+            case "GetByName(JSON)": {
                 expr = `${this.handleInputs(inputPins[0])}[${this.handleInputs(inputPins[1])}]`;
             }
+                break;
+            case "Confirm": {
+                expr = `_confirm_answer${inputNode.node._id}`;
+            }
+                break;
+            case "OpenWindow": {
+                expr = `_window_opened${inputNode.node._id}`;
+            }
+                break;
+            case "Prompt": {
+                expr = ``;
+                if (inputNode.srcOutputPinNumber == 0) {
+                    expr = `_prompt_ok${inputNode.node._id}`;
+                }
+                else {
+                    expr = `_prompt_value${inputNode.node._id}`;
+                }
+            }
+                break;
+            case "StrToArray": {
+                expr = `strArray${inputNode.node._id}`;
+            }
+                break;
+            case "ArrayToStr": {
+                expr = `arrayStr${inputNode.node._id}`;
+            }
+                break;
         }
         return expr;
     }

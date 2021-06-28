@@ -7,8 +7,12 @@ export var ContextMenu = {
     contextMenu: function (stage, layer) {
         let contextMenu = document.getElementById("ctx-menu-container");
         let deleteCtxMenu = document.getElementById("delete-ctx-container");
-        // contextMenu.getBoundingClientRect().
+        let getSetCtxMenu = document.getElementById("get-set-ctx-menu-container");
         let searchBar = document.getElementById("ctx-search-bar");
+        let draggedVariableInfo = {
+            name: null,
+            dataType: null,
+        };
         function toggleContextMenu(location, show) {
             if (show) {
                 contextMenu.classList.toggle("hidden", false);
@@ -33,6 +37,16 @@ export var ContextMenu = {
             }
             else {
                 deleteCtxMenu.classList.toggle("hidden", true);
+            }
+        }
+        function toggleGetSetCtxMenu(location, show) {
+            if (show) {
+                getSetCtxMenu.classList.toggle("hidden", false);
+                getSetCtxMenu.style.left = location[0] + 'px';
+                getSetCtxMenu.style.top = location[1] + 'px';
+            }
+            else {
+                getSetCtxMenu.classList.toggle("hidden", true);
             }
         }
         ContextMenu.addEventToCtxMenuItems = function (e) {
@@ -74,8 +88,8 @@ export var ContextMenu = {
                     offY = -260;
                 }
                 let availX = stage.getContainer().getBoundingClientRect().width - e.evt.clientX;
-                if (availX <= 250) {
-                    offX = -250;
+                if (availX <= 200) {
+                    offX = -200;
                 }
                 toggleContextMenu([e.evt.clientX + offX, e.evt.clientY + offY], true);
             }
@@ -102,29 +116,49 @@ export var ContextMenu = {
         stage.on('click', function (e) {
             toggleContextMenu([e.evt.clientX, e.evt.clientY], false);
             toggleDeleteCtxMenu([], false);
+            toggleGetSetCtxMenu([], false);
         });
         document.addEventListener("click", (e) => {
             if (e.target !== stage.getContainer() && e.target !== searchBar)
                 toggleContextMenu([0, 0], false);
-            if (e.target !== stage.getContainer())
+            if (e.target !== stage.getContainer()) {
                 toggleDeleteCtxMenu([], false);
-
+                toggleGetSetCtxMenu([], false);
+            }
         });
-        // for (let e of contextMenu.children) {
-        //     e.addEventListener('click', function () {
-        //         let xx = e.parentElement.getBoundingClientRect().x - stage.getContainer().getBoundingClientRect().x;
-        //         let yy = e.parentElement.getBoundingClientRect().y - stage.getContainer().getBoundingClientRect().y;
-        //         let node = undefined;
-        //         // let dataType;
-        //         // // console.log("x")
-        //         // if(e.dataset.dataType)
-        //         //     dataType = e.dataset.dataType;
-        //         Nodes.CreateNode(e.innerHTML, { x: xx, y: yy }, layer, stage);
-        //         // setLocationOfNode.place(node, { x: xx, y: yy }, stage);
-        //         // layer.add(node);
-        //         layer.draw();
-        //         toggleContextMenu([], false);
-        //     });
+
+        getSetCtxMenu.addEventListener("click", (e) => {
+            let nodeType = e.target.innerHTML + " " + draggedVariableInfo.name;
+            let xx = e.target.parentElement.getBoundingClientRect().x - stage.getContainer().getBoundingClientRect().x;
+            let yy = e.target.parentElement.getBoundingClientRect().y - stage.getContainer().getBoundingClientRect().y;
+            if (e.target.innerHTML == "Get") {
+                Nodes.CreateNode(nodeType, { x: xx, y: yy }, layer, stage, "Get", draggedVariableInfo.dataType, null);
+            }
+            else {
+                Nodes.CreateNode(nodeType, { x: xx, y: yy }, layer, stage, "Set", draggedVariableInfo.dataType, null);
+            }
+        });
+
+
+        stage.getContainer().addEventListener('dragenter', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+        });
+        stage.getContainer().addEventListener('dragover', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+        });
+        stage.getContainer().addEventListener('drop', (e) => {
+            e.preventDefault();
+            if (e.dataTransfer.getData("variableName")) {
+                toggleGetSetCtxMenu([e.clientX, e.clientY], true);
+                draggedVariableInfo = {
+                    name: e.dataTransfer.getData("variableName"),
+                    dataType: e.dataTransfer.getData("dataType"),
+                }
+            }
+            e.stopPropagation();
+        });
     }
 }
 
@@ -146,8 +180,6 @@ function makeNode(e, stage, layer, toggleContextMenu) {
     let defValue = null;
     // console.log(e.innerHTML);
     Nodes.CreateNode(e.innerHTML, { x: xx, y: yy }, layer, stage, isGetSet, dataType, defValue);
-    // setLocationOfNode.place(node, { x: xx, y: yy }, stage);
-    // layer.add(node);
     layer.draw();
     toggleContextMenu([], false);
 }

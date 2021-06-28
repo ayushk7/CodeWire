@@ -16,7 +16,7 @@ export var Nodes = {
         let pin = new Konva.Line({
             points: [0, 0, -14, -7, -14, 7],
             stroke: 'white',
-            strokeWidth: 1,
+            strokeWidth: 2,
             closed: true,
             helper: helper,
             name: 'pin',
@@ -30,7 +30,7 @@ export var Nodes = {
             layer.draw();
         });
         pin.on("mouseleave", () => {
-            pin.strokeWidth(1);
+            pin.strokeWidth(2);
             layer.draw();
         });
         pin.on("wireremoved", (e) => {
@@ -66,7 +66,7 @@ export var Nodes = {
         let pin = new Konva.Circle({
             radius: 7,
             stroke: colorMap[type],
-            strokeWidth: 1,
+            strokeWidth: 2,
             name: 'pin',
             pinType: (inType) ? 'inp' : 'outp',
             pinDataType: type,
@@ -79,7 +79,7 @@ export var Nodes = {
             layer.draw();
         });
         pin.on("mouseleave", () => {
-            pin.strokeWidth(1);
+            pin.strokeWidth(2);
             layer.draw();
         });
         pin.on("wireremoved", (e) => {
@@ -113,7 +113,6 @@ export var Nodes = {
             fill: colorMap[color],
             cornerRadius: [5, 5, 0, 0],
         });
-        console.log(color);
         let label = new Konva.Text({
             text: text,
             fontSize: size - 5,
@@ -169,7 +168,6 @@ export var Nodes = {
             text.offsetX(0);
         else
             text.offsetX(text.width());
-        console.log(text.offsetX(), isInput);
         // text.off()
         return text;
     },
@@ -350,7 +348,7 @@ export var Nodes = {
             if (nodeDescription.execOut) {
                 Object.keys(nodeDescription.execOut).forEach((value, index) => {
                     let execOutPin = Nodes.getExecPin(false, `exec-out-${index}`, layer);
-                    execOutPin.position({ x: width - 7, y: 44 + index * 39 });
+                    execOutPin.position({ x: width - 7, y: 44 + nodeDescription.execOut[value].outOrder * 39 });
                     if (nodeDescription.execOut[value].pinExecOutId == null) {
                         execOutPin.id(`${execOutPin._id}`);
                     }
@@ -361,7 +359,7 @@ export var Nodes = {
                     this.grp.add(execOutPin);
                     if (nodeDescription.execOut[value].execOutTitle) {
                         let exLabel = Nodes.getExecOutTitle(nodeDescription.execOut[value].execOutTitle);
-                        exLabel.position({ x: width - 28, y: 44 + index * 39 - 4 });
+                        exLabel.position({ x: width - 28, y: 44 + nodeDescription.execOut[value].outOrder * 39 - 4 });
                         this.grp.add(exLabel);
                     }
                     let tmp = {
@@ -412,7 +410,7 @@ export var Nodes = {
             if (nodeDescription.outputs) {
                 Object.keys(nodeDescription.outputs).forEach((value, index) => {
                     let outputPin = Nodes.getInputPin(false, `out-${index}`, nodeDescription.outputs[value].dataType, layer);
-                    outputPin.position({ x: width - 7, y: 44 + 39 * outputPinsPlaced });
+                    outputPin.position({ x: width - 7, y: 44 + 39 * nodeDescription.outputs[value].outOrder });
                     if (nodeDescription.outputs[value].pinOutId == null) {
                         outputPin.id(`${outputPin._id}`);
                     }
@@ -422,7 +420,7 @@ export var Nodes = {
                     nodeDescription.outputs[value].pinOutId = outputPin.id();
                     this.grp.add(outputPin);
                     let outLabel = Nodes.getInputLabel(nodeDescription.outputs[value].outputTitle, false);
-                    outLabel.position({ x: width - 28, y: 44 + 39 * outputPinsPlaced - 4 })
+                    outLabel.position({ x: width - 28, y: 44 + 39 * nodeDescription.outputs[value].outOrder - 4 })
                     this.grp.add(outLabel);
                     let tmp = {
                         wire: [],
@@ -455,6 +453,7 @@ export var Nodes = {
                 execOut0: {
                     execOutTitle: null,
                     pinExecOutId: null,
+                    outOrder: 0,
                 }
             };
             nodeDescription.color = 'Begin';
@@ -469,6 +468,7 @@ export var Nodes = {
                 execOut0: {
                     execOutTitle: null,
                     pinExecOutId: null,
+                    outOrder: 0,
                 },
             }
             nodeDescription.inputs = {
@@ -483,6 +483,103 @@ export var Nodes = {
             nodeDescription.rows = 3;
             nodeDescription.colums = 12;
         }
+        if (type == 'Alert') {
+            nodeDescription.nodeTitle = 'Alert';
+            nodeDescription.execIn = true;
+            nodeDescription.pinExecInId = null;
+            nodeDescription.execOut = {
+                execOut0: {
+                    execOutTitle: null,
+                    pinExecOutId: null,
+                    outOrder: 0,
+                },
+            }
+            nodeDescription.inputs = {
+                input0: {
+                    inputTitle: 'Value',
+                    dataType: 'Data',
+                    defValue: "'hello'",
+                    pinInId: null,
+                }
+            }
+            nodeDescription.color = 'Print';
+            nodeDescription.rows = 3;
+            nodeDescription.colums = 12;
+        }
+        if (type == 'Confirm') {
+            nodeDescription.nodeTitle = 'Confirm';
+            nodeDescription.execIn = true;
+            nodeDescription.pinExecInId = null;
+            nodeDescription.execOut = {
+                execOut0: {
+                    execOutTitle: null,
+                    pinExecOutId: null,
+                    outOrder: 0,
+                },
+            }
+            nodeDescription.inputs = {
+                input0: {
+                    inputTitle: 'Message',
+                    dataType: 'String',
+                    defValue: "'Ok'",
+                    pinInId: null,
+                }
+            }
+            nodeDescription.outputs = {
+                output0: {
+                    outputTitle: 'Ok?',
+                    dataType: 'Boolean',
+                    pinOutId: null,
+                    outOrder: 1,
+                }
+            }
+            nodeDescription.color = 'Print';
+            nodeDescription.rows = 3;
+            nodeDescription.colums = 12;
+        }
+        if (type == 'Prompt') {
+            nodeDescription.nodeTitle = 'Prompt';
+            nodeDescription.execIn = true;
+            nodeDescription.pinExecInId = null;
+            nodeDescription.execOut = {
+                execOut0: {
+                    execOutTitle: null,
+                    pinExecOutId: null,
+                    outOrder: 0,
+                },
+            }
+            nodeDescription.inputs = {
+                input0: {
+                    inputTitle: 'Message',
+                    dataType: 'String',
+                    defValue: "'Ok'",
+                    pinInId: null,
+                },
+                input1: {
+                    inputTitle: 'Default',
+                    dataType: 'String',
+                    defValue: "'Yes'",
+                    pinInId: null,
+                },
+            }
+            nodeDescription.outputs = {
+                output0: {
+                    outputTitle: 'Ok?',
+                    dataType: 'Boolean',
+                    pinOutId: null,
+                    outOrder: 1,
+                },
+                output1: {
+                    outputTitle: 'Value',
+                    dataType: 'String',
+                    pinOutId: null,
+                    outOrder: 2,
+                },
+            }
+            nodeDescription.color = 'Print';
+            nodeDescription.rows = 3;
+            nodeDescription.colums = 12;
+        }
         if (type == 'If/Else') {
             nodeDescription.nodeTitle = 'If/Else';
             nodeDescription.execIn = true;
@@ -491,14 +588,17 @@ export var Nodes = {
                 execOut0: {
                     execOutTitle: 'True',
                     pinExecOutId: null,
+                    outOrder: 0,
                 },
                 execOut1: {
                     execOutTitle: 'False',
                     pinExecOutId: null,
+                    outOrder: 1,
                 },
                 execOut2: {
                     execOutTitle: 'Done',
                     pinExecOutId: null,
+                    outOrder: 2,
                 },
             }
             nodeDescription.inputs = {
@@ -534,6 +634,7 @@ export var Nodes = {
                     outputTitle: 'Result',
                     dataType: 'Number',
                     pinOutId: null,
+                    outOrder: 0,
                 }
             }
             nodeDescription.color = 'Math';
@@ -561,6 +662,7 @@ export var Nodes = {
                     outputTitle: 'Result',
                     dataType: 'Number',
                     pinOutId: null,
+                    outOrder: 0,
                 }
             }
             nodeDescription.color = 'Math';
@@ -588,6 +690,7 @@ export var Nodes = {
                     outputTitle: 'Result',
                     dataType: 'Number',
                     pinOutId: null,
+                    outOrder: 0,
                 }
             }
             nodeDescription.color = 'Math';
@@ -615,6 +718,8 @@ export var Nodes = {
                     outputTitle: 'Result',
                     dataType: 'Number',
                     pinOutId: null,
+                    outOrder: 0,
+
                 }
             }
             nodeDescription.color = 'Math';
@@ -642,6 +747,8 @@ export var Nodes = {
                     outputTitle: 'Result',
                     dataType: 'Number',
                     pinOutId: null,
+                    outOrder: 0,
+
                 }
             }
             nodeDescription.color = 'Math';
@@ -669,6 +776,8 @@ export var Nodes = {
                     outputTitle: 'Result',
                     dataType: 'Number',
                     pinOutId: null,
+                    outOrder: 0,
+
                 }
             }
             nodeDescription.color = 'Math';
@@ -690,6 +799,8 @@ export var Nodes = {
                     outputTitle: 'Result',
                     dataType: 'Number',
                     pinOutId: null,
+                    outOrder: 0,
+
                 }
             }
             nodeDescription.color = 'Math';
@@ -711,6 +822,8 @@ export var Nodes = {
                     outputTitle: 'Result',
                     dataType: 'Number',
                     pinOutId: null,
+                    outOrder: 0,
+
                 }
             }
             nodeDescription.color = 'Math';
@@ -734,10 +847,13 @@ export var Nodes = {
                 execOut0: {
                     execOutTitle: 'Loop Body',
                     pinExecOutId: null,
+                    outOrder: 0,
+
                 },
                 execOut1: {
                     execOutTitle: 'Completed',
                     pinExecOutId: null,
+                    outOrder: 1,
 
                 }
             }
@@ -767,6 +883,8 @@ export var Nodes = {
                     outputTitle: 'Result',
                     dataType: 'Boolean',
                     pinOutId: null,
+                    outOrder: 0,
+
                 }
             }
             nodeDescription.color = 'Math';
@@ -794,6 +912,7 @@ export var Nodes = {
                     outputTitle: 'Result',
                     dataType: 'Boolean',
                     pinOutId: null,
+                    outOrder: 0,
                 }
             }
             nodeDescription.color = 'Math';
@@ -821,6 +940,7 @@ export var Nodes = {
                     outputTitle: 'Result',
                     dataType: 'Boolean',
                     pinOutId: null,
+                    outOrder: 0,
                 }
             }
             nodeDescription.color = 'Math';
@@ -848,10 +968,10 @@ export var Nodes = {
                     outputTitle: 'Result',
                     dataType: 'Number',
                     pinOutId: null,
+                    outOrder: 0,
                 }
             }
             nodeDescription.color = 'Math';
-
             nodeDescription.rows = 2;
             nodeDescription.colums = 10;
         }
@@ -876,6 +996,7 @@ export var Nodes = {
                     outputTitle: 'Result',
                     dataType: 'Number',
                     pinOutId: null,
+                    outOrder: 0,
                 }
             }
             nodeDescription.color = 'Math';
@@ -904,6 +1025,7 @@ export var Nodes = {
                     outputTitle: 'Result',
                     dataType: 'Number',
                     pinOutId: null,
+                    outOrder: 0,
                 }
             }
             nodeDescription.color = 'Math';
@@ -932,6 +1054,7 @@ export var Nodes = {
                     outputTitle: 'Result',
                     dataType: 'Number',
                     pinOutId: null,
+                    outOrder: 0,
                 }
             }
             nodeDescription.color = 'Math';
@@ -954,6 +1077,7 @@ export var Nodes = {
                     outputTitle: 'Result',
                     dataType: 'Number',
                     pinOutId: null,
+                    outOrder: 0,
                 }
             }
             nodeDescription.color = 'Math';
@@ -965,6 +1089,13 @@ export var Nodes = {
             nodeDescription.nodeTitle = 'Swap';
             nodeDescription.execIn = true,
                 nodeDescription.pinExecInId = null;
+            nodeDescription.execOut = {
+                execOut0: {
+                    execOutTitle: null,
+                    pinExecOutId: null,
+                    outOrder: 0,
+                },
+            }
             nodeDescription.inputs = {
                 input0: {
                     inputTitle: 'Ref1',
@@ -984,19 +1115,16 @@ export var Nodes = {
                     outputTitle: 'Ref1',
                     dataType: 'Data',
                     pinOutId: null,
+                    outOrder: 1,
+
                 },
                 output1: {
                     outputTitle: 'Ref2',
                     dataType: 'Data',
                     pinOutId: null,
+                    outOrder: 2,
 
                 }
-            }
-            nodeDescription.execOut = {
-                execOut0: {
-                    execOutTitle: null,
-                    pinExecOutId: null,
-                },
             }
             nodeDescription.color = 'Func';
 
@@ -1025,6 +1153,7 @@ export var Nodes = {
                     outputTitle: 'Result',
                     dataType: 'Boolean',
                     pinOutId: null,
+                    outOrder: 0,
                 }
             }
             nodeDescription.color = 'Math';
@@ -1054,6 +1183,7 @@ export var Nodes = {
                     outputTitle: 'Result',
                     dataType: 'Boolean',
                     pinOutId: null,
+                    outOrder: 0,
                 }
             }
             nodeDescription.color = 'Math';
@@ -1082,6 +1212,7 @@ export var Nodes = {
                     outputTitle: 'Result',
                     dataType: 'Boolean',
                     pinOutId: null,
+                    outOrder: 0,
                 }
             }
             nodeDescription.color = 'Math';
@@ -1110,6 +1241,7 @@ export var Nodes = {
                     outputTitle: 'Result',
                     dataType: 'Boolean',
                     pinOutId: null,
+                    outOrder: 0,
                 }
             }
             nodeDescription.color = 'Math';
@@ -1138,6 +1270,7 @@ export var Nodes = {
                     outputTitle: 'Result',
                     dataType: 'Boolean',
                     pinOutId: null,
+                    outOrder: 0,
                 }
             }
             nodeDescription.color = 'Math';
@@ -1166,6 +1299,7 @@ export var Nodes = {
                     outputTitle: 'Result',
                     dataType: 'Boolean',
                     pinOutId: null,
+                    outOrder: 0,
                 }
             }
             nodeDescription.color = 'Math';
@@ -1187,6 +1321,7 @@ export var Nodes = {
                     outputTitle: 'Result',
                     dataType: 'Boolean',
                     pinOutId: null,
+                    outOrder: 0,
                 }
             }
             nodeDescription.color = 'Math';
@@ -1215,6 +1350,7 @@ export var Nodes = {
                     outputTitle: 'Max',
                     dataType: 'Number',
                     pinOutId: null,
+                    outOrder: 0,
                 }
             }
             nodeDescription.color = 'Func';
@@ -1242,6 +1378,7 @@ export var Nodes = {
                     outputTitle: 'Min',
                     dataType: 'Number',
                     pinOutId: null,
+                    outOrder: 0,
                 }
             }
             nodeDescription.color = 'Func';
@@ -1253,7 +1390,7 @@ export var Nodes = {
                 "Number": 0,
                 "Boolean": true,
                 "String": "'hello'",
-                "Array": [],
+                "Array": '[]',
             }
             nodeDescription.nodeTitle = type;
             nodeDescription.execIn = true;
@@ -1262,6 +1399,7 @@ export var Nodes = {
                 execOut0: {
                     execOutTitle: null,
                     pinExecOutId: null,
+                    outOrder: 0,
                 },
             }
             nodeDescription.inputs = {
@@ -1274,23 +1412,25 @@ export var Nodes = {
             }
             nodeDescription.outputs = {
                 output0: {
-                    outputTitle: 'Ref/Val',
+                    outputTitle: 'Value(Ref)',
                     dataType: dataType,
                     pinOutId: null,
+                    outOrder: 1,
                 }
             }
             nodeDescription.color = 'Func';
 
             nodeDescription.rows = 2;
-            nodeDescription.colums = 10;
+            nodeDescription.colums = 11;
         }
         if (isGetSet == "Get") {
             nodeDescription.nodeTitle = type;
             nodeDescription.outputs = {
                 output0: {
-                    outputTitle: 'Ref/Val',
+                    outputTitle: 'Value(Ref)',
                     dataType: dataType,
                     pinOutId: null,
+                    outOrder: 0,
                 }
             }
             nodeDescription.color = 'Get';
@@ -1304,6 +1444,7 @@ export var Nodes = {
                     outputTitle: 'Random[0,1)',
                     dataType: 'Number',
                     pinOutId: null,
+                    outOrder: 0,
                 }
             }
             nodeDescription.color = 'Math';
@@ -1318,10 +1459,12 @@ export var Nodes = {
                 execOut0: {
                     execOutTitle: 'Loop Body',
                     pinExecOutId: null,
+                    outOrder: 0,
                 },
                 execOut1: {
                     execOutTitle: 'Completed',
                     pinExecOutId: null,
+                    outOrder: 2,
                 }
             }
             nodeDescription.inputs = {
@@ -1349,6 +1492,7 @@ export var Nodes = {
                     outputTitle: 'Index',
                     dataType: 'Number',
                     pinOutId: null,
+                    outOrder: 1,
                 }
             }
             nodeDescription.color = 'Logic';
@@ -1363,10 +1507,12 @@ export var Nodes = {
                 execOut0: {
                     execOutTitle: 'Loop Body',
                     pinExecOutId: null,
+                    outOrder: 0,
                 },
                 execOut1: {
                     execOutTitle: 'Completed',
                     pinExecOutId: null,
+                    outOrder: 4,
                 }
             }
             nodeDescription.inputs = {
@@ -1379,19 +1525,22 @@ export var Nodes = {
             }
             nodeDescription.outputs = {
                 output0: {
-                    outputTitle: 'Ref/Value',
+                    outputTitle: 'Value',
                     dataType: 'Data',
                     pinOutId: null,
+                    outOrder: 1,
                 },
                 output1: {
                     outputTitle: 'Index',
                     dataType: 'Number',
                     pinOutId: null,
+                    outOrder: 2,
                 },
                 output2: {
                     outputTitle: 'Array',
                     dataType: 'Array',
                     pinOutId: null,
+                    outOrder: 3,
                 }
             }
             nodeDescription.color = 'Logic';
@@ -1429,6 +1578,7 @@ export var Nodes = {
                     outputTitle: 'Value',
                     dataType: 'Number',
                     pinOutId: null,
+                    outOrder: 0,
                 }
             }
             nodeDescription.color = 'Get';
@@ -1450,6 +1600,7 @@ export var Nodes = {
                     outputTitle: 'Result',
                     dataType: 'Boolean',
                     pinOutId: null,
+                    outOrder: 0,
                 }
             }
             nodeDescription.color = 'Get';
@@ -1464,6 +1615,7 @@ export var Nodes = {
                 execOut0: {
                     execOutTitle: null,
                     pinExecOutId: null,
+                    outOrder: 0,
                 }
             }
             nodeDescription.inputs = {
@@ -1479,6 +1631,7 @@ export var Nodes = {
                     outputTitle: 'Array',
                     dataType: 'Array',
                     pinOutId: null,
+                    outOrder: 1,
                 }
             }
             nodeDescription.color = 'Func';
@@ -1497,14 +1650,15 @@ export var Nodes = {
             }
             nodeDescription.outputs = {
                 output0: {
-                    outputTitle: 'Front',
+                    outputTitle: 'Front(Ref)',
                     dataType: 'Data',
                     pinOutId: null,
+                    outOrder: 0,
                 }
             }
             nodeDescription.color = 'Get';
             nodeDescription.rows = 2;
-            nodeDescription.colums = 10;
+            nodeDescription.colums = 11;
         }
         if (type == 'Sort(Num)') {
             nodeDescription.nodeTitle = 'Sort(Num)';
@@ -1514,6 +1668,7 @@ export var Nodes = {
                 execOut0: {
                     execOutTitle: null,
                     pinExecOutId: null,
+                    outOrder: 0,
                 },
             }
             nodeDescription.inputs = {
@@ -1535,6 +1690,7 @@ export var Nodes = {
                     outputTitle: 'Array',
                     dataType: 'Array',
                     pinOutId: null,
+                    outOrder: 1,
                 }
             }
             nodeDescription.color = 'Func';
@@ -1553,14 +1709,15 @@ export var Nodes = {
             }
             nodeDescription.outputs = {
                 output0: {
-                    outputTitle: 'Back',
+                    outputTitle: 'Back(Ref)',
                     dataType: 'Data',
                     pinOutId: null,
+                    outOrder: 0,
                 }
             }
             nodeDescription.color = 'Get';
             nodeDescription.rows = 2;
-            nodeDescription.colums = 10;
+            nodeDescription.colums = 11;
         }
         if (type == 'GetByPos') {
             nodeDescription.nodeTitle = 'GetByPos';
@@ -1580,9 +1737,10 @@ export var Nodes = {
             }
             nodeDescription.outputs = {
                 output0: {
-                    outputTitle: 'Ref/Val',
+                    outputTitle: 'Value(Ref)',
                     dataType: 'Data',
                     pinOutId: null,
+                    outOrder: 0,
                 }
             }
             nodeDescription.color = 'Get';
@@ -1597,6 +1755,7 @@ export var Nodes = {
                 execOut0: {
                     execOutTitle: null,
                     pinExecOutId: null,
+                    outOrder: 0,
                 },
             }
             nodeDescription.inputs = {
@@ -1623,9 +1782,10 @@ export var Nodes = {
             }
             nodeDescription.outputs = {
                 output0: {
-                    outputTitle: 'Ref/Val',
+                    outputTitle: 'Value(Ref)',
                     dataType: 'Data',
                     pinOutId: null,
+                    outOrder: 1,
                 }
             }
             nodeDescription.color = 'Func';
@@ -1640,6 +1800,7 @@ export var Nodes = {
                 execOut0: {
                     execOutTitle: null,
                     pinExecOutId: null,
+                    outOrder: 0,
                 },
             }
             nodeDescription.inputs = {
@@ -1667,6 +1828,7 @@ export var Nodes = {
                     outputTitle: 'Array',
                     dataType: 'Array',
                     pinOutId: null,
+                    outOrder: 1,
                 }
             }
             nodeDescription.color = 'Func';
@@ -1681,6 +1843,7 @@ export var Nodes = {
                 execOut0: {
                     execOutTitle: null,
                     pinExecOutId: null,
+                    outOrder: 0,
                 },
             }
             nodeDescription.inputs = {
@@ -1702,6 +1865,7 @@ export var Nodes = {
                     outputTitle: 'Array',
                     dataType: 'Array',
                     pinOutId: null,
+                    outOrder: 1,
                 }
             }
             nodeDescription.color = 'Func';
@@ -1716,6 +1880,7 @@ export var Nodes = {
                 execOut0: {
                     execOutTitle: null,
                     pinExecOutId: null,
+                    outOrder: 0,
                 },
             }
             nodeDescription.inputs = {
@@ -1737,6 +1902,7 @@ export var Nodes = {
                     outputTitle: 'Array',
                     dataType: 'Array',
                     pinOutId: null,
+                    outOrder: 1,
                 }
             }
             nodeDescription.color = 'Func';
@@ -1751,6 +1917,7 @@ export var Nodes = {
                 execOut0: {
                     execOutTitle: null,
                     pinExecOutId: null,
+                    outOrder: 0,
                 },
             }
             nodeDescription.inputs = {
@@ -1766,6 +1933,7 @@ export var Nodes = {
                     outputTitle: 'Array',
                     dataType: 'Array',
                     pinOutId: null,
+                    outOrder: 1,
                 }
             }
             nodeDescription.color = 'Func';
@@ -1780,6 +1948,7 @@ export var Nodes = {
                 execOut0: {
                     execOutTitle: null,
                     pinExecOutId: null,
+                    outOrder: 0,
                 },
             }
             nodeDescription.inputs = {
@@ -1795,6 +1964,7 @@ export var Nodes = {
                     outputTitle: 'Array',
                     dataType: 'Array',
                     pinOutId: null,
+                    outOrder: 1,
                 }
             }
             nodeDescription.color = 'Func';
@@ -1822,11 +1992,13 @@ export var Nodes = {
                     outputTitle: 'Exist',
                     dataType: 'Boolean',
                     pinOutId: null,
+                    outOrder: 0,
                 },
                 output1: {
                     outputTitle: 'Index',
                     dataType: 'Number',
                     pinOutId: null,
+                    outOrder: 1,
                 }
             }
             nodeDescription.color = 'Func';
@@ -1854,16 +2026,20 @@ export var Nodes = {
                     outputTitle: 'Exist',
                     dataType: 'Boolean',
                     pinOutId: null,
+                    outOrder: 0,
+
                 },
                 output1: {
                     outputTitle: 'Lower Bound',
                     dataType: 'Number',
                     pinOutId: null,
+                    outOrder: 1,
                 },
                 output2: {
                     outputTitle: 'Upper Bound',
                     dataType: 'Number',
                     pinOutId: null,
+                    outOrder: 2,
                 }
             }
             nodeDescription.color = 'Func';
@@ -1882,9 +2058,10 @@ export var Nodes = {
             }
             nodeDescription.outputs = {
                 output0: {
-                    outputTitle: 'Index',
+                    outputTitle: 'MaxValue',
                     dataType: 'Number',
                     pinOutId: null,
+                    outOrder: 0,
                 },
             }
             nodeDescription.color = 'Func';
@@ -1903,9 +2080,10 @@ export var Nodes = {
             }
             nodeDescription.outputs = {
                 output0: {
-                    outputTitle: 'Index',
+                    outputTitle: 'MinValue',
                     dataType: 'Number',
                     pinOutId: null,
+                    outOrder: 0,
                 },
             }
             nodeDescription.color = 'Func';
@@ -1920,14 +2098,17 @@ export var Nodes = {
                 execOut0: {
                     execOutTitle: 'OnSuccess',
                     pinExecOutId: null,
+                    outOrder: 0,
                 },
                 execOut1: {
                     execOutTitle: 'OnFail',
                     pinExecOutId: null,
+                    outOrder: 2,
                 },
                 execOut2: {
                     execOutTitle: 'Continue',
                     pinExecOutId: null,
+                    outOrder: 3,
                 },
             }
             nodeDescription.inputs = {
@@ -1943,6 +2124,38 @@ export var Nodes = {
                     outputTitle: 'JSON',
                     dataType: 'Data',
                     pinOutId: null,
+                    outOrder: 1,
+                },
+            }
+            nodeDescription.color = 'Func';
+            nodeDescription.rows = 2;
+            nodeDescription.colums = 12;
+        }
+        if (type == 'OpenWindow') {
+            nodeDescription.nodeTitle = 'OpenWindow';
+            nodeDescription.execIn = true;
+            nodeDescription.pinExecInId = null;
+            nodeDescription.execOut = {
+                execOut0: {
+                    execOutTitle: null,
+                    pinExecOutId: null,
+                    outOrder: 0,
+                },
+            }
+            nodeDescription.inputs = {
+                input0: {
+                    inputTitle: 'URL',
+                    dataType: 'String',
+                    defValue: "'link'",
+                    pinInId: null,
+                },
+            }
+            nodeDescription.outputs = {
+                output0: {
+                    outputTitle: 'Success?',
+                    dataType: 'Boolean',
+                    pinOutId: null,
+                    outOrder: 1,
                 },
             }
             nodeDescription.color = 'Func';
@@ -1958,7 +2171,7 @@ export var Nodes = {
                     isInputBoxRequired: false,
                     pinInId: null,
                 },
-                input1:{
+                input1: {
                     inputTitle: 'Name',
                     dataType: 'String',
                     defValue: "'id'",
@@ -1970,13 +2183,76 @@ export var Nodes = {
                     outputTitle: 'Data',
                     dataType: 'Data',
                     pinOutId: null,
+                    outOrder: 0,
                 },
             }
             nodeDescription.color = 'Get';
             nodeDescription.rows = 2;
             nodeDescription.colums = 12;
         }
-        
+        if (type == 'StrToArray') {
+            nodeDescription.nodeTitle = 'StrToArray';
+            nodeDescription.execIn = true;
+            nodeDescription.pinExecInId = null;
+            nodeDescription.execOut = {
+                execOut0: {
+                    execOutTitle: null,
+                    pinExecOutId: null,
+                    outOrder: 0,
+                },
+            }
+            nodeDescription.inputs = {
+                input0: {
+                    inputTitle: 'String',
+                    dataType: 'String',
+                    isInputBoxRequired: false,
+                    pinInId: null,
+                },
+            }
+            nodeDescription.outputs = {
+                output0: {
+                    outputTitle: 'Array',
+                    dataType: 'Array',
+                    pinOutId: null,
+                    outOrder: 1,
+                },
+            }
+            nodeDescription.color = 'Func';
+            nodeDescription.rows = 2;
+            nodeDescription.colums = 12;
+        }
+        if (type == 'ArrayToStr') {
+            nodeDescription.nodeTitle = 'ArrayToStr';
+            nodeDescription.execIn = true;
+            nodeDescription.pinExecInId = null;
+            nodeDescription.execOut = {
+                execOut0: {
+                    execOutTitle: null,
+                    pinExecOutId: null,
+                    outOrder: 0,
+                },
+            }
+            nodeDescription.inputs = {
+                input0: {
+                    inputTitle: 'Array',
+                    dataType: 'Array',
+                    isInputBoxRequired: false,
+                    pinInId: null,
+                },
+            }
+            nodeDescription.outputs = {
+                output0: {
+                    outputTitle: 'String',
+                    dataType: 'String',
+                    pinOutId: null,
+                    outOrder: 1,
+                },
+            }
+            nodeDescription.color = 'Func';
+            nodeDescription.rows = 2;
+            nodeDescription.colums = 12;
+        }
+
         new this.ProgramNode(nodeDescription, location, layer, stage);
     }
 

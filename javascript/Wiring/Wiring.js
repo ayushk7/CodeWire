@@ -25,7 +25,7 @@ export var Wiring = {
         let wireLayer = new Konva.Layer({
             id: 'wireLayer',
         });
-        
+
         let drawWire = null;
         let potentialTarget = null;
         let dir = 0;
@@ -54,7 +54,6 @@ export var Wiring = {
                     name: "isConnection",
                     bezier: true,
                 });
-                // console.log(src.attrs.fill);
                 originPreOccupied = !(src.attrs.fill == '' || src.attrs.fill == 'transparent');
                 src.fire('wiringstart',
                     {
@@ -67,28 +66,10 @@ export var Wiring = {
             }
         });
         stage.on('mouseup', (e) => {
-            if (src && src.name() == 'pin' && e.evt.button == 0) {
-                // console.log(originPreOccupied);
-                deleteHalfWire(drawWire, originPreOccupied);
-                if (e.target && src && e.target.name() == 'pin' && src != e.target && src.getParent() !== e.target.getParent() && isValidMatch(e.target.attrs.pinType, e.target.attrs.pinDataType)) {
-                    dest = e.target;
-                    // let connectionWire = drawWire.clone();
-
-                    addConnectionWire(dest, src, stage, dir, wireLayer);
-                }
-                src.getParent().draggable(true);
-                src = null;
-                originPreOccupied = false;
-                dest = null;
-                isWiring = false;
-                dir = 0;
-                drawWire = null;
-                currentPinType = null;
-                currentPinDataType = null;
-                wireColor = null;
-                wireLayer.draw();
-                layer.draw();
-            }
+            handleMouseUp(e, true);
+        });
+        document.addEventListener("mouseup", (e) => {
+            handleMouseUp(e, false);
         });
         // stage.on('mouseover', (e) => {
         //     if (e.target && src && e.target.name() == 'pin' && src != e.target && src.getParent() !== e.target.getParent() && isValidMatch(e.target.attrs.pinType, e.target.attrs.pinDataType)) {
@@ -109,6 +90,47 @@ export var Wiring = {
             }
         })
 
+
+        function handleMouseUp(e, isStageEvent) {
+            if (isStageEvent) {
+                if (src && src.name() == 'pin' && e.evt.button == 0) {
+                    deleteHalfWire(drawWire, originPreOccupied);
+                    if (e.target && src && e.target.name() == 'pin' && src != e.target && src.getParent() !== e.target.getParent() && isValidMatch(e.target.attrs.pinType, e.target.attrs.pinDataType)) {
+                        dest = e.target;
+                        addConnectionWire(dest, src, stage, dir, wireLayer);
+                    }
+                    src.getParent().draggable(true);
+                    src = null;
+                    originPreOccupied = false;
+                    dest = null;
+                    isWiring = false;
+                    dir = 0;
+                    drawWire = null;
+                    currentPinType = null;
+                    currentPinDataType = null;
+                    wireColor = null;
+                    wireLayer.draw();
+                    layer.draw();
+                }
+            }
+            else {
+                if (src) {
+                    deleteHalfWire(drawWire, originPreOccupied);
+                    src.getParent().draggable(true);
+                    src = null;
+                    originPreOccupied = false;
+                    dest = null;
+                    isWiring = false;
+                    dir = 0;
+                    drawWire = null;
+                    currentPinType = null;
+                    currentPinDataType = null;
+                    wireColor = null;
+                    wireLayer.draw();
+                    layer.draw();
+                }
+            }
+        }
     }
 
 }
@@ -126,7 +148,6 @@ export function addConnectionWire(dest, src, stage, dir, wireLayer) {
     connectionWire.on('mouseover', (e) => {
         connectionWire.strokeWidth(5);
         wireLayer.draw();
-        // console.log('mouseover wire');
     });
     connectionWire.on('mouseleave', (e) => {
         connectionWire.strokeWidth(2);
@@ -190,7 +211,10 @@ export function addConnectionWire(dest, src, stage, dir, wireLayer) {
 
 function setWirePoints(destLoc, srcLoc, dir, wire) {
     let len = (destLoc.x - srcLoc.x) / 2;
-    len = dir * (Math.abs(len));
+    let diffY = Math.abs(destLoc.y - srcLoc.y);
+    let diffX = Math.abs(destLoc.x - srcLoc.x);    //unused
+    // len = dir * (Math.max(Math.abs(len) + 5, diffY/4));
+    len = dir * (Math.abs(len) + diffY/4);
     let mid1 = {
         x: srcLoc.x + len,
         y: srcLoc.y

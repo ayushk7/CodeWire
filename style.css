@@ -39,6 +39,7 @@ html{
   /* border: #f0f0f0 solid 7px; */
   /* border-left: #f0f0f0 solid 3px; */
   background-color: 	#26282b;
+  /* background-color: #b3b3b3; */
   /* background-image: url("images/sqq1.png"); */
   background-image: linear-gradient(rgb(92, 92, 92) .1rem, transparent .1rem), linear-gradient(90deg, rgb(92, 92, 92) .1rem, transparent .1rem);
 background-size: 10rem 10rem;
@@ -76,7 +77,7 @@ background-size: 10rem 10rem;
   }
   #ctx-menu-container{
     position: absolute;
-    width: 250px;
+    width: 200px;
     height: 250px;
     /* overflow: hidden; */
     z-index: 20;
@@ -92,7 +93,7 @@ background-size: 10rem 10rem;
     background-color: rgb(230, 221, 221, 0.3);
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
-    caret-color: #ff4000;
+    caret-color: white;
     color: white;
     border-radius:0;
   }
@@ -108,7 +109,7 @@ background-size: 10rem 10rem;
     border-top: none;
     /* border-radius: 2px; */
     /* cursor:pointer; */
-    padding: 10px 0px;
+    /* padding: 10px 0px; */
     width: 100%;
     max-height: 225px;
     min-height: 35px;
@@ -370,15 +371,46 @@ input[type="file"] {
   justify-content: center;
   align-items:center;
   flex-direction: column;
+  overflow: auto;
+  font-size: 1.5rem;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  /* padding: 0.5rem; */
+  user-select: none;
+  color: black;
+  border: solid 1px #d65a31;
+  /* background-color: white; */
+  background-color: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   width: 125px !important;
 }
-
+#delete-ctx-container:hover{
+  background-color: #d65a31;
+  color: white;
+}
+#get-set-ctx-menu-container{
+    position: absolute;
+    border: #d65a31 solid 1px;
+    box-shadow: 15px 15px 25px rgba(0, 0, 0, 0.5);
+    width: 100px !important;
+    overflow: auto;
+    font-size: 1.5rem;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    user-select: none;
+    color: black;
+    background-color: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 200;
+}
 .left-panel-variable{
-  width: 80%;
+  width: 100%;
   font-size: 1.6rem;
   margin:2rem 1rem 0 1rem;
-  background: transparent !important;
+  cursor: grab;
+  user-select: none;
   color: white !important;
+  overflow: hidden;
 }
 .variableList{
   display: flex;

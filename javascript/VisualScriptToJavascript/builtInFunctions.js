@@ -45,7 +45,22 @@ export const BuilInFunctions = {
         const _json = await _response.json();
         return _json;
     }
-    `
+    `,
+    _confirm: `function _confirm(_message){
+        const _answer = window.confirm(_message);
+        return _answer;
+    }
+    `,
+    _newWindow: `function _newWindow(_url){
+        const _win = window.open(_url);
+        return (_win) ? true: false;
+    }
+    `,
+    _prompt: `function _prompt(_message, _default){
+        const _value = window.prompt(_message, _default);
+        return [(_value !== null), _value];
+    }
+    `,
 
 
 }

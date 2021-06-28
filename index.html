@@ -46,7 +46,7 @@
                         </div>
                         <div class="input-group input-group-lg pt-3 ps-5 pe-5" id="number-default-form">
                             <div class="icon2">Value</div>
-                            <input type="text" class="form-control" placeholder="Default" title="enter number"
+                            <input type="number" class="form-control" placeholder="Default" title="enter number"
                                 id="number-default-value" value=0>
                         </div>
                         <div class="input-group input-group-lg pt-3 ps-5 pe-5 hidden" id="string-default-form">
@@ -74,7 +74,7 @@
                 <div id="list-of-variables" class="left-panel-tab">Variable List<div id="list-of-variables-down-icon"
                         style="position: absolute; right: 0.7rem; transition: 0.1s;"><i class="fas fa-chevron-down"></i></div>
                 </div>
-                <div id="list-of-variables-content" class="left-panel-tab-content">
+                <div id="list-of-variables-content" class="left-panel-tab-content" style="width: 90%;">
                     <div class="variableList" style="width: 100%;">
                         <ul class="list-group list-group-flush" id="variable-list">
                         </ul>
@@ -175,15 +175,24 @@
             <button id="refresh-cancel-btn" class="icon">Cancel</button>
         </div>
     </div>
-    <div id="delete-ctx-container" class="icon hidden">
+    <div id="delete-ctx-container" class="context-menu-items hidden">
         <div>Delete</div>
         <div style="font-size: xx-small;">Ctrl+LMB</div>
+    </div>
+    <div id="get-set-ctx-menu-container" class="hidden">
+        <div id="get-set-ctx-menu">
+            <div class="context-menu-items" data-isGetOrSet="Get">Get</div>
+            <div class="context-menu-items" data-isGetOrSet="Set">Set</div>
+        </div>
     </div>
     <div id="ctx-menu-container" class="hidden">
         <input type="text" id="ctx-search-bar" placeholder="Search...">
         <div id="context-menu">
             <div class="context-menu-items">Begin</div>
             <div class="context-menu-items">Print</div>
+            <div class="context-menu-items">Alert</div>
+            <div class="context-menu-items">Confirm</div>
+            <div class="context-menu-items">Prompt</div>
             <hr>
             <div class="context-menu-items">If/Else</div>
             <div class="context-menu-items">WhileLoop</div>
@@ -222,9 +231,12 @@
             <div class="context-menu-items" title="bitwise operators">bXOR</div>
             <div class="context-menu-items" title="bitwise operators">bNEG</div>
             <hr>
+            <div class="context-menu-items">OpenWindow</div>
             <div class="context-menu-items">HttpRequest</div>
             <div class="context-menu-items">GetByName(JSON)</div>
             <hr>
+            <div class="context-menu-items">StrToArray</div>
+            <div class="context-menu-items">ArrayToStr</div>
             <div class="context-menu-items">Length</div>
             <div class="context-menu-items">Front</div>
             <div class="context-menu-items">Back</div>
@@ -255,6 +267,7 @@
     </select>
 
     <div class="hidden" id="console-window">
+        <p style="position: absolute; font-size: 1.4rem; font-family: 'Courier New', Courier, monospace; padding: 0.5rem 1rem;">Console</p>
         <button id="cross-console" class="cross">
             <div>+</div>
         </button>
@@ -267,7 +280,7 @@
     crossorigin="anonymous"></script>
 <script src="./javascript/Dependencies/CodeMirror/codemirror.js"></script>
 <script src="./javascript/Dependencies/CodeMirror/javascript/javascript.js"></script>
-<script src="javascript/Dependencies/jquery/jquery.js"></script>
+<script src="./javascript/Dependencies/jquery/jquery.js"></script>
 <script src="./javascript/Dependencies/Konva/konva.min.js"></script>
 <script type="module" src="./javascript/main/main.js"></script>
 

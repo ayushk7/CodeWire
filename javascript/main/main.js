@@ -153,3 +153,5 @@ document.getElementById("starter").addEventListener("click", (e) => {
     prompRefreshOrStarter("starter", stage);
 })
 
+
+
