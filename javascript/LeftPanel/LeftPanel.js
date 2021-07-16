@@ -72,6 +72,12 @@ export class leftPanel {
             else if (variableList.variables.some(value => value.name == variableName)) {
                 showAlert("Variable Already Exist");
             }
+            else if(variableName.includes(' ')){
+                showAlert("Variable Name Can't Have Spaces");
+            }
+            else if(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'].includes(variableName[0])){
+                showAlert("Variable Name should start with an alphabet or '_'");
+            }
             else {
                 let value;
                 let type = document.getElementById("variable-data-type").value;

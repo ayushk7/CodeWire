@@ -60,6 +60,8 @@ export var VSToJS = class {
             catch (err) {
                 document.getElementById("console-window").classList.toggle("hidden", false);
                 let codeDoc = document.getElementById("console").contentWindow.document;
+                this.script = '';
+                this.builtin_functions = {};
                 codeDoc.open();
                 codeDoc.writeln(
                     `<!DOCTYPE html>\n
@@ -72,7 +74,7 @@ export var VSToJS = class {
                     <body>
                     <code>
                     Recheck the nodes <br>
-                    ${err}
+                    ${err.name === 'RangeError' ? 'CyclicDependence : Irresolvable Cycle(s) Exists' : `UnknownException: Improve The Editor By Opening Issue On GitHub(Just Attach The Exported Graph)`}
                     </code>
                     </body>
                     </html>

@@ -17,6 +17,7 @@ export var Nodes = {
             points: [0, 0, -14, -7, -14, 7],
             stroke: 'white',
             strokeWidth: 2,
+            hitStrokeWidth: 10,
             closed: true,
             helper: helper,
             name: 'pin',
@@ -26,7 +27,7 @@ export var Nodes = {
             fill: '',
         });
         pin.on("mouseenter", () => {
-            pin.strokeWidth(3);
+            pin.strokeWidth(4);
             layer.draw();
         });
         pin.on("mouseleave", () => {
@@ -51,13 +52,18 @@ export var Nodes = {
         let rect = new Konva.Rect({
             height: height,
             width: width,
-            fill: colorMap['MainBox'],
+            // fill: colorMap['MainBox'],
             opacity: 0.8,
             cornerRadius: 5,
             shadowColor: 'black',
             shadowBlur: 15,
             shadowOffset: { x: 15, y: 15 },
             shadowOpacity: 0.5,
+            fillLinearGradientStartPoint: { x: 0, y: 0 },
+            fillLinearGradientEndPoint: { x: width, y: height },
+            fillLinearGradientColorStops: [0, colorMap['MainBoxGradient']['start'], 1, colorMap['MainBoxGradient']['end']],
+            // fillLinearGradientColorStops: [0, '#12100e', 1, '#2b4162'],
+
             // strokeWidth: [10, 10, 110, 0],
         });
         return rect;
@@ -67,6 +73,7 @@ export var Nodes = {
             radius: 7,
             stroke: colorMap[type],
             strokeWidth: 2,
+            hitStrokeWidth: 10,
             name: 'pin',
             pinType: (inType) ? 'inp' : 'outp',
             pinDataType: type,
@@ -75,7 +82,7 @@ export var Nodes = {
             fill: '',
         });
         pin.on("mouseenter", () => {
-            pin.strokeWidth(3);
+            pin.strokeWidth(4);
             layer.draw();
         });
         pin.on("mouseleave", () => {
@@ -112,6 +119,18 @@ export var Nodes = {
             height: size + 3,
             fill: colorMap[color],
             cornerRadius: [5, 5, 0, 0],
+            // fillLinearGradientStartPoint: { x: 0, y: 0 },
+            // fillLinearGradientEndPoint: { x: width, y: size + 3 },
+            // fillLinearGradientColorStops: [0, colorMap[color], 1, 'rgba(0, 0, 0, 0)'],
+            // fillRadialGradientStartPoint: {x: 0, y: 0},
+            // fillRadialGradientEndPoint: { x: 30, y: 0 },
+            // fillRadialGradientColorStops: [0, colorMap[color], 1, '#2d3436'],
+            // fillRadialGradientStartRadius: size / 3,
+            // fillRadialGradientEndRadius: 100,
+
+            // fillLinearGradientColorStops: [0, '#9e768f', 1, '#ff4e00'],
+
+            // #ec9f05 #ff4e00
         });
         let label = new Konva.Text({
             text: text,
@@ -1421,7 +1440,7 @@ export var Nodes = {
             nodeDescription.color = 'Func';
 
             nodeDescription.rows = 2;
-            nodeDescription.colums = 11;
+            nodeDescription.colums = 12;
         }
         if (isGetSet == "Get") {
             nodeDescription.nodeTitle = type;

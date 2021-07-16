@@ -210,10 +210,9 @@ export function addConnectionWire(dest, src, stage, dir, wireLayer) {
 }
 
 function setWirePoints(destLoc, srcLoc, dir, wire) {
-    let len = (destLoc.x - srcLoc.x) / 2;
+    let len = (destLoc.x - srcLoc.x) / 3;
     let diffY = Math.abs(destLoc.y - srcLoc.y);
-    let diffX = Math.abs(destLoc.x - srcLoc.x);    //unused
-    // len = dir * (Math.max(Math.abs(len) + 5, diffY/4));
+    let diffX = Math.abs(destLoc.x - srcLoc.x);
     len = dir * (Math.abs(len) + diffY/4);
     let mid1 = {
         x: srcLoc.x + len,

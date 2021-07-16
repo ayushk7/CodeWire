@@ -7,8 +7,12 @@ export const colorMap = {
     'MainLabel': '#ffffff',
     'MainLabelBox': '#3282b8',
     // 'MainLabelBox': '#7209b7',
-    'MainBox': '#3c415c',
+    // 'MainBox': '#3c415c',
     // 'MainBox': '#413D65', 
+    'MainBoxGradient': {
+        'start': '#28313b',
+        'end': '#485461',
+    },
     'Text': '#ffffff',
     'Logic': '#7209b7',
     'Get': '#008000',
