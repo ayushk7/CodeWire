@@ -4,11 +4,11 @@ import { DragAndDrop } from '../DragAndDrop/DragAndDrop.js'
 import { Wiring } from '../Wiring/Wiring.js'
 import { ContextMenu } from '../ContextMenu/contextMenu.js'
 import { leftPanel } from '../LeftPanel/LeftPanel.js'
-import { VSToJS } from '../VisualScriptToJavascript/VisualScriptToJavascript.js'
+import { VSToJS } from '../Compilers/Javascript/ToJavascript.js'
 import { Delete } from '../Delete/delete.js'
 import { Export, Import, Save, prompLastSave } from '../SaveAndLoad/SaveAndLoad.js'
 import { showAlert, prompRefreshOrStarter } from './alertBox.js'
-import { refresh } from '../VisualScriptToJavascript/liveCode.js'
+import { refresh } from '../Compilers/liveCode.js'
 // var width = window.innerWidth;
 // var height = window.innerHeight;
 let stage = AppStage.getStage(document.getElementById("container").clientWidth, document.getElementById("container").clientHeight, 'container');
@@ -18,6 +18,44 @@ var layer = new Konva.Layer({
 let dragLayer = new Konva.Layer({
     id: 'dragLayer',
 });
+
+let currentLanguageTarget = 'Javascript';
+
+let language_field = document.getElementById("language-type");
+
+function compileAndRefresh(){
+    try {
+        let script = '';
+        switch (currentLanguageTarget) {
+            case 'Javascript':
+                script = new VSToJS(stage, layer, "live-code-refresh").script;
+                break;
+            case 'Python':
+
+                break;
+            case 'C++':
+
+                break;
+            case 'Java':
+
+                break;
+        }
+        refresh(script);
+    }
+    catch (err) {
+
+    }
+}
+
+
+
+
+language_field.addEventListener("input", (e) => {
+    currentLanguageTarget = language_field.value;
+    compileAndRefresh();
+});
+
+
 stage.add(layer);
 stage.add(dragLayer);
 stage.container().style.backgroundPosition = `${stage.position().x} ${stage.position().y}`;
@@ -40,9 +78,7 @@ let panel = new leftPanel();
 layer.draw();
 document.getElementById("Run").addEventListener("click", (e) => {
     try {
-        let script = new VSToJS(stage, layer, "Run").script;
-        // let script = new VSToJS(stage, layer, "live-code-refresh").script;
-        refresh(script);
+        compileAndRefresh();
     }
     catch (err) {
 
@@ -113,15 +149,13 @@ document.getElementById("import").addEventListener("click", () => {
     });
 })
 document.getElementById("live-code-refresh").addEventListener("click", () => {
-    let script = new VSToJS(stage, layer, "live-code-refresh").script;
-    refresh(script);
+    compileAndRefresh()
 }
 );
 document.onkeydown = (e) => {
     // e.preventDefault();
     if (e.code == 'KeyQ' && e.ctrlKey) {
-        let script = new VSToJS(stage, layer, "live-code-refresh").script;
-        refresh(script);
+        compileAndRefresh()
     }
 }
 document.getElementById("live-code-arrow").addEventListener("click", () => {

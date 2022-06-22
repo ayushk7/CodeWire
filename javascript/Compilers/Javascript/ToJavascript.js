@@ -1,5 +1,5 @@
-import { variableList } from '../Variable/variable.js'
-import { showAlert } from '../main/alertBox.js'
+import { variableList } from '../../Variable/variable.js'
+import { showAlert } from '../../main/alertBox.js'
 import { BuilInFunctions } from './builtInFunctions.js'
 export var VSToJS = class {
 

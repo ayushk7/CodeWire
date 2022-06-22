@@ -159,6 +159,24 @@ background-size: 10rem 10rem;
   color: white;
   user-select: none;
 }
+.icon5{
+  width: 40px;
+  padding: 30px;
+  height: 10px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  display: flex;
+  align-items:center;
+  justify-content: center;
+  font-size: 1.2rem;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  outline: none;
+  border: none;
+  background-color: #d65a31;
+  z-index: 10;
+  color: white;
+  user-select: none;
+}
 .icon4{
   width: 60px;
   padding: 30px;
@@ -508,7 +526,7 @@ input[type="file"] {
   color: white;
   height: 5rem;
 }
-.icons-live-code div{
+#live-code-arrow, #live-code-refresh{
   display: flex;
   justify-content:center;
   align-items:center;
@@ -521,7 +539,7 @@ input[type="file"] {
   font-size: 2rem;
   transition: 0.5s transform;
 }
-.icons-live-code div:hover{
+#live-code-arrow:hover, #live-code-refresh:hover{
   /* background-color:transparent; */
   color: #d65a31;
   /* transform: scale(1.1); */
