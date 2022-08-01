@@ -64,7 +64,7 @@ export function prompRefreshOrStarter(type, stage) {
         });
         refCnclBtn.addEventListener("click", (e) => {
             refreshBox.classList.toggle('hidden', true);
-        });
+        }) ;
     }
 }
 export function vscriptOnLoad(stage) {
