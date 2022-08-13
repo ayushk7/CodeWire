@@ -1,5 +1,5 @@
 # CodeWire
-![CodeWire](images/Code%20Wire%20Logo.svg)
+![CodeWire](images/Code%20Wire%20Logo.png)
 
 Try at https://ayushk7.github.io/CodeWire/
 CodeWire is a node based editor inspired by UE4 Blueprints which helps in better visualization of the code,
