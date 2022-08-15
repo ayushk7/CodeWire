@@ -6,7 +6,8 @@
     "build": "vite build",
     "preview": "vite preview --port 4173",
     "test:unit": "vitest --environment jsdom",
-    "lint": "eslint CodeWire-v2 --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
+    "lint": "eslint CodeWire-v2 --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore",
+    "buildcss": "tailwindcss -i ./src/input.css -o assets/css/styles.css --watch"
   },
   "dependencies": {
     "vue": "^3.2.37",
