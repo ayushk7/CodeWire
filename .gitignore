@@ -141,3 +141,5 @@ coverage
 *.njsproj
 *.sln
 *.sw?
+
+/src/assets/css/styles.css
