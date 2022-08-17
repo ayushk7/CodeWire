@@ -8,14 +8,14 @@ module.exports = {
     },
     extend: {
       colors: {
-        backgroud: "#292c35", // index backgroud
+        backgroud: "#292C35", // index backgroud
         "box-bg": "#353944",
-        "box-bg-dark": "#2a2c32",
+        "box-bg-dark": "#2A2C32",
         border: "#404658",
         "dot-line": "#404552",
-        "icon-color": "#4c535f",
-        primary: "#472ba2",
-        "primary-light": "#5533c2",
+        icon: "#4C535F", // icon color
+        primary: "#472BA2",
+        "primary-light": "#5533C2",
         secondary: "#d1ec1a",
       },
     },
