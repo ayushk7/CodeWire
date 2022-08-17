@@ -18,8 +18,14 @@ const isDashboard = computed(() => router.currentRoute.value.path !== "/")
 
     <nav class="font-title text-2xl ml-4">
       <ul class="flex">
-        <li v-if="isDashboard"><DashboardIcon class="mr-2" /><RouterLink to="/">Dashboard</RouterLink></li>
-        <li><DocumentationIcon class="mr-2" /><RouterLink to="/about">Documentation</RouterLink></li>
+        <li v-if="isDashboard">
+          <DashboardIcon class="mr-2 text-icon" />
+          <RouterLink to="/">Dashboard</RouterLink>
+        </li>
+        <li>
+          <DocumentationIcon class="mr-2 text-icon" />
+          <RouterLink to="/about">Documentation</RouterLink>
+        </li>
         <li></li>
         <li></li>
         <li></li>
