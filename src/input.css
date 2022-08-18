@@ -1,16 +1,29 @@
-@import url('https://fonts.googleapis.com/css2?family=Anton&family=Silkscreen&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Rubik&family=Silkscreen&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-h1,
+@layer utilities {
+    .text-shadow {
+        text-shadow: 1px 2px #000000;
+    }
+
+    .text-shadow-md {
+        text-shadow: 2px 3px #000000;
+    }
+}
+
+h1 {
+    @apply font-title text-primary text-shadow-md ;
+}
+
 h2,
 h3,
 h4,
 h5,
 h6 {
-    @apply font-title ;
+    @apply font-title text-primary text-shadow ;
 }
 
 li {
@@ -18,7 +31,7 @@ li {
 }
 
 li a {
-    @apply text-neutral-400;
+    @apply text-neutral-400 text-shadow-md;
 }
 
 a {
@@ -27,5 +40,13 @@ a {
 
 a:hover {
     @apply text-secondary;
+}
+
+div span {
+    @apply font-title;
+}
+
+svg {
+    filter: drop-shadow(1px 2px 0px rgb(0 0 0 / .4));
 }
 
