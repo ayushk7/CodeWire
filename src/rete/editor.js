@@ -11,7 +11,7 @@ class NumControl extends Rete.Control {
     super(key);
     this.emitter = emitter;
     this.key = key;
-    this.
+    // this.
     this.scope = {
       value: 0,
       readonly,

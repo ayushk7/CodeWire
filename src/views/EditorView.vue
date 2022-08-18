@@ -1,14 +1,14 @@
 <template>
     <div>
-    <Dock />
+    <!-- <Dock /> -->
     <EditorTab />
-    <Dock />
+    <!-- <Dock /> -->
     </div>
 </template>
 
 
 <script setup>
-
+    import EditorTab from '../components/EditorTab.vue';
 
 </script>
 
