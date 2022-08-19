@@ -24,7 +24,7 @@ import RedditIcon from "../components/icons/IconReddit.vue";
               href="https://www.reddit.com/r/codewire/"
             >
               <RedditIcon class="mr-2" />
-              <span>Join Reddit</span></a
+              <span>Reddit</span></a
             >
           </h2>
         </div>
