@@ -22,6 +22,14 @@
     .text-shadow-md {
         text-shadow: 2px 3px #000000;
     }
+
+    .icon-shadow {
+        filter: drop-shadow(1px 2px 0px rgb(0 0 0 / .4));
+    }
+
+    .icon-shadow-md {
+        filter: drop-shadow(2px 3px 0px rgb(0 0 0 / .6));
+    }
 }
 
 h1 {
@@ -57,6 +65,8 @@ div span {
 }
 
 svg {
-    filter: drop-shadow(2px 3px 0px rgb(0 0 0 / .6));
+    @apply icon-shadow-md;
 }
+
+
 
