@@ -22,9 +22,10 @@ module.exports = {
         "box-bg": "#353944",
         "box-bg-dark": "#2A2C32",
         border: "#394159",
+        "border-dark": "#222222",
         "dot-line": "#404552",
         icon: "#4C535F", // icon color
-        body: "#A3A3A3",
+        body: "#7f7f7f",
         primary: "#5F22C4",
         "primary-light": "#5533C2",
         secondary: "#d1ec1a",

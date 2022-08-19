@@ -7,15 +7,13 @@ import DatabaseIcon from "./icons/IconDatabase.vue";
 </script>
 
 <template>
-  <h1 class="text-5xl mb-4">Dashboard</h1>
+  <h1>Dashboard</h1>
   <div
     class="outline-dashed outline-2 outline-dot-line w-full h-16 p-4 mb-5 rounded-md text-3xl flex place-content-center"
   >
     <add-icon class="self-center text-icon" />
   </div>
-  <div
-    class="shadow-md outline outline-2 outline-border bg-box-bg w-full p-4 rounded-md"
-  >
+  <div class="box">
     <div class="flex justify-between mb-2 col-span-full row-span-full">
       <h2 class="text-base">Project Title</h2>
       <div class="text-icon">

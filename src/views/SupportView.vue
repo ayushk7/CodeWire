@@ -1,15 +1,36 @@
+<script setup>
+import DiscordIcon from "../components/icons/IconDiscord.vue";
+import RedditIcon from "../components/icons/IconReddit.vue";
+</script>
 <template>
-  <div class="about">
-    <h1>This is an about page</h1>
-  </div>
+  <main class="w-full col-span-full">
+    <h1>Support</h1>
+    <div class="box p-10">
+      <div class="flex justify-around">
+        <div class="box-dark">
+          <div class="text-body">Get Code Wire support on our discord</div>
+          <h2 class="flex justify-center items-center text-lg">
+            <a class="flex items-center" href="https://discord.gg/nmg8ynKzjN">
+              <DiscordIcon class="mr-2" />
+              <span>Join Discord</span></a
+            >
+          </h2>
+        </div>
+        <div class="box-dark">
+          <div class="text-body">Get Code Wire support in our reddit sub</div>
+          <h2 class="flex justify-center items-center text-lg">
+            <a
+              class="flex items-center"
+              href="https://www.reddit.com/r/codewire/"
+            >
+              <RedditIcon class="mr-2" />
+              <span>Join Reddit</span></a
+            >
+          </h2>
+        </div>
+      </div>
+    </div>
+  </main>
 </template>
 
-<style>
-@media (min-width: 1024px) {
-  .about {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-  }
-}
-</style>
+<style></style>
