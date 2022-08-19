@@ -1,10 +1,14 @@
 <script setup>
 import DiscordIcon from "../components/icons/IconDiscord.vue";
 import RedditIcon from "../components/icons/IconReddit.vue";
+import SupportIcon from "../components/icons/IconSupport.vue";
 </script>
 <template>
   <main class="w-full col-span-full">
-    <h1>Support</h1>
+    <div class="flex items-center">
+      <SupportIcon class="w-9 h-9 mr-2 text-primary" />
+      <h1>Support</h1>
+    </div>
     <div class="box p-10">
       <div class="flex justify-around">
         <div class="box-dark">
