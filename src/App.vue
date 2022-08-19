@@ -9,6 +9,9 @@ import SupportIcon from "./components/icons/IconSupport.vue";
 //import HelloWorld from './components/HelloWorld.vue'
 const router = useRouter();
 const isDashboard = computed(() => router.currentRoute.value.path !== "/");
+const isDocumentation = computed(
+  () => router.currentRoute.value.path !== "/documentation"
+);
 </script>
 
 <template>
@@ -29,8 +32,8 @@ const isDashboard = computed(() => router.currentRoute.value.path !== "/");
               Dashboard
             </RouterLink>
           </li>
-          <li>
-            <RouterLink class="flex items-center" to="/about">
+          <li v-if="isDocumentation">
+            <RouterLink class="flex items-center" to="/documentation">
               <DocumentationIcon class="mr-2" />
               Documentation
             </RouterLink>
