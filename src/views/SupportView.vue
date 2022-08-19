@@ -17,14 +17,14 @@ import RedditIcon from "../components/icons/IconReddit.vue";
           </h2>
         </div>
         <div class="box-dark">
-          <div class="text-body">Get Code Wire support in our reddit sub</div>
+          <div class="text-body">Get support in our reddit sub</div>
           <h2 class="flex justify-center items-center text-lg">
             <a
               class="flex items-center"
               href="https://www.reddit.com/r/codewire/"
             >
               <RedditIcon class="mr-2" />
-              <span>Reddit</span></a
+              <span>Code Wire</span></a
             >
           </h2>
         </div>
