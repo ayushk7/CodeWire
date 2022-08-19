@@ -12,6 +12,7 @@ const isDashboard = computed(() => router.currentRoute.value.path !== "/");
 const isDocumentation = computed(
   () => router.currentRoute.value.path !== "/documentation"
 );
+const isSupport = computed(() => router.currentRoute.value.path !== "/support");
 </script>
 
 <template>
@@ -38,7 +39,7 @@ const isDocumentation = computed(
               Documentation
             </RouterLink>
           </li>
-          <li>
+          <li v-if="isSupport">
             <RouterLink class="flex items-center" to="/support">
               <SupportIcon class="mr-2" />
               Support
