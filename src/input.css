@@ -4,6 +4,16 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components {
+    .box {
+        @apply shadow-md outline outline-2 outline-border bg-box-bg w-full p-4 rounded-md;
+    }
+
+    .box-dark {
+        @apply bg-box-bg-dark rounded shadow p-4 outline outline-2 outline-border-dark;
+    }
+}
+
 @layer utilities {
     .text-shadow {
         text-shadow: 1px 2px #000000;
@@ -15,7 +25,7 @@
 }
 
 h1 {
-    @apply font-title text-primary text-shadow-md ;
+    @apply font-title text-primary text-shadow-md text-5xl mb-4 ;
 }
 
 h2,
@@ -31,7 +41,7 @@ li {
 }
 
 li a {
-    @apply text-neutral-400 text-shadow-md;
+    @apply text-body text-shadow-md;
 }
 
 a {
@@ -47,6 +57,6 @@ div span {
 }
 
 svg {
-    filter: drop-shadow(1px 2px 0px rgb(0 0 0 / .4));
+    filter: drop-shadow(2px 3px 0px rgb(0 0 0 / .6));
 }
 
