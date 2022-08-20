@@ -33,7 +33,7 @@
 }
 
 h1 {
-    @apply font-title text-primary text-shadow-md text-5xl mb-4 ;
+    @apply font-title text-primary text-shadow-md text-5xl ;
 }
 
 h2,
