@@ -5,7 +5,7 @@ import SupportIcon from "../components/icons/IconSupport.vue";
 </script>
 <template>
   <main class="w-full col-span-full">
-    <div class="flex items-center">
+    <div class="flex items-baseline mb-12">
       <SupportIcon class="w-9 h-9 mr-2 text-primary" />
       <h1>Support</h1>
     </div>

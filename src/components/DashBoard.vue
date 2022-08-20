@@ -4,10 +4,14 @@ import DotsIcon from "./icons/IconDots.vue";
 import FileIcon from "./icons/IconFile.vue";
 import FolderIcon from "./icons/IconFolder.vue";
 import DatabaseIcon from "./icons/IconDatabase.vue";
+import DashBoardIcon from "./icons/IconDashboard.vue";
 </script>
 
 <template>
-  <h1>Dashboard</h1>
+  <div class="flex items-baseline mb-12">
+    <DashBoardIcon class="w-8 h-8 mr-2 text-primary" />
+    <h1>Dashboard</h1>
+  </div>
   <div
     class="outline-dashed outline-2 outline-dot-line w-full h-16 p-4 mb-5 rounded-md text-3xl flex place-content-center"
   >
