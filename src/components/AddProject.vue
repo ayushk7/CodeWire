@@ -16,7 +16,7 @@ projects.projectArr = [];
       </form>
       <div class="w-full flex justify-end">
         <button
-          class="bg-primary p-2 rounded text-border-dark font-title text-2xl outline outline-4 outline-border-dark text-shadow"
+          class="bg-primary p-2 rounded text-border-dark font-title text-2xl outline outline-4 outline-border-dark"
           form="add-project"
           type="submit"
           value="Submit"
