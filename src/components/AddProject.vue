@@ -1,6 +1,8 @@
 <script setup>
 import projects from "../assets/js/projects.js";
-import AddProject from "./parts/Add.vue";
+import AddProject from "./parts/AddTemplate.vue";
+import FormTemplate from "./parts/FormTemplate.vue";
+import InputTemplate from "./parts/InputTemplate.vue";
 
 projects.projectArr = [];
 </script>
@@ -8,11 +10,15 @@ projects.projectArr = [];
   <AddProject msg="Add Project" />
   <div class="box flex place-content-center">
     <div class="box-dark w-full">
+      <!--      <FormTemplate id="add-project" action="/" method="POST">-->
       <form id="add-project" action="/" class="" method="POST">
-        <h2><label for="title">Project Title</label></h2>
-        <input name="title" type="text" />
-        <h2><label for="title">Description</label></h2>
-        <input name="title" type="text" />
+        <InputTemplate msg="Project Title" name="project_title" type="text" />
+        <InputTemplate
+          msg="Project Description"
+          name="description"
+          type="text"
+        />
+        <!--      </FormTemplate>-->
       </form>
       <div class="w-full flex justify-end">
         <button
