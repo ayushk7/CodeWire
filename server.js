@@ -1,18 +1,23 @@
 const express = require("express");
 const app = express();
-const PORT = 5050;
+const PORT = 8080;
 // Connect to the database
 require("./src/server/DB/connection");
 const bodyParser = require("body-parser");
+const cors = require("cors");
+var corsOptions = {
+  origin: "http://localhost:8081"
+};
+app.use(cors(corsOptions));
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+/*const path = require("path");
+const util = require("util");*/
+app.get("/", (req, res) => {
+  res.json({ message: "Welcome to Code Wire Server." });
+});
 
-const path = require("path");
-const util = require("util");
-require("vue-template-compiler");
-require("vue-loader");
-require("vue");
-
-const fs = require("fs");
+/*const fs = require("fs");
 const fileName = path.join(__dirname, "../ test.json");
 let writeJSON;
 
@@ -22,8 +27,8 @@ if (!fs.existsSync(fileName)) {
   fs.writeFileSync(fileName, writeJSON);
   console.log(`${fileName} Created`);
 }
-/*const budgetApp = await JSON.parse(fs.readFileSync(fileName));*/
-app.use("/", require("./src/server/routes/add_project.js"));
+const budgetApp = await JSON.parse(fs.readFileSync(fileName));*/
+require("./src/server/routes/routes")(app);
 app.listen(PORT, () => {
   console.log(`Server is listening at http://localhost:${PORT}`);
 });
