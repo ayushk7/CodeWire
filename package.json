@@ -1,32 +1,43 @@
 {
   "name": "code-wire",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "scripts": {
-    "dev": "vite",
+    "server": "nodemon server.js",
+    "client": "vite",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
     "build": "vite build",
     "preview": "vite preview --port 4173",
     "test:unit": "vitest --environment jsdom",
-    "lint": "eslint CodeWire-v2 --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore",
-    "buildcss": "tailwindcss -i ./src/input.css -o assets/css/styles.css --watch"
-  },
-  "dependencies": {
-    "vue": "^3.2.37",
-    "vue-router": "^4.1.3"
+    "lint": "eslint CodeWire-v2 --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.1.4",
     "@vitejs/plugin-vue": "^3.0.1",
     "@vitejs/plugin-vue-jsx": "^2.0.0",
+    "@vue/cli-service": "^5.0.8",
     "@vue/eslint-config-prettier": "^7.0.0",
     "@vue/test-utils": "^2.0.2",
+    "autoprefixer": "^10.4.8",
+    "concurrently": "^7.3.0",
+    "cors": "^2.8.5",
     "eslint": "^8.21.0",
     "eslint-plugin-vue": "^9.3.0",
+    "express": "^4.18.1",
     "jsdom": "^20.0.0",
+    "mongoose": "^6.5.2",
+    "nodemon": "^2.0.19",
+    "path": "^0.12.7",
+    "postcss": "^8.4.16",
     "prettier": "^2.7.1",
+    "tailwindcss": "^3.1.8",
+    "util": "^0.12.4",
     "vite": "^3.0.4",
     "vitest": "^0.21.0",
-      "autoprefixer": "^10.4.8",
-      "postcss": "^8.4.16",
-      "tailwindcss": "^3.1.8"
+    "vue": "^3.2.37",
+    "vue-loader": "^17.0.0",
+    "vue-router": "^4.1.3"
+  },
+  "dependencies": {
+    "body-parser": "^1.20.0"
   }
 }

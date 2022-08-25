@@ -141,5 +141,4 @@ coverage
 *.njsproj
 *.sln
 *.sw?
-
-/src/assets/css/styles.css
+package-lock.json
