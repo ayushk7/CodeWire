@@ -1,23 +1,33 @@
 <template>
-    <div ref="rete_container" class="rete-container">
+    <div ref="editor_container" class="rete-container" style="width: 100%; height: 500px">
     </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRete } from '../rete/editor'
-const rete_container = ref(null);
+
+defineProps({
+  width: {
+    type: String,
+    required: true
+  },
+  height: {
+    type: String,
+    required: true
+  }
+})
+
+
+const editor_container = ref(null);
 const [initEditor] = useRete();
 
 onMounted(() => {
-    initEditor(rete_container.value)
+    initEditor(editor_container.value)
 })
 
 </script>
 
-<style>
-.rete-container {
-    width: 100vw !important;
-    height: 100vh !important;
-}
+<style scoped>
+
 </style>

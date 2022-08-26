@@ -1,7 +1,7 @@
 <template>
     <div>
     <!-- <Dock /> -->
-    <EditorTab />
+    <EditorTab class="border-solid border-2 border-sky-500" />
     <!-- <Dock /> -->
     </div>
 </template>
@@ -13,6 +13,8 @@
 </script>
 
 
-<style>
+<style scoped>
+
+
 
 </style>

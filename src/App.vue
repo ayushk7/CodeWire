@@ -1,7 +1,7 @@
 <script setup>
 import { RouterLink, RouterView, useRouter } from "vue-router";
 // eslint-disable-next-line no-unused-vars
-import { computed } from "vue";
+import { computed, watchEffect } from "vue";
 import DashboardIcon from "./components/icons/IconDashboard.vue";
 import DocumentationIcon from "./components/icons/IconDocumentation.vue";
 import SupportIcon from "./components/icons/IconSupport.vue";
@@ -9,10 +9,14 @@ import SupportIcon from "./components/icons/IconSupport.vue";
 //import HelloWorld from './components/HelloWorld.vue'
 const router = useRouter();
 const isDashboard = computed(() => router.currentRoute.value.path !== "/");
+const isEditor = computed(() => router.currentRoute.value.path === '/editor')
+watchEffect(() => {
+  console.log(router.currentRoute.value)
+})
 </script>
 
 <template>
-  <div class="grid grid-cols-8">
+  <div v-if="!isEditor" class="grid grid-cols-8">
     <!-- main grid -->
     <header class="col-span-full flex items-center mb-20">
       <img
@@ -49,11 +53,15 @@ const isDashboard = computed(() => router.currentRoute.value.path !== "/");
       <!--     <HelloWorld msg="You did it!" />-->
     </header>
 
-    <RouterView />
 
-    <footer class=""></footer>
   </div>
+    <RouterView class="router-view"/>
+    <footer class=""></footer>
+
   <!-- main grid end -->
 </template>
 
-<style scoped></style>
+<style scoped>
+
+
+</style>
