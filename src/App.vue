@@ -13,6 +13,10 @@ const isEditor = computed(() => router.currentRoute.value.path === '/editor')
 watchEffect(() => {
   console.log(router.currentRoute.value)
 })
+const isDocumentation = computed(
+  () => router.currentRoute.value.path !== "/documentation"
+);
+const isSupport = computed(() => router.currentRoute.value.path !== "/support");
 </script>
 
 <template>
@@ -33,13 +37,13 @@ watchEffect(() => {
               Dashboard
             </RouterLink>
           </li>
-          <li>
-            <RouterLink class="flex items-center" to="/about">
+          <li v-if="isDocumentation">
+            <RouterLink class="flex items-center" to="/documentation">
               <DocumentationIcon class="mr-2" />
               Documentation
             </RouterLink>
           </li>
-          <li>
+          <li v-if="isSupport">
             <RouterLink class="flex items-center" to="/support">
               <SupportIcon class="mr-2" />
               Support
