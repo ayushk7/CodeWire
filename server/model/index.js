@@ -4,5 +4,6 @@ mongoose.Promise = global.Promise;
 const db = {};
 db.mongoose = mongoose;
 db.url = dbConfig.url;
-db.project = require("./projects_db.js")(mongoose);
+db.project = require("./projects.db.js")(mongoose)
+db.script = require("./scripts.db.js")(mongoose)
 module.exports = db;
