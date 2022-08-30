@@ -1,18 +1,17 @@
 import Rete from 'rete';
 import { h } from 'vue';
-import NumberInput from './components/NumberInput.vue'
+import InputTemplate from './components/InputTemplate.vue'
 export class NumControl extends Rete.Control {
     constructor(emitter, key, readonly) {
       super(key);
       this.emitter = emitter;
       this.key = key;
-      this.component = h(NumberInput, { value: 5});
       this.scope = {
-        value: 45,
-        readonly,
+        type: 'number',
+        value: 0,
         change: this.change.bind(this),
       };
-      this.component = h(NumberInput, this.scope)
+      this.component = h(InputTemplate, this.scope)
 
     }
   

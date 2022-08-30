@@ -1,6 +1,6 @@
 <script setup>
 defineProps({
-  msg: {
+  label: {
     type: String,
     required: true,
   },
@@ -12,11 +12,16 @@ defineProps({
     type: String,
     required: true,
   },
+  modelValue: {
+    type: [String, Number],
+    default: ''
+  }
 });
+
 </script>
 <template>
   <h2>
-    <label :for="name">{{ msg }}</label>
+    <label :for="name">{{ label }}</label>
   </h2>
-  <input :name="name" :type="type" />
+  <input :name="name" :type="type" :placeholder="label" :value="modelValue" @input="$emit('update:modelValue', $event.target.value)"/>
 </template>

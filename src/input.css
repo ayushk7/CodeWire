@@ -33,7 +33,7 @@
 }
 
 h1 {
-    @apply font-title text-primary text-shadow-md text-5xl ;
+    @apply font-title text-primary text-shadow-md text-5xl;
 }
 
 h2,
@@ -41,7 +41,7 @@ h3,
 h4,
 h5,
 h6 {
-    @apply font-title text-body text-shadow mb-2 text-2xl ;
+    @apply font-title text-body text-shadow mb-2 text-2xl;
 }
 
 li {
@@ -69,7 +69,7 @@ svg {
 }
 
 input {
-    @apply border-solid border-4 border-border-dark w-full h-10 bg-neutral-800 mb-4 text-2xl ;
+    @apply border-solid border-4 border-border-dark w-full h-10 bg-neutral-800 mb-4 text-2xl;
 }
 
 textarea:focus,
@@ -79,5 +79,3 @@ input[type]:focus,
     @apply outline-4 outline outline-neutral-800;
 
 }
-
-
