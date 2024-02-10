@@ -153,13 +153,8 @@ case "Add": {
 ![](images/add_ex.JPG)
 
 
-#### GOALS
-1. Add support for functions
-2. Add support for custom modules
-3. Make it available in VSCode as an extension
-4. Add support for multiple target languages to compile the graph to(for example python, C++ etc)
+## Thanks to all who ever checked Codewire out. I want to convery that I won't be able to maintain this project any further (as you can see there is no commit from past 2 years) because of time constrainsts, my full-time job, and the not so great code quality which I wrote back in the college 😅. Please feel free to fork this out, or raise prs I'll be happy to look at them.
 
-<i> These goals are ordered based on the priority </i>
 
 
 
