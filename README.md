@@ -1,6 +1,8 @@
 # CodeWire: A Comprehensive Guide
 
 ![CodeWire](images/Code%20Wire%20Logo.png)
+![GitHub stars](https://img.shields.io/github/stars/ayushk7/CodeWire?style=social)
+![GitHub forks](https://img.shields.io/github/forks/ayushk7/CodeWire?style=social)
 
 Welcome to **CodeWire**, a visual scripting tool inspired by Unreal Engine 4's Blueprints. It is designed to help users visualize code and automate repetitive tasks efficiently. CodeWire is language-agnostic, meaning multiple programming languages can be supported as target outputs in future updates. 
 
