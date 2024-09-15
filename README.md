@@ -1,9 +1,13 @@
 # CodeWire: A Comprehensive Guide
 
-![CodeWire](images/Code%20Wire%20Logo.png)
-
 ![GitHub stars](https://img.shields.io/github/stars/ayushk7/CodeWire?style=social)
 ![GitHub forks](https://img.shields.io/github/forks/ayushk7/CodeWire?style=social)
+![GitHub license](https://img.shields.io/github/license/ayushk7/CodeWire)
+
+
+![CodeWire](images/Code%20Wire%20Logo.png)
+
+
 
 Welcome to **CodeWire**, a visual scripting tool inspired by Unreal Engine 4's Blueprints. It is designed to help users visualize code and automate repetitive tasks efficiently. CodeWire is language-agnostic, meaning multiple programming languages can be supported as target outputs in future updates. 
 
@@ -24,11 +28,11 @@ Try CodeWire at: [CodeWire](https://ayushk7.github.io/CodeWire/)
 ## Getting Started
 To start using CodeWire, open the application, right-click on the canvas, and start adding nodes. CodeWire provides a visual flow for writing scripts, allowing for faster prototyping of ideas.
 
-### Key Features:
-- **Node-Based Scripting**: Create logic through interconnected nodes, which is easier to visualize.
-- **Execution Flow**: Control the script's flow through execution pins and connections.
-- **Language Agnostic**: While CodeWire currently supports JavaScript output, it can be extended to multiple languages.
-- **User-Friendly Interface**: Easily create, pan, and zoom through the node editor.
+## Features
+- 🚀 **Node-Based Editor** for visual scripting
+- 🌐 **Multi-Language Support** (Currently supports JavaScript)
+- 🎨 **Intuitive User Interface** for better visualization and faster coding
+- 🛠️ **Custom Nodes** creation for extended functionality
 
 ## Basic Workflow
 1. **Add a Node**: Right-click anywhere on the canvas and select "Begin" to start your node chain.
