@@ -23,7 +23,7 @@ Try CodeWire at: [CodeWire](https://ayushk7.github.io/CodeWire/)
 5. [Node Anatomy](#node-anatomy)
 6. [Executing Code](#executing-code)
 7. [Adding New Nodes](#adding-new-nodes)
-8. [Contributing to CodeWire](#contributing)
+8. [Contributing to CodeWire](#contributing-to-codewire)
 
 ## Getting Started
 To start using CodeWire, open the application, right-click on the canvas, and start adding nodes. CodeWire provides a visual flow for writing scripts, allowing for faster prototyping of ideas.
