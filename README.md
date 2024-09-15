@@ -1,6 +1,7 @@
 # CodeWire: A Comprehensive Guide
 
 ![CodeWire](images/Code%20Wire%20Logo.png)
+
 ![GitHub stars](https://img.shields.io/github/stars/ayushk7/CodeWire?style=social)
 ![GitHub forks](https://img.shields.io/github/forks/ayushk7/CodeWire?style=social)
 
