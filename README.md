@@ -29,21 +29,17 @@ Tutorial:
 
 ![HTTP REQUEST/Compiled Code](images/httpreq.png)
 
-This project is still in under development,
-subsequent new features like functions, delay, sand boxing, save, undo will be added.
 
-## Contributing
 
-Join Discord Server https://discord.gg/VuB2UjzqrK
-Thanks @L-o-o-t for creating the server
+## Documentation
 
-### Anatomy Of Nodes
+### Node Anatomy
 ![](images/Untitled%20Diagram.drawio.png)
 
 
 
 
-### Adding New JS Nodes
+### Adding New Nodes
 1. Add the description of node in the [javascript/Nodes/nodes.js](javascript/Nodes/nodes.js)
 ```js
     //description of the Print node
@@ -152,8 +148,6 @@ case "Add": {
 ```
 ![](images/add_ex.JPG)
 
-
-## Thanks to all who ever checked Codewire out. I want to convery that I won't be able to maintain this project any further (as you can see there is no commit from past 2 years) because of time constrainsts, my full-time job, and the not so great code quality which I wrote back in the college 😅. Please feel free to fork this out, or raise prs I'll be happy to look at them.
 
 
 
