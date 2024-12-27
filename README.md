@@ -1,8 +1,10 @@
 # CodeWire
+![Stars](https://img.shields.io/github/stars/username/repository?style=social)
+![Forks](https://img.shields.io/github/forks/username/repository?style=social)
 
-<div style="text-align: center;">
+<p align="center">
   <img src="images/Code%20Wire%20Logo.png" alt="CodeWire" />
-</div>
+</p>
 
 Try at https://ayushk7.github.io/CodeWire/
 CodeWire is a node based editor inspired by UE4 Blueprints which helps in better visualization of the code,
