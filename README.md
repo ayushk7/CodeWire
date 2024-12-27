@@ -1,6 +1,6 @@
 # CodeWire
-![Stars](https://img.shields.io/github/stars/username/repository?style=social)
-![Forks](https://img.shields.io/github/forks/username/repository?style=social)
+![Stars](https://img.shields.io/github/stars/ayushk7/CodeWire?style=social)
+![Forks](https://img.shields.io/github/forks/ayushk7/CodeWire?style=social)
 
 <p align="center">
   <img src="images/Code%20Wire%20Logo.png" alt="CodeWire" />
