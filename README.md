@@ -1,5 +1,8 @@
 # CodeWire
-![CodeWire](images/Code%20Wire%20Logo.png)
+
+<div style="text-align: center;">
+  <img src="images/Code%20Wire%20Logo.png" alt="CodeWire" />
+</div>
 
 Try at https://ayushk7.github.io/CodeWire/
 CodeWire is a node based editor inspired by UE4 Blueprints which helps in better visualization of the code,
