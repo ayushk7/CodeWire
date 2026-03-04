@@ -1,5 +1,5 @@
-import { refresh } from '../SaveAndLoad/SaveAndLoad.js'
-import { Import } from '../SaveAndLoad/SaveAndLoad.js'
+import { refresh } from '../SaveAndLoad/saveAndLoad.js'
+import { Import } from '../SaveAndLoad/saveAndLoad.js'
 
 export function showAlert(msg) {
     let alertMsg = document.getElementById("alert-box").children[0].children[0];

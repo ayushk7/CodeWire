@@ -1,4 +1,4 @@
-import { setLocationOfNode } from '../setLocationOfNode/setLocationOfNode.js'
+import { setLocationOfNode } from '../SetLocationOfNode/setLocationOfNode.js'
 import { Nodes } from '../Nodes/nodes.js'
 import { variableList } from '../Variable/variable.js'
 import { deleteProgramNode, deleteWire } from '../Delete/delete.js'

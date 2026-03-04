@@ -1,5 +1,5 @@
 import { Nodes } from '../Nodes/nodes.js'
-import { addConnectionWire } from '../Wiring/Wiring.js'
+import { addConnectionWire } from '../Wiring/wiring.js'
 import { variableList } from '../Variable/variable.js'
 import {showAlert, vscriptOnLoad} from '../main/alertBox.js'
 function writeError(err, msg) {

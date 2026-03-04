@@ -57,9 +57,7 @@ export var AppStage = {
         })
         window.addEventListener('resize', () => {
             let container = document.querySelector('#container');
-            // console.log("Resized");
             let containerWidth = container.offsetWidth;
-            let scale = containerWidth / stage.width();
             stage.width(container.offsetWidth);
             stage.height(container.offsetHeight);
             stage.draw();

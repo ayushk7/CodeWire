@@ -1,6 +1,6 @@
-import { InputBox } from '../InputBox/InputBox.js'
+import { InputBox } from '../InputBox/inputBox.js'
 import { colorMap } from '../ColorMap/colorMap.js'
-import { setLocationOfNode } from '../setLocationOfNode/setLocationOfNode.js';
+import { setLocationOfNode } from '../SetLocationOfNode/setLocationOfNode.js';
 import { buildNodeDescription, hasType } from '../NodeRegistry/index.js';
 let placeLocation = function (location) {
     //"this" is stage
