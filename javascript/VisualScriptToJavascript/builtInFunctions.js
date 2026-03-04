@@ -61,6 +61,11 @@ export const BuilInFunctions = {
         return [(_value !== null), _value];
     }
     `,
+    _sleep: `function _sleep(_ms){
+        const _start = Date.now();
+        while (Date.now() - _start < _ms) {}
+    }
+    `,
 
 
 }

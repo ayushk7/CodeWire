@@ -1,3 +1,4 @@
+import '../NodeRegistry/index.js'; // load node registry first so all nodes are registered
 import { AppStage } from '../AppStage/intiStage.js'
 // import {SelectionBox} from '../SelectionBox/SelectionBox.js'
 import { DragAndDrop } from '../DragAndDrop/DragAndDrop.js'

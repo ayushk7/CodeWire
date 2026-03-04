@@ -1,0 +1,10 @@
+{
+  "name": "codewire",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "test": "node test/compiler.test.js",
+    "test:compiler": "node test/compiler.test.js",
+    "setup:hooks": "node scripts/setup-git-hooks.js"
+  }
+}

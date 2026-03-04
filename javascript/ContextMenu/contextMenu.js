@@ -2,13 +2,34 @@ import { setLocationOfNode } from '../setLocationOfNode/setLocationOfNode.js'
 import { Nodes } from '../Nodes/nodes.js'
 import { variableList } from '../Variable/variable.js'
 import { deleteProgramNode, deleteWire } from '../Delete/delete.js'
+import { getMenuOrder, getDefinition } from '../NodeRegistry/index.js'
 
 export var ContextMenu = {
     contextMenu: function (stage, layer) {
         let contextMenu = document.getElementById("ctx-menu-container");
+        let contextMenuList = document.getElementById("context-menu");
         let deleteCtxMenu = document.getElementById("delete-ctx-container");
         let getSetCtxMenu = document.getElementById("get-set-ctx-menu-container");
         let searchBar = document.getElementById("ctx-search-bar");
+
+        // Build context menu from node registry (single source of truth)
+        contextMenuList.innerHTML = '';
+        const menuOrder = getMenuOrder();
+        for (const id of menuOrder) {
+            if (id === null) {
+                const hr = document.createElement('hr');
+                contextMenuList.appendChild(hr);
+            } else {
+                const def = getDefinition(id);
+                if (def) {
+                    const div = document.createElement('div');
+                    div.className = 'context-menu-items';
+                    div.textContent = def.label;
+                    div.dataset.nodeId = id;
+                    contextMenuList.appendChild(div);
+                }
+            }
+        }
         let draggedVariableInfo = {
             name: null,
             dataType: null,
@@ -24,7 +45,9 @@ export var ContextMenu = {
                 contextMenu.classList.toggle("hidden", true);
                 searchBar.value = '';
                 for (let ctxItem of contextMenu.children[1].children) {
-                    ctxItem.classList.toggle("hidden", false);
+                    if (ctxItem.classList && ctxItem.classList.contains('context-menu-items')) {
+                        ctxItem.classList.toggle("hidden", false);
+                    }
                 }
             }
         }
@@ -61,11 +84,12 @@ export var ContextMenu = {
             // let patt = new RegExp(`${key}`, "gis");
             // console.log(patt);
             for (let ctxItem of contextMenu.children[1].children) {
-                if (ctxItem.innerHTML.toString().toLowerCase().includes(key)) {
-                    ctxItem.classList.toggle("hidden", false);
-                }
-                else {
-                    ctxItem.classList.toggle("hidden", true);
+                if (ctxItem.classList && ctxItem.classList.contains('context-menu-items')) {
+                    if (ctxItem.textContent.toLowerCase().includes(key)) {
+                        ctxItem.classList.toggle("hidden", false);
+                    } else {
+                        ctxItem.classList.toggle("hidden", true);
+                    }
                 }
             }
 
@@ -75,8 +99,10 @@ export var ContextMenu = {
 
 
         for (let e of contextMenu.children[1].children) {
-            this.addEventToCtxMenuItems(e);
-        };
+            if (e.classList && e.classList.contains('context-menu-items')) {
+                this.addEventToCtxMenuItems(e);
+            }
+        }
 
         // let alreadyPresent = [];   // to prevent adding multiple eventListeners
         stage.on('contextmenu', function (e) {
@@ -167,19 +193,18 @@ export var ContextMenu = {
 function makeNode(e, stage, layer, toggleContextMenu) {
     let xx = e.parentElement.getBoundingClientRect().x - stage.getContainer().getBoundingClientRect().x;
     let yy = e.parentElement.getBoundingClientRect().y - stage.getContainer().getBoundingClientRect().y;
-    let node = undefined;
     let dataType;
     if (e.dataset.datatype)
         dataType = e.dataset.datatype;
-    let tmp = e.innerHTML.split(" ");
+    const type = e.dataset.nodeId || e.innerHTML;
+    let tmp = type.split(" ");
     let isGetSet = "";
     if (tmp[0] == "Get")
         isGetSet = "Get";
     else if (tmp[0] == "Set")
         isGetSet = "Set";
     let defValue = null;
-    // console.log(e.innerHTML);
-    Nodes.CreateNode(e.innerHTML, { x: xx, y: yy }, layer, stage, isGetSet, dataType, defValue);
+    Nodes.CreateNode(type, { x: xx, y: yy }, layer, stage, isGetSet, dataType, defValue);
     layer.draw();
     toggleContextMenu([], false);
 }
