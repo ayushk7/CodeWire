@@ -1,6 +1,6 @@
-import { colorMap } from '../ColorMap/colorMap.js'
-import { variableList } from '../Variable/variable.js'
-import { showAlert } from '../main/alertBox.js'
+import { colorMap } from '../core/colorMap.js'
+import { variableList } from './variableList.js'
+import { showAlert } from './dialogs.js'
 export class leftPanel {
     constructor() {
         let isBooleanValid = false;

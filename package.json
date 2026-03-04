@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
+    "start": "npx serve src -p 3000",
     "test": "node test/compiler.test.js",
     "test:compiler": "node test/compiler.test.js",
     "setup:hooks": "node scripts/setup-git-hooks.js"
