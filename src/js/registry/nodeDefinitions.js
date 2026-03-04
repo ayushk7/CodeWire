@@ -9,7 +9,7 @@
  * 5. Add the node id to the registerMenuOrder() array at the bottom (use null for a separator).
  */
 import { registerNode, registerMenuOrder } from './registry.js';
-import { BuilInFunctions } from '../VisualScriptToJavascript/builtInFunctions.js';
+import { BuilInFunctions } from '../compiler/builtInFunctions.js';
 
 // ---------- Helper used by codegen (compiler has getExecOut, getInputPins, handleInputs, script, coreAlgorithm, builtin_functions) ----------
 // Codegen functions receive (compiler, node) or (compiler, inputNode) and use compiler.* freely.

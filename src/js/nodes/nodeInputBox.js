@@ -1,4 +1,4 @@
-
+﻿
 export var InputBox = class{
     constructor(stage, layer, type, grp, position, colorMap, inputPin, iplabel, inputPinsPlaced, defValueContainer, defValueContainerForSave)
     {

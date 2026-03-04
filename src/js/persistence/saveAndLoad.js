@@ -1,7 +1,7 @@
-import { Nodes } from '../Nodes/nodes.js'
-import { addConnectionWire } from '../Wiring/wiring.js'
-import { variableList } from '../Variable/variable.js'
-import {showAlert, vscriptOnLoad} from '../main/alertBox.js'
+import { Nodes } from '../nodes/nodeFactory.js'
+import { addConnectionWire } from '../nodes/wiring.js'
+import { variableList } from '../ui/variableList.js'
+import { showAlert, vscriptOnLoad } from '../ui/dialogs.js'
 function writeError(err, msg) {
     document.getElementById("console-window").classList.toggle("hidden", false);
     let codeDoc = document.getElementById("console").contentWindow.document;

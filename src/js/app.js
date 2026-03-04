@@ -1,15 +1,15 @@
-import '../NodeRegistry/index.js'; // load node registry first so all nodes are registered
-import { AppStage } from '../AppStage/initStage.js'
-// import {SelectionBox} from '../SelectionBox/selectionBox.js'
-import { DragAndDrop } from '../DragAndDrop/dragAndDrop.js'
-import { Wiring } from '../Wiring/wiring.js'
-import { ContextMenu } from '../ContextMenu/contextMenu.js'
-import { leftPanel } from '../LeftPanel/leftPanel.js'
-import { VSToJS } from '../VisualScriptToJavascript/visualScriptToJavascript.js'
-import { Delete } from '../Delete/delete.js'
-import { Export, Import, Save, prompLastSave } from '../SaveAndLoad/saveAndLoad.js'
-import { showAlert, prompRefreshOrStarter } from './alertBox.js'
-import { refresh } from '../VisualScriptToJavascript/liveCode.js'
+import './registry/index.js';
+import { AppStage } from './core/stage.js'
+// import { SelectionBox } from './editor/selectionBox.js'
+import { DragAndDrop } from './editor/dragAndDrop.js'
+import { Wiring } from './nodes/wiring.js'
+import { ContextMenu } from './editor/contextMenu.js'
+import { leftPanel } from './ui/variablePanel.js'
+import { VSToJS } from './compiler/compiler.js'
+import { Delete } from './editor/deleteHandler.js'
+import { Export, Import, Save, prompLastSave } from './persistence/saveAndLoad.js'
+import { showAlert, prompRefreshOrStarter } from './ui/dialogs.js'
+import { refresh } from './compiler/codePreview.js'
 // var width = window.innerWidth;
 // var height = window.innerHeight;
 let stage = AppStage.getStage(document.getElementById("container").clientWidth, document.getElementById("container").clientHeight, 'container');

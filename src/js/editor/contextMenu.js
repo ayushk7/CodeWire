@@ -1,8 +1,8 @@
-import { setLocationOfNode } from '../SetLocationOfNode/setLocationOfNode.js'
-import { Nodes } from '../Nodes/nodes.js'
-import { variableList } from '../Variable/variable.js'
-import { deleteProgramNode, deleteWire } from '../Delete/delete.js'
-import { getMenuOrder, getDefinition } from '../NodeRegistry/index.js'
+import { setLocationOfNode } from '../nodes/nodePosition.js'
+import { Nodes } from '../nodes/nodeFactory.js'
+import { variableList } from '../ui/variableList.js'
+import { deleteProgramNode, deleteWire } from './deleteHandler.js'
+import { getMenuOrder, getDefinition } from '../registry/index.js'
 
 export var ContextMenu = {
     contextMenu: function (stage, layer) {

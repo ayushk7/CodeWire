@@ -30,10 +30,10 @@ Use [Conventional Commits](https://www.conventionalcommits.org/):
 
 ## File and folder naming
 
-- **Feature folders:** Use PascalCase for app feature modules (e.g. `Nodes`, `ContextMenu`, `NodeRegistry`, `SetLocationOfNode`). Use lowercase for non-feature folders (e.g. `main`, `dependencies`, `scripts`).
-- **JavaScript files:** Use camelCase (e.g. `alertBox.js`, `contextMenu.js`, `initStage.js`, `inputBox.js`, `saveAndLoad.js`). Match the main export or feature name. Use `index.js` for module entry points.
-- **Third-party / assets:** Keep the `javascript/dependencies/` folder (lowercase) for CodeMirror, jQuery, Konva, etc. Use lowercase for subfolders (e.g. `codemirror`, `konva`) to avoid case-sensitivity issues on Linux/macOS.
-- **Avoid:** Typos in filenames (e.g. `intiStage` → `initStage`); mixing casing for the same concept (e.g. `Dependencies` vs `dependencies`).
+- **Domain folders:** Use lowercase for domain group folders under `src/js/` (e.g. `core`, `nodes`, `registry`, `compiler`, `editor`, `ui`, `persistence`).
+- **JavaScript files:** Use camelCase (e.g. `nodeFactory.js`, `contextMenu.js`, `stage.js`, `saveAndLoad.js`). Match the main export or feature name. Use `index.js` for module entry points.
+- **App layout:** App source lives under `src/`: entry point `src/index.html`, styles and images in `src/`, app JavaScript in `src/js/` (domain folders as above), app entry point at `src/js/app.js`. Third-party libraries live in `src/vendor/` (e.g. `codemirror`, `jquery`, `konva`). Use lowercase for vendor subfolders to avoid case-sensitivity issues.
+- **Avoid:** Typos in filenames; mixing casing for the same concept (e.g. `Dependencies` vs `dependencies`).
 
 ---
 

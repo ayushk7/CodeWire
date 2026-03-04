@@ -1,5 +1,5 @@
-import {colorMap} from '../ColorMap/colorMap.js'
-import {ContextMenu } from '../ContextMenu/contextMenu.js'
+import { colorMap } from '../core/colorMap.js'
+import { ContextMenu } from '../editor/contextMenu.js'
 class VariableList {
 
     constructor()

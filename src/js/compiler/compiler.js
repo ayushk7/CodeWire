@@ -1,7 +1,7 @@
-import { variableList } from '../Variable/variable.js'
-import { showAlert } from '../main/alertBox.js'
+import { variableList } from '../ui/variableList.js'
+import { showAlert } from '../ui/dialogs.js'
 import { BuilInFunctions } from './builtInFunctions.js'
-import { runExecCodegen, runExprCodegen, hasType } from '../NodeRegistry/index.js'
+import { runExecCodegen, runExprCodegen, hasType } from '../registry/index.js'
 export var VSToJS = class {
 
     constructor(stage, layer, isRunOrCode) {

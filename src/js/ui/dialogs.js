@@ -1,5 +1,5 @@
-import { refresh } from '../SaveAndLoad/saveAndLoad.js'
-import { Import } from '../SaveAndLoad/saveAndLoad.js'
+import { refresh } from '../persistence/saveAndLoad.js'
+import { Import } from '../persistence/saveAndLoad.js'
 
 export function showAlert(msg) {
     let alertMsg = document.getElementById("alert-box").children[0].children[0];
