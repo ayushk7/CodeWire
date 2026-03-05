@@ -2,6 +2,7 @@ import { InputBox } from './nodeInputBox.js'
 import { colorMap } from '../core/colorMap.js'
 import { setLocationOfNode } from './nodePosition.js';
 import { buildNodeDescription, hasType } from '../registry/index.js';
+import { deleteNodeByGroup } from '../editor/deleteHandler.js';
 let placeLocation = function (location) {
     //"this" is stage
     return {
@@ -205,61 +206,54 @@ export var Nodes = {
     optimizeDrag: function (grp, stage, layer) {
         let dragLayer = stage.findOne('#dragLayer');
         let wireLayer = stage.findOne('#wireLayer');
+        function moveWireToLayer(aWire, targetLayer) {
+            aWire.moveTo(targetLayer);
+            if (aWire._closeIndicator) aWire._closeIndicator.moveTo(targetLayer);
+        }
         grp.on('dragstart', () => {
             grp.moveTo(dragLayer);
             for (let each of grp.customClass.execInPins) {
                 for (let aWire of each.wire) {
-                    aWire.moveTo(dragLayer);
+                    moveWireToLayer(aWire, dragLayer);
                 }
             }
             for (let each of grp.customClass.execOutPins) {
                 if (each.wire)
-                    each.wire.moveTo(dragLayer);
+                    moveWireToLayer(each.wire, dragLayer);
             }
             for (let each of grp.customClass.inputPins) {
                 if (each.wire)
-                    each.wire.moveTo(dragLayer);
+                    moveWireToLayer(each.wire, dragLayer);
             }
             for (let each of grp.customClass.outputPins) {
                 for (let aWire of each.wire) {
-                    aWire.moveTo(dragLayer);
+                    moveWireToLayer(aWire, dragLayer);
                 }
             }
             wireLayer.draw();
             dragLayer.draw();
             layer.draw();
-            // try {
-            //     if (layer.hasChildren())
-            //         layer.cache();
-            //     if (wireLayer.hasChildren())
-            //         wireLayer.cache();
-            // }
-            // catch (err) {
-
-            // }
         })
         grp.on('dragend', () => {
             grp.moveTo(layer);
             for (let each of grp.customClass.execInPins) {
                 for (let aWire of each.wire) {
-                    aWire.moveTo(wireLayer);
+                    moveWireToLayer(aWire, wireLayer);
                 }
             }
             for (let each of grp.customClass.execOutPins) {
                 if (each.wire)
-                    each.wire.moveTo(wireLayer);
+                    moveWireToLayer(each.wire, wireLayer);
             }
             for (let each of grp.customClass.inputPins) {
                 if (each.wire)
-                    each.wire.moveTo(wireLayer);
+                    moveWireToLayer(each.wire, wireLayer);
             }
             for (let each of grp.customClass.outputPins) {
                 for (let aWire of each.wire) {
-                    aWire.moveTo(wireLayer);
+                    moveWireToLayer(aWire, wireLayer);
                 }
             }
-            // layer.clearCache();
-            // wireLayer.clearCache();
             wireLayer.draw();
             dragLayer.draw();
             layer.draw();
@@ -301,25 +295,69 @@ export var Nodes = {
             let width = nodeDescription.colums * 15;
             this.grp.position(relativePosition(location));
             let rect = Nodes.getRectBlock(height, width);
+            this.bodyRect = rect;
             this.grp.add(rect);
             let borderRect = Nodes.getBorderRect(height, width);
             let titleLabel = Nodes.getLabel(nodeDescription.nodeTitle, 20, width, nodeDescription.color);
+            this.titleBg = titleLabel.bg;
+            this.titleText = titleLabel.text;
             this.grp.add(titleLabel.bg);
             this.grp.add(titleLabel.text);
             this.grp.add(borderRect);
 
+            let closeBtn = null;
+            if (nodeDescription.nodeTitle !== 'Begin') {
+                const btnSize = 16;
+                const btnX = width - btnSize - 4;
+                const btnY = Math.round((23 - btnSize) / 2);
+                closeBtn = new Konva.Group({ x: btnX, y: btnY, visible: false });
+                const btnBg = new Konva.Rect({
+                    width: btnSize,
+                    height: btnSize,
+                    fill: 'rgba(0,0,0,0.5)',
+                    cornerRadius: 3,
+                });
+                const btnText = new Konva.Text({
+                    text: '\u00D7',
+                    fontSize: 14,
+                    fontFamily: 'Verdana',
+                    fill: '#fff',
+                    width: btnSize,
+                    height: btnSize,
+                    align: 'center',
+                    verticalAlign: 'middle',
+                });
+                closeBtn.add(btnBg);
+                closeBtn.add(btnText);
+                closeBtn.on('mouseenter', () => {
+                    btnBg.fill('rgba(200,50,50,0.85)');
+                    document.body.style.cursor = 'pointer';
+                    layer.draw();
+                });
+                closeBtn.on('mouseleave', () => {
+                    btnBg.fill('rgba(0,0,0,0.5)');
+                    document.body.style.cursor = 'default';
+                    layer.draw();
+                });
+                closeBtn.on('mousedown', (e) => {
+                    e.cancelBubble = true;
+                });
+                closeBtn.on('click', (e) => {
+                    e.cancelBubble = true;
+                    document.body.style.cursor = 'default';
+                    deleteNodeByGroup(this.grp, stage);
+                });
+                this.grp.add(closeBtn);
+            }
+
             this.grp.on("mouseover", (e) => {
-                // console.log(e);
-                // if(shape == this.grp)
                 borderRect.strokeWidth(1);
+                if (closeBtn) closeBtn.visible(true);
                 layer.draw();
             });
             this.grp.on("mouseleave", (e) => {
-                // rect.opacity(0.9);
-                // rect.shadowOffset({ x: 15, y: 15 });
-                // this.grp.scale(1);
-                // this.grp.filters([]);
                 borderRect.strokeWidth(0);
+                if (closeBtn) closeBtn.visible(false);
                 layer.draw();
             });
             this.grp.on('mousedown', (e) => {

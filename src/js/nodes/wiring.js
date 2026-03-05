@@ -145,13 +145,27 @@ export function addConnectionWire(dest, src, stage, dir, wireLayer) {
         name: "isConnection",
         bezier: true,
     });
+    let closeIndicator = null;
+    let closeHideTimeout = null;
     connectionWire.on('mouseover', (e) => {
+        if (closeHideTimeout) { clearTimeout(closeHideTimeout); closeHideTimeout = null; }
         connectionWire.strokeWidth(5);
+        if (closeIndicator) {
+            const pts = connectionWire.points();
+            if (pts.length >= 8) {
+                closeIndicator.x((pts[0] + pts[6]) / 2);
+                closeIndicator.y((pts[1] + pts[7]) / 2);
+            }
+            closeIndicator.visible(true);
+        }
         wireLayer.draw();
     });
     connectionWire.on('mouseleave', (e) => {
-        connectionWire.strokeWidth(2);
-        wireLayer.draw();
+        closeHideTimeout = setTimeout(() => {
+            connectionWire.strokeWidth(2);
+            if (closeIndicator) closeIndicator.visible(false);
+            wireLayer.draw();
+        }, 100);
     })
     let srcLoc = placeLocation(src.getAbsolutePosition(), stage);
     let destLoc = placeLocation(dest.getAbsolutePosition(), stage);
@@ -207,6 +221,76 @@ export function addConnectionWire(dest, src, stage, dir, wireLayer) {
         }
     );
     wireLayer.draw();
+
+    const closeBtnSize = 18;
+    closeIndicator = new Konva.Group({ visible: false });
+    const closeBg = new Konva.Rect({
+        width: closeBtnSize,
+        height: closeBtnSize,
+        offsetX: closeBtnSize / 2,
+        offsetY: closeBtnSize / 2,
+        fill: 'rgba(0,0,0,0.7)',
+        stroke: 'rgba(255,255,255,0.3)',
+        strokeWidth: 1,
+        cornerRadius: 4,
+    });
+    const closeText = new Konva.Text({
+        text: '\u00D7',
+        fontSize: 14,
+        fontFamily: 'Verdana',
+        fill: '#fff',
+        width: closeBtnSize,
+        height: closeBtnSize,
+        offsetX: closeBtnSize / 2,
+        offsetY: closeBtnSize / 2,
+        align: 'center',
+        verticalAlign: 'middle',
+    });
+    closeIndicator.add(closeBg);
+    closeIndicator.add(closeText);
+    const initPts = connectionWire.points();
+    if (initPts.length >= 8) {
+        closeIndicator.x((initPts[0] + initPts[6]) / 2);
+        closeIndicator.y((initPts[1] + initPts[7]) / 2);
+    }
+    wireLayer.add(closeIndicator);
+    connectionWire._closeIndicator = closeIndicator;
+
+    closeIndicator.on('mouseenter', () => {
+        if (closeHideTimeout) { clearTimeout(closeHideTimeout); closeHideTimeout = null; }
+        closeBg.fill('rgba(200,50,50,0.85)');
+        document.body.style.cursor = 'pointer';
+        wireLayer.draw();
+    });
+    closeIndicator.on('mouseleave', () => {
+        closeBg.fill('rgba(0,0,0,0.7)');
+        document.body.style.cursor = 'default';
+        connectionWire.strokeWidth(2);
+        closeIndicator.visible(false);
+        wireLayer.draw();
+    });
+    closeIndicator.on('click', () => {
+        document.body.style.cursor = 'default';
+        if (closeHideTimeout) { clearTimeout(closeHideTimeout); closeHideTimeout = null; }
+        deleteWire(connectionWire);
+        stage.draw();
+    });
+
+    const srcParentGrp = connectionWire.attrs.src.getParent();
+    const destParentGrp = connectionWire.attrs.dest.getParent();
+    function updateClosePos() {
+        const p = connectionWire.points();
+        if (p.length >= 8) {
+            closeIndicator.x((p[0] + p[6]) / 2);
+            closeIndicator.y((p[1] + p[7]) / 2);
+        }
+    }
+    srcParentGrp.on('dragmove.wireclose', updateClosePos);
+    destParentGrp.on('dragmove.wireclose', updateClosePos);
+    connectionWire._closeDragCleanup = () => {
+        srcParentGrp.off('dragmove.wireclose', updateClosePos);
+        destParentGrp.off('dragmove.wireclose', updateClosePos);
+    };
 }
 
 function setWirePoints(destLoc, srcLoc, dir, wire) {

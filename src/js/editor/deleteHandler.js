@@ -1,54 +1,14 @@
 
 export var Delete = {
     enableDelete: function (stage, layer) {
-        let ctrlIsPressed = false;
-        // console.log(wireLayer);
-        stage.on("click", (e) => {
-            // console.log(e.target.getParent());
-            if (e.target.name() == "isConnection" && ctrlIsPressed) {
-                let aWire = e.target;
-                deleteWire(aWire);
-                let wireLayer = stage.findOne('#wireLayer');
-                stage.draw();
-
-            }
-            else if (e.target !== stage && e.target.getParent().name() == "aProgramNodeGroup" && ctrlIsPressed) {
-                // console.log(e);
-                deleteProgramNode(e, layer, stage);
-
-            }
-        });
-        stage.container().addEventListener("keydown", (e) => {
-            e.preventDefault();
-            if (e.code == "ControlLeft" && !ctrlIsPressed) {
-                ctrlIsPressed = true;
-                let wireLayer = stage.findOne('#wireLayer');
-                let wireArray = wireLayer.find(".isConnection");
-                wireArray.forEach(wire => {
-                    wire.strokeWidth(5);
-                    // wire.hitStrokeWidth(10);
-                });
-                stage.draw();
-            }
-        });
-        stage.container().addEventListener("keyup", (e) => {
-            e.preventDefault();
-            let wireLayer = stage.findOne('#wireLayer');
-            if (e.code == "ControlLeft") {
-                let wireArray = wireLayer.find(".isConnection");
-                wireArray.forEach(wire => {
-                    // wire.hitStrokeWidth(0);
-                    wire.strokeWidth(2);
-                });
-                // layer.toggleHitCanvas();
-                stage.draw();
-                ctrlIsPressed = false;
-            }
-        })
     }
 }
 export function deleteProgramNode(e, layer, stage) {
     let node = e.target.getParent();
+    deleteNodeByGroup(node, stage);
+}
+
+export function deleteNodeByGroup(node, stage) {
     for (let each of node.customClass.execInPins) {
         let len = each.wire.length;
         for (let i = 0; i < len; i++) {
@@ -73,11 +33,8 @@ export function deleteProgramNode(e, layer, stage) {
             if (each.wire[0]) { deleteWire(each.wire[0]); }
         }
     }
-    // console.log(e.target.getParent());
-    e.target.getParent().destroy();
-    let wireLayer = stage.findOne('#wireLayer');
+    node.destroy();
     stage.draw();
-
 }
 
 export function deleteWire(aWire) {
@@ -139,6 +96,22 @@ export function deleteWire(aWire) {
                 isPinEmpty: true,
             }
         );
+    }
+    if (lineClone._mismatchDragCleanup) {
+        lineClone._mismatchDragCleanup();
+        lineClone._mismatchDragCleanup = null;
+    }
+    if (lineClone._mismatchIndicator) {
+        lineClone._mismatchIndicator.destroy();
+        lineClone._mismatchIndicator = null;
+    }
+    if (lineClone._closeDragCleanup) {
+        lineClone._closeDragCleanup();
+        lineClone._closeDragCleanup = null;
+    }
+    if (lineClone._closeIndicator) {
+        lineClone._closeIndicator.destroy();
+        lineClone._closeIndicator = null;
     }
     lineClone.destroy();
     
