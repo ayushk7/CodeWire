@@ -2,7 +2,21 @@ import { setLocationOfNode } from '../nodes/nodePosition.js'
 import { Nodes } from '../nodes/nodeFactory.js'
 import { variableList } from '../ui/variableList.js'
 import { deleteProgramNode, deleteWire } from './deleteHandler.js'
-import { getMenuOrder, getDefinition } from '../registry/index.js'
+import { getMenuOrderGroupedByCategory, getDefinition } from '../registry/index.js'
+import { colorMap, lightenHex } from '../core/colorMap.js'
+
+const CATEGORY_LABELS = {
+    Begin: 'Flow',
+    Print: 'I/O',
+    Logic: 'Logic',
+    Math: 'Math',
+    Str: 'String',
+    Obj: 'Object / Map',
+    Get: 'Array',
+    Func: 'Utility',
+};
+
+const DEFAULT_EXPANDED_CATEGORIES = new Set(['Begin', 'Logic']);
 
 export var ContextMenu = {
     contextMenu: function (stage, layer) {
@@ -12,24 +26,83 @@ export var ContextMenu = {
         let getSetCtxMenu = document.getElementById("get-set-ctx-menu-container");
         let searchBar = document.getElementById("ctx-search-bar");
 
-        // Build context menu from node registry (single source of truth)
+        // Build context menu from registry, grouped by category (collapsible sections)
         contextMenuList.innerHTML = '';
-        const menuOrder = getMenuOrder();
-        for (const id of menuOrder) {
-            if (id === null) {
-                const hr = document.createElement('hr');
-                contextMenuList.appendChild(hr);
-            } else {
+        const { categoryOrder, groups } = getMenuOrderGroupedByCategory();
+        for (const category of categoryOrder) {
+            const ids = groups[category] || [];
+            if (ids.length === 0) continue;
+            const section = document.createElement('div');
+            section.className = 'ctx-menu-section';
+            section.dataset.category = category;
+            const expanded = DEFAULT_EXPANDED_CATEGORIES.has(category);
+            if (!expanded) section.classList.add('ctx-menu-section--collapsed');
+            const headerColor = colorMap[category] || colorMap['Text'];
+            const menuTextColor = lightenHex(headerColor);
+            const header = document.createElement('div');
+            header.className = 'ctx-menu-section-header';
+            header.style.borderLeftColor = headerColor;
+            header.style.color = menuTextColor;
+            const arrow = document.createElement('span');
+            arrow.className = 'ctx-menu-section-arrow';
+            arrow.textContent = expanded ? '\u25BC' : '\u25B6';
+            const label = document.createElement('span');
+            label.textContent = CATEGORY_LABELS[category] ?? category;
+            header.appendChild(arrow);
+            header.appendChild(label);
+            header.title = 'Click to expand/collapse';
+            const body = document.createElement('div');
+            body.className = 'ctx-menu-section-body';
+            for (const id of ids) {
                 const def = getDefinition(id);
-                if (def) {
-                    const div = document.createElement('div');
-                    div.className = 'context-menu-items';
-                    div.textContent = def.label;
-                    div.dataset.nodeId = id;
-                    contextMenuList.appendChild(div);
-                }
+                if (!def) continue;
+                const item = document.createElement('div');
+                item.className = 'context-menu-items';
+                item.textContent = def.label;
+                item.dataset.nodeId = id;
+                item.style.borderLeftColor = headerColor;
+                item.style.color = menuTextColor;
+                body.appendChild(item);
             }
+            header.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const collapsed = section.classList.toggle('ctx-menu-section--collapsed');
+                arrow.textContent = collapsed ? '\u25B6' : '\u25BC';
+            });
+            section.appendChild(header);
+            section.appendChild(body);
+            contextMenuList.appendChild(section);
         }
+        // Variables section (expand/collapse) for Get/Set items added by variableList
+        const variablesColor = colorMap['Get'] || colorMap['Text'];
+        const variablesMenuColor = lightenHex(variablesColor);
+        const variablesSection = document.createElement('div');
+        variablesSection.className = 'ctx-menu-section';
+        variablesSection.dataset.category = 'Variables';
+        variablesSection.classList.add('ctx-menu-section--collapsed');
+        const variablesHeader = document.createElement('div');
+        variablesHeader.className = 'ctx-menu-section-header';
+        variablesHeader.style.borderLeftColor = variablesColor;
+        variablesHeader.style.color = variablesMenuColor;
+        const variablesArrow = document.createElement('span');
+        variablesArrow.className = 'ctx-menu-section-arrow';
+        variablesArrow.textContent = '\u25B6';
+        const variablesLabel = document.createElement('span');
+        variablesLabel.textContent = 'Variables';
+        variablesHeader.appendChild(variablesArrow);
+        variablesHeader.appendChild(variablesLabel);
+        variablesHeader.title = 'Click to expand/collapse';
+        const variablesBody = document.createElement('div');
+        variablesBody.className = 'ctx-menu-section-body';
+        variablesBody.id = 'context-menu-variables-body';
+        variablesHeader.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const collapsed = variablesSection.classList.toggle('ctx-menu-section--collapsed');
+            variablesArrow.textContent = collapsed ? '\u25B6' : '\u25BC';
+        });
+        variablesSection.appendChild(variablesHeader);
+        variablesSection.appendChild(variablesBody);
+        contextMenuList.appendChild(variablesSection);
         let draggedVariableInfo = {
             name: null,
             dataType: null,
@@ -44,12 +117,21 @@ export var ContextMenu = {
             else {
                 contextMenu.classList.toggle("hidden", true);
                 searchBar.value = '';
-                for (let ctxItem of contextMenu.children[1].children) {
-                    if (ctxItem.classList && ctxItem.classList.contains('context-menu-items')) {
-                        ctxItem.classList.toggle("hidden", false);
-                    }
-                }
+                resetSectionsVisibility();
             }
+        }
+        function resetSectionsVisibility() {
+            const sections = contextMenuList.querySelectorAll('.ctx-menu-section');
+            sections.forEach((section) => {
+                const category = section.dataset.category;
+                const expanded = DEFAULT_EXPANDED_CATEGORIES.has(category);
+                section.classList.toggle('ctx-menu-section--collapsed', !expanded);
+                const arr = section.querySelector('.ctx-menu-section-arrow');
+                if (arr) arr.textContent = expanded ? '\u25BC' : '\u25B6';
+                const items = section.querySelectorAll('.context-menu-items');
+                items.forEach((el) => el.classList.remove('hidden'));
+            });
+            contextMenuList.querySelectorAll('.context-menu-items').forEach((el) => el.classList.remove('hidden'));
         }
         function toggleDeleteCtxMenu(location, show) {
             if (show) {
@@ -73,36 +155,43 @@ export var ContextMenu = {
             }
         }
         ContextMenu.addEventToCtxMenuItems = function (e) {
-            e.addEventListener('click', function () {
+            e.addEventListener('click', function (ev) {
+                if (ev.target.classList.contains('ctx-menu-section-header')) return;
                 makeNode(e, stage, layer, toggleContextMenu);
             });
-        }
+        };
         searchBar.addEventListener("input", (e) => {
-            let key = e.target.value.toLowerCase();
-            // /\bhe/gmi
-            // let patt = /\b(key)/gi;
-            // let patt = new RegExp(`${key}`, "gis");
-            // console.log(patt);
-            for (let ctxItem of contextMenu.children[1].children) {
-                if (ctxItem.classList && ctxItem.classList.contains('context-menu-items')) {
-                    if (ctxItem.textContent.toLowerCase().includes(key)) {
-                        ctxItem.classList.toggle("hidden", false);
-                    } else {
-                        ctxItem.classList.toggle("hidden", true);
-                    }
+            const key = e.target.value.toLowerCase().trim();
+            const sections = contextMenuList.querySelectorAll('.ctx-menu-section');
+            sections.forEach((section) => {
+                const body = section.querySelector('.ctx-menu-section-body');
+                const items = body ? body.querySelectorAll('.context-menu-items') : [];
+                let hasMatch = false;
+                items.forEach((item) => {
+                    const label = (item.textContent || '').toLowerCase();
+                    const nodeId = (item.dataset.nodeId || '').toLowerCase();
+                    const match = !key || label.includes(key) || nodeId.includes(key);
+                    item.classList.toggle('hidden', !match);
+                    if (match) hasMatch = true;
+                });
+                section.classList.toggle('hidden', !key ? false : !hasMatch);
+                if (key && hasMatch) {
+                    section.classList.remove('ctx-menu-section--collapsed');
+                    const arr = section.querySelector('.ctx-menu-section-arrow');
+                    if (arr) arr.textContent = '\u25BC';
                 }
-            }
-
+            });
+            const orphanItems = Array.from(contextMenuList.children).filter((el) => el.classList && el.classList.contains('context-menu-items'));
+            orphanItems.forEach((item) => {
+                const label = (item.textContent || '').toLowerCase();
+                const match = !key || label.includes(key);
+                item.classList.toggle('hidden', !match);
+            });
         });
 
-
-
-
-        for (let e of contextMenu.children[1].children) {
-            if (e.classList && e.classList.contains('context-menu-items')) {
-                this.addEventToCtxMenuItems(e);
-            }
-        }
+        contextMenuList.querySelectorAll('.context-menu-items').forEach((el) => {
+            this.addEventToCtxMenuItems(el);
+        });
 
         // let alreadyPresent = [];   // to prevent adding multiple eventListeners
         stage.on('contextmenu', function (e) {

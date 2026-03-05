@@ -9,6 +9,7 @@ export {
     buildNodeDescription,
     getDefinition,
     getMenuOrder,
+    getMenuOrderGroupedByCategory,
     runExecCodegen,
     runExprCodegen,
     hasType,

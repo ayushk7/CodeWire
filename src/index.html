@@ -117,18 +117,29 @@
 
     </div>
 
-    <div id="import-menu" class="sidebox hidden">
-        <button id="cross-upload-cross" class="cross">
-            <div>+</div>
-        </button>
-        <div class="sidebox-flex">
-            <div style="font-size: 1.2rem; color: white; padding: 10px;; text-align: center;"><span
-                    style="color: tomato;">Alert:</span>Current Script Will Be Lost</div>
-            <div class="#button-wrap">
-                <label for="upload-json" class="icon">JSON</label>
-                <input id="upload-json" type="file">
+    <div id="import-overlay" class="hidden">
+        <div id="import-modal">
+            <div class="import-modal-header">
+                <span class="import-modal-title">Import Script</span>
+                <button id="import-close-btn" class="import-modal-close">&times;</button>
             </div>
-            <button id="import-btn" class="icon">Import</button>
+            <div id="import-dropzone">
+                <i class="fas fa-file-upload import-dropzone-icon"></i>
+                <p class="import-dropzone-text">Drag & drop a <strong>.json</strong> file here, or click to browse</p>
+                <input id="upload-json" type="file" accept=".json">
+            </div>
+            <div id="import-file-info" class="hidden">
+                <i class="fas fa-file-code"></i>
+                <span id="import-filename"></span>
+                <button id="import-file-clear" title="Remove file">&times;</button>
+            </div>
+            <div class="import-modal-warning">
+                <i class="fas fa-exclamation-triangle"></i> Current script will be replaced
+            </div>
+            <div class="import-modal-footer">
+                <button id="import-cancel-btn" class="import-btn-secondary">Cancel</button>
+                <button id="import-btn" class="import-btn-primary">Import</button>
+            </div>
         </div>
     </div>
     <div id="save-menu" class="sidebox hidden">

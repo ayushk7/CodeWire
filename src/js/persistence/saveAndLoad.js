@@ -66,7 +66,8 @@ export class Export {
             let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportScript));
             let exportAnchorElem = document.getElementById('exportAnchorElem');
             exportAnchorElem.setAttribute("href", dataStr);
-            exportAnchorElem.setAttribute("download", "wireScript.json");
+            const ts = new Date().toISOString().slice(0, 19).replace(/[T:]/g, '-');
+            exportAnchorElem.setAttribute("download", `wireScript_${ts}.json`);
             exportAnchorElem.click();
 
             // console.log(JSON.stringify(exportScript));

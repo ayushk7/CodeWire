@@ -118,6 +118,28 @@ export function getMenuOrder() {
 }
 
 /**
+ * Get menu order grouped by category (schema.color). Preserves order: categoryOrder lists
+ * categories in first-appearance order; groups[category] lists node ids in menu order.
+ * @returns {{ categoryOrder: string[], groups: Record<string, string[]> }}
+ */
+export function getMenuOrderGroupedByCategory() {
+    const categoryOrder = [];
+    const groups = Object.create(null);
+    for (const id of menuOrder) {
+        if (id === null) continue;
+        const def = definitions.get(id);
+        if (!def || !def.schema || !def.schema.color) continue;
+        const cat = def.schema.color;
+        if (!groups[cat]) {
+            categoryOrder.push(cat);
+            groups[cat] = [];
+        }
+        groups[cat].push(id);
+    }
+    return { categoryOrder, groups };
+}
+
+/**
  * Run exec codegen for a node type. No-op if no execCodegen.
  */
 export function runExecCodegen(type, compiler, node) {
