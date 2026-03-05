@@ -11,6 +11,7 @@ import { Delete } from './editor/deleteHandler.js'
 import { Export, Import, Save, prompLastSave } from './persistence/saveAndLoad.js'
 import { showAlert, prompRefreshOrStarter } from './ui/dialogs.js'
 import { refresh } from './compiler/codePreview.js'
+import { enableNodeGroups } from './editor/nodeGroup.js'
 // var width = window.innerWidth;
 // var height = window.innerHeight;
 let stage = AppStage.getStage(document.getElementById("container").clientWidth, document.getElementById("container").clientHeight, 'container');
@@ -32,6 +33,7 @@ stage.container().style.backgroundPosition = `${stage.position().x} ${stage.posi
 //     }
 // });
 // SelectionBox.setSelectionBox(layer, stage);
+enableNodeGroups(stage, layer);
 Delete.enableDelete(stage, layer);
 // DragAndDrop.DragAndDrop(stage, layer);
 Wiring.enableWiring(stage, layer);

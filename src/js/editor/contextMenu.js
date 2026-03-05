@@ -120,13 +120,26 @@ export var ContextMenu = {
                 toggleContextMenu([e.evt.clientX + offX, e.evt.clientY + offY], true);
             }
             else {
+                let parentGroup = e.target.getParent();
+                let isNodeGroup = false;
+                let nodeGroupRef = null;
+                let tmp = e.target;
+                while (tmp && tmp !== stage) {
+                    if (tmp.name && tmp.name() === 'aNodeGroup') {
+                        isNodeGroup = true;
+                        nodeGroupRef = tmp;
+                        break;
+                    }
+                    tmp = tmp.getParent ? tmp.getParent() : null;
+                }
 
                 toggleDeleteCtxMenu([e.evt.clientX - 130, e.evt.clientY - 35], true);
-                // console.log("xx");
                 deleteCtxMenu.onclick = function () {
-                    // console.log("x");
-                    // console.log(e);
-                    if (e.target.getParent().name() == 'aProgramNodeGroup') {
+                    if (isNodeGroup && nodeGroupRef) {
+                        nodeGroupRef.destroy();
+                        stage.draw();
+                    }
+                    else if (parentGroup && parentGroup.name() == 'aProgramNodeGroup') {
                         deleteProgramNode(e, layer, stage);
                         stage.draw();
                     }

@@ -41,7 +41,7 @@ export var AppStage = {
         stage.container().focus();
 
         stage.on('mousedown', function (e) {
-            if (e.target === stage && (e.evt.button == 0 || e.evt.button == 1)) {
+            if (e.target === stage && (e.evt.button == 0 || e.evt.button == 1) && !e.evt.shiftKey) {
                 stage.draggable(true);
             }
         });
