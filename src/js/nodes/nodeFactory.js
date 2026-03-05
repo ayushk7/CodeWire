@@ -2,7 +2,11 @@ import { InputBox } from './nodeInputBox.js'
 import { colorMap } from '../core/colorMap.js'
 import { setLocationOfNode } from './nodePosition.js';
 import { buildNodeDescription, hasType } from '../registry/index.js';
-import { deleteNodeByGroup } from '../editor/deleteHandler.js';
+import { deleteNodeByGroup, deleteWire } from '../editor/deleteHandler.js';
+import { tabManager } from '../editor/tabManager.js';
+import { addConnectionWire } from './wiring.js';
+import { applyMismatchToWire, isTypeCompatible } from '../utils/wireMismatch.js';
+
 let placeLocation = function (location) {
     //"this" is stage
     return {
@@ -204,13 +208,13 @@ export var Nodes = {
         return text;
     },
     optimizeDrag: function (grp, stage, layer) {
-        let dragLayer = stage.findOne('#dragLayer');
-        let wireLayer = stage.findOne('#wireLayer');
         function moveWireToLayer(aWire, targetLayer) {
             aWire.moveTo(targetLayer);
             if (aWire._closeIndicator) aWire._closeIndicator.moveTo(targetLayer);
         }
         grp.on('dragstart', () => {
+            let dragLayer = tabManager.getDragLayer();
+            let wireLayer = tabManager.getActiveWireLayer();
             grp.moveTo(dragLayer);
             for (let each of grp.customClass.execInPins) {
                 for (let aWire of each.wire) {
@@ -235,6 +239,8 @@ export var Nodes = {
             layer.draw();
         })
         grp.on('dragend', () => {
+            let dragLayer = tabManager.getDragLayer();
+            let wireLayer = tabManager.getActiveWireLayer();
             grp.moveTo(layer);
             for (let each of grp.customClass.execInPins) {
                 for (let aWire of each.wire) {
@@ -283,7 +289,12 @@ export var Nodes = {
             });
             if (nodeDescription.nodeTitle == 'Begin') {
                 this.grp.id('Begin');
+            } else if (nodeDescription.nodeTitle == 'FunctionBegin') {
+                this.grp.id('FunctionBegin');
+            } else if (nodeDescription.nodeTitle == 'Return') {
+                this.grp.id('Return');
             }
+            this.isDeletable = nodeDescription.isDeletable !== false;
             this.grp.customClass = this;
             // this.grp.on('dblclick', (e) => {
             //     console.table(e.currentTarget.customClass);
@@ -306,7 +317,7 @@ export var Nodes = {
             this.grp.add(borderRect);
 
             let closeBtn = null;
-            if (nodeDescription.nodeTitle !== 'Begin') {
+            if (nodeDescription.nodeTitle !== 'Begin' && nodeDescription.isDeletable !== false) {
                 const btnSize = 16;
                 const btnX = width - btnSize - 4;
                 const btnY = Math.round((23 - btnSize) / 2);
@@ -529,7 +540,359 @@ export var Nodes = {
         }
         if (!nodeDescription) return;
         new this.ProgramNode(nodeDescription, location, layer, stage);
-    }
+    },
+
+    buildFunctionBeginDescription: function (inputParams) {
+        const nd = {
+            nodeTitle: 'FunctionBegin',
+            execIn: false,
+            pinExecInId: null,
+            execOut: { execOut0: { execOutTitle: null, pinExecOutId: null, outOrder: 0 } },
+            color: 'FunctionBegin',
+            rows: 2,
+            colums: 12,
+            isDeletable: false,
+        };
+        if (inputParams && inputParams.length > 0) {
+            nd.outputs = {};
+            inputParams.forEach((p, i) => {
+                nd.outputs[`output${i}`] = {
+                    outputTitle: p.name,
+                    dataType: p.dataType,
+                    pinOutId: null,
+                    outOrder: i + 1,
+                };
+            });
+            nd.rows = Math.max(2, inputParams.length + 1);
+        }
+        return nd;
+    },
+
+    buildReturnDescription: function (outputParams) {
+        const nd = {
+            nodeTitle: 'Return',
+            execIn: true,
+            pinExecInId: null,
+            color: 'Return',
+            rows: 2,
+            colums: 12,
+            isDeletable: false,
+        };
+        if (outputParams && outputParams.length > 0) {
+            nd.inputs = {};
+            outputParams.forEach((p, i) => {
+                nd.inputs[`input${i}`] = {
+                    inputTitle: p.name,
+                    dataType: p.dataType,
+                    defValue: null,
+                    pinInId: null,
+                    isInputBoxRequired: false,
+                };
+            });
+            nd.rows = Math.max(2, outputParams.length + 1);
+        }
+        return nd;
+    },
+
+    CreateFunctionBeginNode: function (inputParams, location, layer, stage) {
+        const nd = this.buildFunctionBeginDescription(inputParams);
+        const node = new this.ProgramNode(nd, location, layer, stage);
+        node.grp.id('FunctionBegin');
+        return node;
+    },
+
+    CreateReturnNode: function (outputParams, location, layer, stage) {
+        const nd = this.buildReturnDescription(outputParams);
+        const node = new this.ProgramNode(nd, location, layer, stage);
+        node.grp.id('Return');
+        return node;
+    },
+
+    rebuildFunctionBeginNode: function (node, inputParams, layer, stage, wireLayer) {
+        const programNode = node;
+        const grp = programNode.grp;
+        const oldNd = programNode.nodeDescription;
+        const oldOutputs = oldNd.outputs ? Object.keys(oldNd.outputs).sort().map(k => oldNd.outputs[k]) : [];
+
+        const savedOutputs = [];
+        for (let j = 0; j < programNode.outputPins.length; j++) {
+            const pin = programNode.outputPins[j];
+            const wires = [...(Array.isArray(pin.wire) ? pin.wire : (pin.wire ? [pin.wire] : []))].filter(Boolean);
+            savedOutputs[j] = wires.map(w => {
+                const destPin = w.attrs.dest;
+                const oldType = oldOutputs[j]?.dataType;
+                deleteWire(w);
+                return { destPin, oldType };
+            });
+        }
+
+        const pos = grp.position();
+        const grpId = grp.id();
+        grp.destroy();
+
+        const newNd = this.buildFunctionBeginDescription(inputParams);
+        const newNode = new this.ProgramNode(newNd, {
+            x: pos.x * stage.scaleX() + stage.x(),
+            y: pos.y * stage.scaleY() + stage.y()
+        }, layer, stage);
+        newNode.grp.id(grpId);
+        const newCC = newNode.grp.customClass;
+
+        const outPins = newNode.grp.find('.pin').filter(p => p.attrs.pinType === 'outp');
+        outPins.sort((a, b) => {
+            const ai = parseInt(String(a.attrs.helper || '').split('-')[1], 10) || 0;
+            const bi = parseInt(String(b.attrs.helper || '').split('-')[1], 10) || 0;
+            return ai - bi;
+        });
+
+        for (let j = 0; j < savedOutputs.length && j < (inputParams || []).length; j++) {
+            const newSrcPin = outPins[j];
+            if (!newSrcPin) continue;
+            for (const { destPin, oldType } of savedOutputs[j]) {
+                addConnectionWire(destPin, newSrcPin, stage, 1, wireLayer);
+                const newType = (inputParams || [])[j]?.dataType;
+                if (!isTypeCompatible(newType, destPin.attrs.pinDataType)) {
+                    const inpIdx = destPin.attrs.helper ? parseInt(String(destPin.attrs.helper).split('-')[1], 10) : 0;
+                    const wireToMark = destPin.getParent().customClass?.inputPins?.[inpIdx]?.wire;
+                    if (wireToMark) applyMismatchToWire(wireToMark, wireLayer, stage);
+                }
+            }
+        }
+        return newNode;
+    },
+
+    buildCallNodeDescription: function (funcName, inputParams, outputParams, docString) {
+        const nd = {
+            nodeTitle: `Call ${funcName}`,
+            execIn: true,
+            pinExecInId: null,
+            execOut: { execOut0: { execOutTitle: null, pinExecOutId: null, outOrder: 0 } },
+            color: 'Call',
+            rows: 2,
+            colums: 14,
+            isCallFunction: true,
+            calledFunctionName: funcName,
+            docString: docString || '',
+        };
+        const maxPins = Math.max(
+            (inputParams ? inputParams.length : 0),
+            (outputParams ? outputParams.length : 0)
+        );
+        nd.rows = Math.max(2, maxPins + 1);
+        if (inputParams && inputParams.length > 0) {
+            nd.inputs = {};
+            const defByType = { Number: 0, Boolean: true, String: "'hello'", Array: '[]' };
+            inputParams.forEach((p, i) => {
+                const defVal = p.defValue != null ? p.defValue : defByType[p.dataType];
+                nd.inputs[`input${i}`] = {
+                    inputTitle: p.name,
+                    dataType: p.dataType,
+                    defValue: defVal,
+                    pinInId: null,
+                    isInputBoxRequired: true,
+                };
+            });
+        }
+        if (outputParams && outputParams.length > 0) {
+            nd.outputs = {};
+            outputParams.forEach((p, i) => {
+                nd.outputs[`output${i}`] = {
+                    outputTitle: p.name,
+                    dataType: p.dataType,
+                    pinOutId: null,
+                    outOrder: i + 1,
+                };
+            });
+        }
+        return nd;
+    },
+
+    CreateCallNode: function (funcName, inputParams, outputParams, location, layer, stage, docString) {
+        const nd = this.buildCallNodeDescription(funcName, inputParams, outputParams, docString);
+        return new this.ProgramNode(nd, location, layer, stage);
+    },
+
+    updateCallNodesDocString: function (funcName, docString) {
+        const allTabs = tabManager.getAllTabs();
+        for (const tab of allTabs) {
+            const layer = tab.layer;
+            if (!layer) continue;
+            layer.find('.aProgramNodeGroup').forEach((grp) => {
+                const cc = grp.customClass;
+                if (!cc || !cc.nodeDescription || !cc.nodeDescription.isCallFunction || cc.nodeDescription.calledFunctionName !== funcName) return;
+                cc.nodeDescription.docString = docString || '';
+            });
+        }
+    },
+
+    /**
+     * Update all Call nodes that call the given function with the current definition.
+     * Smart wire matching: preserve wires when params match by index; remove wires for
+     * deleted params; apply dashed mismatch when type changes.
+     */
+    updateCallNodesToDefinition: function (funcName, inputParams, outputParams, docString) {
+        const allTabs = tabManager.getAllTabs();
+        const stage = tabManager.getStage();
+        const inputParamsArr = inputParams || [];
+        const outputParamsArr = outputParams || [];
+
+        for (const tab of allTabs) {
+            const layer = tab.layer;
+            const wireLayer = tab.wireLayer;
+            if (!layer || !wireLayer) continue;
+
+            const toUpdate = [];
+            layer.find('.aProgramNodeGroup').forEach((grp) => {
+                const cc = grp.customClass;
+                if (!cc || !cc.nodeDescription || !cc.nodeDescription.isCallFunction || cc.nodeDescription.calledFunctionName !== funcName) return;
+                if (cc.isOrphaned) return;
+                toUpdate.push({ grp, layer, wireLayer, programNode: cc });
+            });
+
+            for (const { grp, layer, wireLayer, programNode } of toUpdate) {
+                const nd = programNode.nodeDescription;
+                const oldInputs = nd.inputs ? Object.keys(nd.inputs).sort().map(k => nd.inputs[k]) : [];
+                const oldOutputs = nd.outputs ? Object.keys(nd.outputs).sort().map(k => nd.outputs[k]) : [];
+
+                const savedInputs = [];
+                for (let i = 0; i < programNode.inputPins.length; i++) {
+                    const pin = programNode.inputPins[i];
+                    if (pin.wire) {
+                        savedInputs[i] = { srcPin: pin.wire.attrs.src, oldType: oldInputs[i]?.dataType };
+                        deleteWire(pin.wire);
+                    }
+                }
+
+                const savedOutputs = [];
+                for (let j = 0; j < programNode.outputPins.length; j++) {
+                    const pin = programNode.outputPins[j];
+                    const wires = [...(Array.isArray(pin.wire) ? pin.wire : (pin.wire ? [pin.wire] : []))].filter(Boolean);
+                    savedOutputs[j] = wires.map(w => {
+                        const destPin = w.attrs.dest;
+                        const oldType = oldOutputs[j]?.dataType;
+                        deleteWire(w);
+                        return { destPin, oldType };
+                    });
+                }
+
+                const savedExecIn = [];
+                if (programNode.execInPins && programNode.execInPins[0]) {
+                    const wires = [...(programNode.execInPins[0].wire || [])].filter(Boolean);
+                    for (const w of wires) {
+                        savedExecIn.push({ srcPin: w.attrs.src });
+                        deleteWire(w);
+                    }
+                }
+
+                const savedExecOut = [];
+                if (programNode.execOutPins) {
+                    for (const ep of programNode.execOutPins) {
+                        if (ep.wire) {
+                            savedExecOut.push({ destPin: ep.wire.attrs.dest });
+                            deleteWire(ep.wire);
+                        }
+                    }
+                }
+
+                const pos = grp.position();
+                grp.destroy();
+
+                const newNode = Nodes.CreateCallNode(funcName, inputParamsArr, outputParamsArr, pos, layer, stage, docString || '');
+                const newCC = newNode.grp.customClass;
+
+                for (let i = 0; i < savedInputs.length && i < inputParamsArr.length; i++) {
+                    const saved = savedInputs[i];
+                    if (!saved) continue;
+                    const newDestPin = newCC.inputPins[i]?.thisNode;
+                    if (!newDestPin) continue;
+                    addConnectionWire(newDestPin, saved.srcPin, stage, 1, wireLayer);
+                    const newType = inputParamsArr[i]?.dataType;
+                    if (!isTypeCompatible(saved.srcPin.attrs.pinDataType, newType)) {
+                        const wire = newCC.inputPins[i].wire;
+                        if (wire) applyMismatchToWire(wire, wireLayer, stage);
+                    }
+                }
+
+                const outPins = newNode.grp.find('.pin').filter(p => p.attrs.pinType === 'outp');
+                outPins.sort((a, b) => {
+                    const ai = parseInt(String(a.attrs.helper || '').split('-')[1], 10) || 0;
+                    const bi = parseInt(String(b.attrs.helper || '').split('-')[1], 10) || 0;
+                    return ai - bi;
+                });
+
+                for (let j = 0; j < savedOutputs.length && j < outputParamsArr.length; j++) {
+                    const newSrcPin = outPins[j];
+                    if (!newSrcPin) continue;
+                    for (const { destPin, oldType } of savedOutputs[j]) {
+                        addConnectionWire(destPin, newSrcPin, stage, 1, wireLayer);
+                        const newType = outputParamsArr[j]?.dataType;
+                        if (!isTypeCompatible(newType, destPin.attrs.pinDataType)) {
+                            const inpIdx = destPin.attrs.helper ? parseInt(String(destPin.attrs.helper).split('-')[1], 10) : 0;
+                            const wireToMark = destPin.getParent().customClass?.inputPins?.[inpIdx]?.wire;
+                            if (wireToMark) applyMismatchToWire(wireToMark, wireLayer, stage);
+                        }
+                    }
+                }
+
+                for (const { srcPin } of savedExecIn) {
+                    if (newCC.execInPins && newCC.execInPins[0]) {
+                        const destPin = newCC.execInPins[0].thisNode;
+                        addConnectionWire(destPin, srcPin, stage, 1, wireLayer);
+                    }
+                }
+
+                for (let k = 0; k < savedExecOut.length && newCC.execOutPins && newCC.execOutPins[k]; k++) {
+                    const { destPin } = savedExecOut[k];
+                    const srcPin = newCC.execOutPins[k].thisNode;
+                    addConnectionWire(destPin, srcPin, stage, 1, wireLayer);
+                }
+            }
+        }
+        if (stage) stage.draw();
+    },
+
+    rebuildReturnNode: function (node, outputParams, layer, stage, wireLayer) {
+        const programNode = node;
+        const grp = programNode.grp;
+        const oldNd = programNode.nodeDescription;
+        const oldInputs = oldNd.inputs ? Object.keys(oldNd.inputs).sort().map(k => oldNd.inputs[k]) : [];
+
+        const savedInputs = [];
+        for (let i = 0; i < programNode.inputPins.length; i++) {
+            const pin = programNode.inputPins[i];
+            if (pin.wire) {
+                savedInputs[i] = { srcPin: pin.wire.attrs.src, oldType: oldInputs[i]?.dataType };
+                deleteWire(pin.wire);
+            }
+        }
+
+        const pos = grp.position();
+        const grpId = grp.id();
+        grp.destroy();
+
+        const newNd = this.buildReturnDescription(outputParams);
+        const newNode = new this.ProgramNode(newNd, {
+            x: pos.x * stage.scaleX() + stage.x(),
+            y: pos.y * stage.scaleY() + stage.y()
+        }, layer, stage);
+        newNode.grp.id(grpId);
+        const newCC = newNode.grp.customClass;
+
+        const outputParamsArr = outputParams || [];
+        for (let i = 0; i < savedInputs.length && i < outputParamsArr.length; i++) {
+            const saved = savedInputs[i];
+            if (!saved) continue;
+            const newDestPin = newCC.inputPins[i]?.thisNode;
+            if (!newDestPin) continue;
+            addConnectionWire(newDestPin, saved.srcPin, stage, 1, wireLayer);
+            const newType = outputParamsArr[i]?.dataType;
+            if (!isTypeCompatible(saved.srcPin.attrs.pinDataType, newType)) {
+                const wire = newCC.inputPins[i].wire;
+                if (wire) applyMismatchToWire(wire, wireLayer, stage);
+            }
+        }
+        return newNode;
+    },
 };
 
 /*

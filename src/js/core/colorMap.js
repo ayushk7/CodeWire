@@ -26,6 +26,9 @@ export const colorMap = {
     'Get': '#2e7d32',     // Array / access – green
     'Str': '#ad1457',     // String – pink/magenta
     'Obj': '#00695c',     // Object / Map – teal
+    'FunctionBegin': '#ff6d00', // Function entry – warm orange
+    'Return': '#d50000',        // Function exit – red
+    'Call': '#00bfa5',          // Function call – teal
     'GroupBody': 'rgba(255, 255, 255, 0.31)',
     'GroupBorder': 'rgba(255,255,255,0.3)',
     'GroupTitleBar': 'rgba(41,68,150,0.8)',

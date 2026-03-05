@@ -27,6 +27,33 @@
                 </div>
             </div>
             <div class="left-panel-content">
+                <div id="input-params-section" class="hidden">
+                    <div id="input-params" class="left-panel-tab">Input Parameters <div id="input-params-arrow"
+                            style="position: absolute; right: 0.7rem; transition: 0.1s;"><i class="fas fa-chevron-down"></i></div>
+                    </div>
+                    <div id="input-params-content" class="left-panel-tab-content"></div>
+                </div>
+                <div id="output-params-section" class="hidden">
+                    <div id="output-params" class="left-panel-tab">Output Parameters <div id="output-params-arrow"
+                            style="position: absolute; right: 0.7rem; transition: 0.1s;"><i class="fas fa-chevron-down"></i></div>
+                    </div>
+                    <div id="output-params-content" class="left-panel-tab-content"></div>
+                </div>
+                <div id="doc-string-section" class="hidden">
+                    <div id="doc-string" class="left-panel-tab">Description <div id="doc-string-arrow"
+                            style="position: absolute; right: 0.7rem; transition: 0.1s;"><i class="fas fa-chevron-down"></i></div>
+                    </div>
+                    <div id="doc-string-content" class="left-panel-tab-content">
+                        <div class="left-panel-section-inner">
+                            <textarea id="doc-string-input" class="doc-string-textarea" placeholder="Describe what this function does..." rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div id="update-callers-section" class="hidden">
+                    <div class="left-panel-section-inner" style="padding: 0.5rem 0;">
+                        <button type="button" id="update-callers-btn" class="update-callers-btn" title="Update all Call nodes for this function to the current definition">Update callers</button>
+                    </div>
+                </div>
                 <div id="add-variables" class="left-panel-tab">Add Variable <div id="add-variables-plus-icon"
                         style="position: absolute; right: 0.7rem; transition: 0.1s;"><i class="fas fa-chevron-down"></i></div>
                 </div>
@@ -64,7 +91,19 @@
                         </ul>
                     </div>
                 </div>
+                <div id="list-of-functions" class="left-panel-tab">Functions<div id="list-of-functions-down-icon"
+                        style="position: absolute; right: 0.7rem; transition: 0.1s;"><i class="fas fa-chevron-down"></i></div>
+                </div>
+                <div id="list-of-functions-content" class="left-panel-tab-content">
+                    <div class="variableList" style="width: 100%;">
+                        <ul id="function-list" class="param-list"></ul>
+                    </div>
+                </div>
             </div>
+        </div>
+        <div id="tab-bar">
+            <div id="tab-list"></div>
+            <button id="add-tab-btn" title="Add Function">+</button>
         </div>
         <div id="container">
 

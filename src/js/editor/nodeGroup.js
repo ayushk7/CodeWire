@@ -1,4 +1,5 @@
-import { colorMap } from '../core/colorMap.js'
+import { colorMap } from '../core/colorMap.js';
+import { tabManager } from './tabManager.js';
 
 let placeLocation = function (location, stage) {
     return {
@@ -183,7 +184,7 @@ function setupGroupDrag(grp, layer, stage) {
 
     grp.on('dragstart', (e) => {
         e.cancelBubble = true;
-        wireLayer = stage.findOne('#wireLayer');
+        wireLayer = tabManager.getActiveWireLayer();
         containedNodes = findContainedNodes(grp, layer);
         nodeOffsets = containedNodes.map((node) => ({
             node,
@@ -233,6 +234,7 @@ export function createNodeGroup(position, width, height, name, layer, stage) {
         stroke: colorMap['GroupBorder'],
         strokeWidth: 1.5,
         cornerRadius: 6,
+        listening: false,
     });
 
     const titleBar = new Konva.Rect({
@@ -333,7 +335,7 @@ export function getGroupsData(layer) {
     return groups;
 }
 
-export function enableNodeGroups(stage, layer) {
+export function enableNodeGroups(stage) {
     let isDrawing = false;
     let startX = 0;
     let startY = 0;
@@ -342,6 +344,7 @@ export function enableNodeGroups(stage, layer) {
     stage.on('mousedown', (e) => {
         if (!e.evt.shiftKey || e.target !== stage || e.evt.button !== 0) return;
 
+        const layer = tabManager.getActiveLayer();
         isDrawing = true;
         const pos = placeLocation(stage.getPointerPosition(), stage);
         startX = pos.x;
@@ -365,6 +368,7 @@ export function enableNodeGroups(stage, layer) {
     stage.on('mousemove', () => {
         if (!isDrawing || !previewRect) return;
 
+        const layer = tabManager.getActiveLayer();
         const pos = placeLocation(stage.getPointerPosition(), stage);
         previewRect.setAttrs({
             x: Math.min(startX, pos.x),
@@ -379,6 +383,7 @@ export function enableNodeGroups(stage, layer) {
         if (!isDrawing || !previewRect) return;
         isDrawing = false;
 
+        const layer = tabManager.getActiveLayer();
         const w = previewRect.width();
         const h = previewRect.height();
         const x = previewRect.x();

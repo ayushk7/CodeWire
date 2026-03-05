@@ -12,37 +12,49 @@ import { Export, Import, Save, prompLastSave } from './persistence/saveAndLoad.j
 import { showAlert, prompRefreshOrStarter } from './ui/dialogs.js'
 import { refresh } from './compiler/codePreview.js'
 import { enableNodeGroups } from './editor/nodeGroup.js'
-// var width = window.innerWidth;
-// var height = window.innerHeight;
+import { tabManager } from './editor/tabManager.js'
+import { initFunctionPanel } from './ui/functionPanel.js'
+
 let stage = AppStage.getStage(document.getElementById("container").clientWidth, document.getElementById("container").clientHeight, 'container');
 var layer = new Konva.Layer({
     id: 'main_layer'
 });
+let wireLayer = new Konva.Layer({
+    id: 'wireLayer',
+});
 let dragLayer = new Konva.Layer({
     id: 'dragLayer',
 });
+stage.add(wireLayer);
 stage.add(layer);
 stage.add(dragLayer);
+layer.moveToBottom();
 stage.container().style.backgroundPosition = `${stage.position().x} ${stage.position().y}`;
 
-// stage.on("wheel", () => {
-//     if (inputIsFocused) {
-//         document.getElementById("number-ip").blur();
-//         document.getElementById("string-ip").blur();
-//         document.getElementById("bool-ip").blur();
-//     }
-// });
+tabManager.init(stage, layer, wireLayer, dragLayer);
+
 // SelectionBox.setSelectionBox(layer, stage);
-enableNodeGroups(stage, layer);
+enableNodeGroups(stage);
 Delete.enableDelete(stage, layer);
-// DragAndDrop.DragAndDrop(stage, layer);
-Wiring.enableWiring(stage, layer);
-ContextMenu.contextMenu(stage, layer);
+Wiring.enableWiring(stage);
+ContextMenu.contextMenu(stage);
 let panel = new leftPanel();
 variableList.init(layer, stage);
-// layer.toggleHitCanvas();
-// document.getElementById("number-ip").value = 12;
+tabManager.getTab('main').variables = variableList.variables;
+initFunctionPanel();
 layer.draw();
+
+document.getElementById('add-tab-btn').addEventListener('click', () => {
+    const name = prompt('Enter function name:');
+    if (name && name.trim()) {
+        tabManager.createTab(name.trim());
+    }
+});
+
+tabManager.on('tabSwitched', ({ to }) => {
+    variableList.layer = to.layer;
+    variableList.switchToTab(to.variables);
+});
 document.getElementById("Run").addEventListener("click", (e) => {
     try {
         let script = new VSToJS(stage, layer, "Run").script;

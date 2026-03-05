@@ -1,7 +1,10 @@
 import { colorMap, lightenHex } from '../core/colorMap.js'
 import { ContextMenu } from '../editor/contextMenu.js'
 import { deleteNodeByGroup, deleteWire } from '../editor/deleteHandler.js'
+import { applyOrphanOverlay } from '../editor/orphanOverlay.js'
+import { applyMismatchToWire, removeMismatchFromWire } from '../utils/wireMismatch.js'
 import { showAlert, showConfirm } from './dialogs.js'
+import { tabManager } from '../editor/tabManager.js'
 
 class VariableList {
 
@@ -161,78 +164,7 @@ class VariableList {
     }
 
     _applyOrphanOverlay(grp) {
-        const cc = grp.customClass;
-        cc.isOrphaned = true;
-
-        const bodyRect = cc.bodyRect;
-        const overlay = new Konva.Rect({
-            x: bodyRect.x(),
-            y: bodyRect.y(),
-            width: bodyRect.width(),
-            height: bodyRect.height(),
-            fill: 'rgba(255, 0, 0, 0.25)',
-            cornerRadius: 5,
-            listening: false,
-        });
-        grp.add(overlay);
-
-        const boxWidth = 120;
-        const boxHeight = 36;
-        const boxX = bodyRect.width() / 2 - boxWidth / 2;
-        const boxY = -boxHeight - 5;
-
-        const indicatorGrp = new Konva.Group({ x: boxX, y: boxY });
-
-        const bg = new Konva.Rect({
-            width: boxWidth,
-            height: boxHeight,
-            fill: 'rgba(30, 0, 0, 0.85)',
-            cornerRadius: 3,
-            stroke: '#f44',
-            strokeWidth: 1,
-        });
-        indicatorGrp.add(bg);
-
-        const label = new Konva.Text({
-            text: 'Deleted Var',
-            fontSize: 9,
-            fontFamily: 'Verdana',
-            fill: '#f88',
-            width: boxWidth,
-            align: 'center',
-            y: 3,
-        });
-        indicatorGrp.add(label);
-
-        const removeBtn = new Konva.Text({
-            text: 'Remove',
-            fontSize: 10,
-            fontFamily: 'Verdana',
-            fill: '#fff',
-            width: boxWidth,
-            align: 'center',
-            y: 18,
-        });
-        removeBtn.on('mouseenter', () => {
-            removeBtn.fill('#f44');
-            document.body.style.cursor = 'pointer';
-            this.layer.draw();
-        });
-        removeBtn.on('mouseleave', () => {
-            removeBtn.fill('#fff');
-            document.body.style.cursor = 'default';
-            this.layer.draw();
-        });
-        removeBtn.on('click', (e) => {
-            e.cancelBubble = true;
-            document.body.style.cursor = 'default';
-            deleteNodeByGroup(grp, this.stage);
-        });
-        indicatorGrp.add(removeBtn);
-
-        grp.add(indicatorGrp);
-        cc._orphanOverlay = overlay;
-        cc._orphanIndicator = indicatorGrp;
+        applyOrphanOverlay(grp, this.layer, this.stage, 'Deleted Var');
     }
 
     // ---- EDIT FLOW ----
@@ -516,7 +448,7 @@ class VariableList {
 
         if (this.layer) this.layer.draw();
         if (this.stage) {
-            const wireLayer = this.stage.findOne('#wireLayer');
+            const wireLayer = tabManager.getActiveWireLayer();
             if (wireLayer) wireLayer.draw();
         }
     }
@@ -525,7 +457,7 @@ class VariableList {
 
     _markMismatchedWires(grp, newDataType) {
         const cc = grp.customClass;
-        const wireLayer = this.stage ? this.stage.findOne('#wireLayer') : null;
+        const wireLayer = this.stage ? tabManager.getActiveWireLayer() : null;
         if (!wireLayer) return;
 
         for (const pin of cc.inputPins) {
@@ -533,9 +465,9 @@ class VariableList {
                 const srcPin = pin.wire.attrs.src;
                 const srcType = srcPin && srcPin.attrs.pinDataType;
                 if (srcType && srcType !== 'Data' && newDataType !== 'Data' && srcType !== newDataType) {
-                    this._applyMismatchToWire(pin.wire, wireLayer);
+                    applyMismatchToWire(pin.wire, wireLayer, this.stage);
                 } else {
-                    this._removeMismatchFromWire(pin.wire);
+                    removeMismatchFromWire(pin.wire);
                 }
             }
         }
@@ -547,127 +479,48 @@ class VariableList {
                     const destPin = w.attrs.dest;
                     const destType = destPin && destPin.attrs.pinDataType;
                     if (destType && destType !== 'Data' && newDataType !== 'Data' && destType !== newDataType) {
-                        this._applyMismatchToWire(w, wireLayer);
+                        applyMismatchToWire(w, wireLayer, this.stage);
                     } else {
-                        this._removeMismatchFromWire(w);
+                        removeMismatchFromWire(w);
                     }
                 }
             }
         }
     }
 
-    _applyMismatchToWire(wire, wireLayer) {
-        if (wire.isMismatched) return;
-        wire.isMismatched = true;
-        wire.dash([10, 5]);
-
-        const r = 8;
-        const indicatorGrp = new Konva.Group({ x: 0, y: 0 });
-
-        const bg = new Konva.Circle({
-            radius: r,
-            fill: 'rgba(50, 20, 0, 0.9)',
-            stroke: '#ff8800',
-            strokeWidth: 1.5,
-        });
-        indicatorGrp.add(bg);
-
-        const cross1 = new Konva.Line({
-            points: [-4, -4, 4, 4],
-            stroke: '#fff',
-            strokeWidth: 2,
-            lineCap: 'round',
-        });
-        const cross2 = new Konva.Line({
-            points: [-4, 4, 4, -4],
-            stroke: '#fff',
-            strokeWidth: 2,
-            lineCap: 'round',
-        });
-        indicatorGrp.add(cross1);
-        indicatorGrp.add(cross2);
-
-        const tooltip = new Konva.Label({ x: r + 4, y: -10, visible: false });
-        tooltip.add(new Konva.Tag({
-            fill: 'rgba(30, 10, 0, 0.9)',
-            cornerRadius: 3,
-            stroke: '#ff8800',
-            strokeWidth: 0.5,
-        }));
-        tooltip.add(new Konva.Text({
-            text: 'Type Mismatch',
-            fontSize: 10,
-            fontFamily: 'Verdana',
-            fill: '#ffaa44',
-            padding: 4,
-        }));
-        indicatorGrp.add(tooltip);
-
-        indicatorGrp.on('mouseenter', () => {
-            bg.fill('#ff4400');
-            cross1.stroke('#fff');
-            cross2.stroke('#fff');
-            tooltip.visible(true);
-            document.body.style.cursor = 'pointer';
-            wireLayer.draw();
-        });
-        indicatorGrp.on('mouseleave', () => {
-            bg.fill('rgba(50, 20, 0, 0.9)');
-            tooltip.visible(false);
-            document.body.style.cursor = 'default';
-            wireLayer.draw();
-        });
-        indicatorGrp.on('click', (e) => {
-            e.cancelBubble = true;
-            document.body.style.cursor = 'default';
-            indicatorGrp.destroy();
-            deleteWire(wire);
-            if (this.stage) this.stage.draw();
-        });
-
-        const updatePosition = () => {
-            const pts = wire.points();
-            if (pts.length >= 4) {
-                indicatorGrp.x((pts[0] + pts[pts.length - 2]) / 2);
-                indicatorGrp.y((pts[1] + pts[pts.length - 1]) / 2);
-            }
-        };
-        updatePosition();
-
-        const srcNode = wire.attrs.src?.getParent();
-        const destNode = wire.attrs.dest?.getParent();
-        if (srcNode) srcNode.on('dragmove.mismatch', updatePosition);
-        if (destNode) destNode.on('dragmove.mismatch', updatePosition);
-        wire._mismatchDragCleanup = () => {
-            if (srcNode) srcNode.off('dragmove.mismatch');
-            if (destNode) destNode.off('dragmove.mismatch');
-        };
-
-        wireLayer.add(indicatorGrp);
-        wire._mismatchIndicator = indicatorGrp;
-    }
-
-    _removeMismatchFromWire(wire) {
-        if (!wire.isMismatched) return;
-        wire.isMismatched = false;
-        wire.dash([]);
-        if (wire._mismatchDragCleanup) {
-            wire._mismatchDragCleanup();
-            wire._mismatchDragCleanup = null;
-        }
-        if (wire._mismatchIndicator) {
-            wire._mismatchIndicator.destroy();
-            wire._mismatchIndicator = null;
-        }
-    }
-
     deleteAllVariables() {
-        this.variables = [];
+        this.variables.length = 0;
         document.getElementById("variable-list").innerHTML = '';
         this.variablesElements.forEach((item) => {
             item.el.remove();
         });
         this.variablesElements = [];
+    }
+
+    switchToTab(tabVariables) {
+        document.getElementById("variable-list").innerHTML = '';
+        this.variablesElements.forEach((item) => {
+            item.el.remove();
+        });
+        this.variablesElements = [];
+
+        this.variables = tabVariables;
+
+        for (const variable of this.variables) {
+            const el = this.makeLeftPanelVariableListItem(variable);
+            document.getElementById("variable-list").appendChild(el);
+
+            const set = this.makeContextMenuItem(variable, 'set');
+            const get = this.makeContextMenuItem(variable, 'get');
+            const variablesBody = document.getElementById("context-menu-variables-body");
+            const container = variablesBody || document.getElementById("context-menu");
+            container.appendChild(get);
+            container.appendChild(set);
+            ContextMenu.addEventToCtxMenuItems(set);
+            ContextMenu.addEventToCtxMenuItems(get);
+            this.variablesElements.push({ name: variable.name, type: 'get', el: get });
+            this.variablesElements.push({ name: variable.name, type: 'set', el: set });
+        }
     }
 }
 
