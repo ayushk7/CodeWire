@@ -2,6 +2,7 @@ import { variableList } from '../ui/variableList.js'
 import { showAlert } from '../ui/dialogs.js'
 import { BuilInFunctions } from './builtInFunctions.js'
 import { runExecCodegen, runExprCodegen, hasType } from '../registry/index.js'
+import { tabManager } from '../editor/tabManager.js'
 export var VSToJS = class {
 
     constructor(stage, layer, isRunOrCode) {
@@ -10,7 +11,13 @@ export var VSToJS = class {
         this.nodeCount = 0;
         this.isRunOrCode = isRunOrCode;
         this.compileIssues = [];
-        for (let variable of variableList.variables) {
+        this._callCounter = 0;
+
+        this.compileFunctionTabs();
+
+        const mainTab = tabManager.getTab('main');
+        const globalVars = mainTab ? mainTab.variables : variableList.variables;
+        for (let variable of globalVars) {
             this.script += `let ${variable.name} = ${variable.value};\n`;
         }
         let begin = this.getBegin(stage);
@@ -88,6 +95,33 @@ export var VSToJS = class {
             }
         }
     }
+    compileFunctionTabs() {
+        const funcTabs = tabManager.getAllFunctionTabs();
+        for (const tab of funcTabs) {
+            const funcBegin = tab.layer.findOne('#FunctionBegin');
+            if (!funcBegin) continue;
+
+            const params = tab.inputParams.map(p => p.name).join(', ');
+            const savedScript = this.script;
+            this.script = '';
+
+            if (tab.variables && tab.variables.length > 0) {
+                for (const v of tab.variables) {
+                    this.script += `let ${v.name} = ${v.value};\n`;
+                }
+            }
+
+            const execOutPins = this.getExecOut(funcBegin);
+            for (let each of execOutPins) {
+                this.coreAlgorithm(each);
+            }
+
+            const bodyScript = this.script;
+            this.script = savedScript;
+            this.script += `function ${tab.name}(${params}) {\n${bodyScript}}\n`;
+        }
+    }
+
     getBegin(stage) {
         let X = stage.find("#Begin");
         if (X.length == 0) {
@@ -127,7 +161,8 @@ export var VSToJS = class {
                 X.push({ node: aNode.wire.attrs.src.getParent(), isWire: true, wire: aNode.wire, srcOutputPinNumber: this.getSrcOutputPinNumber(aNode.wire.attrs.src.getParent(), aNode.wire) });
             }
             else {
-                X.push({ node: aNode.textBox.textBox.text(), isWire: false, wire: null, srcOutputPinNumber: null });
+                const val = aNode.textBox ? aNode.textBox.textBox.text() : 'undefined';
+                X.push({ node: val, isWire: false, wire: null, srcOutputPinNumber: null });
             }
         }
         return X;
@@ -138,6 +173,54 @@ export var VSToJS = class {
         if (node.customClass.isOrphaned) {
             this.compileIssues.push(`Skipped orphaned node: "${node.customClass.type.typeOfNode}"`);
             let execOutPins = this.getExecOut(node);
+            for (let each of execOutPins) {
+                this.coreAlgorithm(each);
+            }
+            return;
+        }
+
+        const nodeType = node.customClass.type.typeOfNode;
+
+        if (nodeType === 'FunctionBegin') {
+            let execOutPins = this.getExecOut(node);
+            for (let each of execOutPins) {
+                this.coreAlgorithm(each);
+            }
+            return;
+        }
+
+        if (nodeType === 'Return') {
+            let inputPins = this.getInputPins(node);
+            if (inputPins.length > 0) {
+                const nd = node.customClass.nodeDescription;
+                const outputNames = [];
+                if (nd.inputs) {
+                    for (const key of Object.keys(nd.inputs)) {
+                        outputNames.push(nd.inputs[key].inputTitle);
+                    }
+                }
+                if (inputPins.length === 1) {
+                    this.script += `return ${this.handleInputs(inputPins[0])};\n`;
+                } else {
+                    const pairs = outputNames.map((name, i) =>
+                        `${name}: ${this.handleInputs(inputPins[i])}`
+                    ).join(', ');
+                    this.script += `return { ${pairs} };\n`;
+                }
+            } else {
+                this.script += `return;\n`;
+            }
+            return;
+        }
+
+        if (nodeType.startsWith('Call ')) {
+            let inputPins = this.getInputPins(node);
+            let execOutPins = this.getExecOut(node);
+            const funcName = node.customClass.nodeDescription.calledFunctionName || nodeType.slice(5);
+            const args = inputPins.map(ip => this.handleInputs(ip)).join(', ');
+            const varName = `_call_${funcName}_${this._callCounter++}`;
+            this.script += `let ${varName} = ${funcName}(${args});\n`;
+            node._callResultVar = varName;
             for (let each of execOutPins) {
                 this.coreAlgorithm(each);
             }
@@ -174,6 +257,35 @@ export var VSToJS = class {
         if (inputNode.node.customClass.isOrphaned) {
             this.compileIssues.push(`Skipped orphaned node: "${inputNode.node.customClass.type.typeOfNode}"`);
             return "undefined";
+        }
+
+        const nodeType = inputNode.node.customClass.type.typeOfNode;
+
+        if (nodeType === 'FunctionBegin') {
+            const nd = inputNode.node.customClass.nodeDescription;
+            if (nd.outputs) {
+                const outputKey = `output${inputNode.srcOutputPinNumber}`;
+                const paramName = nd.outputs[outputKey]?.outputTitle;
+                if (paramName) return paramName;
+            }
+            return 'undefined';
+        }
+
+        if (nodeType.startsWith('Call ')) {
+            const resultVar = inputNode.node._callResultVar;
+            if (resultVar) {
+                const nd = inputNode.node.customClass.nodeDescription;
+                if (nd.outputs) {
+                    const outputKeys = Object.keys(nd.outputs);
+                    if (outputKeys.length === 1) {
+                        return resultVar;
+                    }
+                    const outputName = nd.outputs[`output${inputNode.srcOutputPinNumber}`]?.outputTitle;
+                    if (outputName) return `${resultVar}.${outputName}`;
+                }
+                return resultVar;
+            }
+            return 'undefined';
         }
 
         let inputPins = this.getInputPins(inputNode.node);

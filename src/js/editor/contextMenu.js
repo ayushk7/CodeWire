@@ -4,6 +4,7 @@ import { variableList } from '../ui/variableList.js'
 import { deleteProgramNode, deleteWire } from './deleteHandler.js'
 import { getMenuOrderGroupedByCategory, getDefinition } from '../registry/index.js'
 import { colorMap, lightenHex } from '../core/colorMap.js'
+import { tabManager } from './tabManager.js'
 
 const CATEGORY_LABELS = {
     Begin: 'Flow',
@@ -19,7 +20,7 @@ const CATEGORY_LABELS = {
 const DEFAULT_EXPANDED_CATEGORIES = new Set(['Begin', 'Logic']);
 
 export var ContextMenu = {
-    contextMenu: function (stage, layer) {
+    contextMenu: function (stage) {
         let contextMenu = document.getElementById("ctx-menu-container");
         let contextMenuList = document.getElementById("context-menu");
         let deleteCtxMenu = document.getElementById("delete-ctx-container");
@@ -126,6 +127,7 @@ export var ContextMenu = {
                 const category = section.dataset.category;
                 const expanded = DEFAULT_EXPANDED_CATEGORIES.has(category);
                 section.classList.toggle('ctx-menu-section--collapsed', !expanded);
+                section.classList.remove('hidden');
                 const arr = section.querySelector('.ctx-menu-section-arrow');
                 if (arr) arr.textContent = expanded ? '\u25BC' : '\u25B6';
                 const items = section.querySelectorAll('.context-menu-items');
@@ -133,6 +135,23 @@ export var ContextMenu = {
             });
             contextMenuList.querySelectorAll('.context-menu-items').forEach((el) => el.classList.remove('hidden'));
         }
+        ContextMenu.resetFilter = function () {
+            const bar = document.getElementById('ctx-search-bar');
+            const list = document.getElementById('context-menu');
+            if (bar) bar.value = '';
+            if (list) {
+                list.querySelectorAll('.ctx-menu-section').forEach((section) => {
+                    const category = section.dataset.category;
+                    const expanded = DEFAULT_EXPANDED_CATEGORIES.has(category);
+                    section.classList.toggle('ctx-menu-section--collapsed', !expanded);
+                    section.classList.remove('hidden');
+                    const arr = section.querySelector('.ctx-menu-section-arrow');
+                    if (arr) arr.textContent = expanded ? '\u25BC' : '\u25B6';
+                    section.querySelectorAll('.context-menu-items').forEach((el) => el.classList.remove('hidden'));
+                });
+                list.querySelectorAll('.context-menu-items').forEach((el) => el.classList.remove('hidden'));
+            }
+        };
         function toggleDeleteCtxMenu(location, show) {
             if (show) {
                 deleteCtxMenu.classList.toggle("hidden", false);
@@ -157,7 +176,7 @@ export var ContextMenu = {
         ContextMenu.addEventToCtxMenuItems = function (e) {
             e.addEventListener('click', function (ev) {
                 if (ev.target.classList.contains('ctx-menu-section-header')) return;
-                makeNode(e, stage, layer, toggleContextMenu);
+                makeNode(e, stage, tabManager.getActiveLayer(), toggleContextMenu);
             });
         };
         searchBar.addEventListener("input", (e) => {
@@ -229,7 +248,7 @@ export var ContextMenu = {
                         stage.draw();
                     }
                     else if (parentGroup && parentGroup.name() == 'aProgramNodeGroup') {
-                        deleteProgramNode(e, layer, stage);
+                        deleteProgramNode(e, tabManager.getActiveLayer(), stage);
                         stage.draw();
                     }
                     else if (e.target.name() == "isConnection") {
@@ -259,11 +278,12 @@ export var ContextMenu = {
             let nodeType = e.target.innerHTML + " " + draggedVariableInfo.name;
             let xx = e.target.parentElement.getBoundingClientRect().x - stage.getContainer().getBoundingClientRect().x;
             let yy = e.target.parentElement.getBoundingClientRect().y - stage.getContainer().getBoundingClientRect().y;
+            let activeLayer = tabManager.getActiveLayer();
             if (e.target.innerHTML == "Get") {
-                Nodes.CreateNode(nodeType, { x: xx, y: yy }, layer, stage, "Get", draggedVariableInfo.dataType, null);
+                Nodes.CreateNode(nodeType, { x: xx, y: yy }, activeLayer, stage, "Get", draggedVariableInfo.dataType, null);
             }
             else {
-                Nodes.CreateNode(nodeType, { x: xx, y: yy }, layer, stage, "Set", draggedVariableInfo.dataType, null);
+                Nodes.CreateNode(nodeType, { x: xx, y: yy }, activeLayer, stage, "Set", draggedVariableInfo.dataType, null);
             }
         });
 
@@ -278,7 +298,19 @@ export var ContextMenu = {
         });
         stage.getContainer().addEventListener('drop', (e) => {
             e.preventDefault();
-            if (e.dataTransfer.getData("variableName")) {
+            if (e.dataTransfer.getData("functionTabId")) {
+                const funcTabId = e.dataTransfer.getData("functionTabId");
+                const funcTab = tabManager.getTab(funcTabId);
+                if (funcTab) {
+                    const containerRect = stage.getContainer().getBoundingClientRect();
+                    const x = e.clientX - containerRect.x;
+                    const y = e.clientY - containerRect.y;
+                    const activeLayer = tabManager.getActiveLayer();
+                    Nodes.CreateCallNode(funcTab.name, funcTab.inputParams, funcTab.outputParams,
+                        { x, y }, activeLayer, stage, funcTab.docString || '');
+                    activeLayer.draw();
+                }
+            } else if (e.dataTransfer.getData("variableName")) {
                 toggleGetSetCtxMenu([e.clientX, e.clientY], true);
                 draggedVariableInfo = {
                     name: e.dataTransfer.getData("variableName"),
@@ -286,6 +318,13 @@ export var ContextMenu = {
                 }
             }
             e.stopPropagation();
+        });
+
+        tabManager.on('tabSwitched', () => {
+            toggleContextMenu([0, 0], false);
+            toggleDeleteCtxMenu([], false);
+            toggleGetSetCtxMenu([], false);
+            ContextMenu.resetFilter();
         });
     }
 }

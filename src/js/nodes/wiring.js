@@ -1,5 +1,6 @@
 import { deleteWire, deleteHalfWire } from '../editor/deleteHandler.js'
 import { colorMap } from '../core/colorMap.js'
+import { tabManager } from '../editor/tabManager.js'
 let placeLocation = function (location, stage) {
     return {
         x: (location.x - stage.x()) / stage.scaleX(),
@@ -7,7 +8,7 @@ let placeLocation = function (location, stage) {
     };
 }
 export var Wiring = {
-    enableWiring: function (stage, layer) {
+    enableWiring: function (stage) {
         let currentPinType = null;
         let currentPinDataType = null;
         function isValidMatch(pinType, targetPinDataType) {
@@ -22,19 +23,18 @@ export var Wiring = {
         let isWiring = false;
         let src = null;
         let dest = null;
-        let wireLayer = new Konva.Layer({
-            id: 'wireLayer',
-        });
+        let activeWireLayer = null;
+        let activeNodeLayer = null;
 
         let drawWire = null;
         let potentialTarget = null;
         let dir = 0;
         let wireColor = null;
         let originPreOccupied = null;
-        stage.add(wireLayer);
-        wireLayer.zIndex(0);
         stage.on('mousedown', (e) => {
             if (e.target.name() == 'pin' && e.evt.button == 0) {
+                activeWireLayer = tabManager.getActiveWireLayer();
+                activeNodeLayer = tabManager.getActiveLayer();
                 src = e.target;
                 currentPinType = e.target.attrs.pinType;
                 currentPinDataType = e.target.attrs.pinDataType;
@@ -61,8 +61,8 @@ export var Wiring = {
                         target: src,
                     });
                 setWirePoints(destLoc, srcLoc, dir, drawWire);
-                wireLayer.add(drawWire);
-                wireLayer.draw();
+                activeWireLayer.add(drawWire);
+                activeWireLayer.draw();
             }
         });
         stage.on('mouseup', (e) => {
@@ -86,7 +86,7 @@ export var Wiring = {
                 let srcLoc = placeLocation(src.getAbsolutePosition(), stage);
                 let destLoc = placeLocation(stage.getPointerPosition(), stage);
                 setWirePoints(destLoc, srcLoc, dir, drawWire);
-                wireLayer.draw();
+                activeWireLayer.draw();
             }
         })
 
@@ -97,7 +97,7 @@ export var Wiring = {
                     deleteHalfWire(drawWire, originPreOccupied);
                     if (e.target && src && e.target.name() == 'pin' && src != e.target && src.getParent() !== e.target.getParent() && isValidMatch(e.target.attrs.pinType, e.target.attrs.pinDataType)) {
                         dest = e.target;
-                        addConnectionWire(dest, src, stage, dir, wireLayer);
+                        addConnectionWire(dest, src, stage, dir, activeWireLayer);
                     }
                     src.getParent().draggable(true);
                     src = null;
@@ -109,8 +109,8 @@ export var Wiring = {
                     currentPinType = null;
                     currentPinDataType = null;
                     wireColor = null;
-                    wireLayer.draw();
-                    layer.draw();
+                    activeWireLayer.draw();
+                    activeNodeLayer.draw();
                 }
             }
             else {
@@ -126,8 +126,8 @@ export var Wiring = {
                     currentPinType = null;
                     currentPinDataType = null;
                     wireColor = null;
-                    wireLayer.draw();
-                    layer.draw();
+                    activeWireLayer.draw();
+                    activeNodeLayer.draw();
                 }
             }
         }

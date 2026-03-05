@@ -5,6 +5,7 @@ export var Delete = {
 }
 export function deleteProgramNode(e, layer, stage) {
     let node = e.target.getParent();
+    if (node.customClass && node.customClass.isDeletable === false) return;
     deleteNodeByGroup(node, stage);
 }
 
