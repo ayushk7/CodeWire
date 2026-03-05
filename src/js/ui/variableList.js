@@ -1,4 +1,4 @@
-import { colorMap } from '../core/colorMap.js'
+import { colorMap, lightenHex } from '../core/colorMap.js'
 import { ContextMenu } from '../editor/contextMenu.js'
 import { deleteNodeByGroup, deleteWire } from '../editor/deleteHandler.js'
 import { showAlert, showConfirm } from './dialogs.js'
@@ -41,6 +41,9 @@ class VariableList {
         div.classList.toggle("context-menu-items", true);
         div.setAttribute('data-datatype', `${variable.dataType}`);
         div.innerHTML = `${(setOrGet == 'set') ? 'Set' : 'Get'} ${variable.name}`;
+        const variablesColor = colorMap['Get'] || colorMap['Text'];
+        div.style.borderLeftColor = variablesColor;
+        div.style.color = lightenHex(variablesColor);
         return div;
     }
 
@@ -50,8 +53,10 @@ class VariableList {
         document.getElementById("variable-list").appendChild(el);
         let set = this.makeContextMenuItem(variable, 'set');
         let get = this.makeContextMenuItem(variable, 'get');
-        document.getElementById("context-menu").appendChild(get);
-        document.getElementById("context-menu").appendChild(set);
+        const variablesBody = document.getElementById("context-menu-variables-body");
+        const container = variablesBody || document.getElementById("context-menu");
+        container.appendChild(get);
+        container.appendChild(set);
         ContextMenu.addEventToCtxMenuItems(set);
         ContextMenu.addEventToCtxMenuItems(get);
         this.variablesElements.push({ name: variable.name, type: 'get', el: get });

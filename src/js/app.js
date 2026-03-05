@@ -60,63 +60,94 @@ document.getElementById("Run").addEventListener("click", (e) => {
 new Save(stage, layer, stage.findOne('#wireLayer'));
 new Export(stage, layer, stage.findOne('#wireLayer'));
 // let script = `{"variables":[{"name":"sadsad","dataType":"Number","value":"0"},{"name":"sadsaddd","dataType":"Array","value":"[1,2]"}],"nodesData":[{"position":{"x":511,"y":16},"nodeDescription":{"nodeTitle":"Begin","execIn":false,"pinExecInId":null,"execOut":{"execOut0":{"execOutTitle":null,"pinExecOutId":"10"}},"rows":2,"colums":10}},{"position":{"x":968,"y":98},"nodeDescription":{"nodeTitle":"Print","execIn":true,"pinExecInId":"16","execOut":{"execOut0":{"execOutTitle":null,"pinExecOutId":"17"}},"inputs":{"input0":{"inputTitle":"Value","dataType":"Data","defValue":"hello","pinInId":"18"}},"rows":3,"colums":12}},{"position":{"x":706,"y":89},"nodeDescription":{"nodeTitle":"Branch","execIn":true,"pinExecInId":"28","execOut":{"execOut0":{"execOutTitle":"       True","pinExecOutId":"29"},"execOut1":{"execOutTitle":"       False","pinExecOutId":"31"}},"inputs":{"input0":{"inputTitle":"Bool","dataType":"Boolean","defValue":true,"pinInId":"33"}},"rows":3,"colums":12}}],"wireData":[{"srcId":"31","destId":"16"},{"srcId":"29","destId":"16"},{"srcId":"10","destId":"28"}]}`;
-document.getElementById("import").addEventListener("click", () => {
-    // document.getElementById("save-menu").classList.toggle("hidden", true);
-    // document.getElementById("saving").classList.toggle("hidden", true);
-    let importMenu = document.getElementById("import-menu");
-    [...document.getElementsByClassName("sidebox")].forEach(value => {
-        if (value !== importMenu) {
-            value.classList.toggle("hidden", true);
-        }
-        else {
-            value.classList.toggle("hidden", false);
-        }
-    })
-    document.getElementById("import-btn").addEventListener("click", (e) => {
+// ── Import modal logic ──
+const importOverlay  = document.getElementById("import-overlay");
+const importModal    = document.getElementById("import-modal");
+const importDropzone = document.getElementById("import-dropzone");
+const importFileInput = document.getElementById("upload-json");
+const importFileInfo = document.getElementById("import-file-info");
+const importFilename = document.getElementById("import-filename");
+const importFileClear = document.getElementById("import-file-clear");
+const importCloseBtn = document.getElementById("import-close-btn");
+const importCancelBtn = document.getElementById("import-cancel-btn");
+const importBtn      = document.getElementById("import-btn");
 
-        let file = document.getElementById("upload-json").files;
-        if (file.length == 0) {
-            showAlert("Upload File First");
-        }
-        else {
-            try {
-                document.getElementById("import-menu").classList.toggle("hidden", true);
-                let fr = new FileReader();
-                fr.onload = function (e) {
-                    // let result = JSON.parse(e.target.result);
-                    // console.log(result);
-                    let script = e.target.result
-                    new Import(stage, layer, stage.findOne('#wireLayer'), script);
-                    document.getElementById("import-menu").classList.toggle("hidden", true);
-                }
-                fr.readAsText(file.item(0));
-            }
-            catch (err) {
-                document.getElementById("console-window").classList.toggle("hidden", false);
-                let codeDoc = document.getElementById("console").contentWindow.document;
-                codeDoc.open();
-                codeDoc.writeln(
-                    `<!DOCTYPE html>\n
-                    <style>
-                        html{
-                            color: white;
-                            margin: 20;
-                        }
-                    </style>
-                    <body>
-                    <code>
-                    "Error Occurred In Importing The JSON"<br>
-                    ${err}
-                    </code>
-                    </body>
-                    </html>
-                    `
-                );
-                codeDoc.close();
-            }
-        }
-    });
-})
+function openImportModal() {
+    [...document.getElementsByClassName("sidebox")].forEach(v => v.classList.add("hidden"));
+    importFileInput.value = "";
+    importFileInfo.classList.add("hidden");
+    importFilename.textContent = "";
+    importDropzone.classList.remove("drag-over");
+    importOverlay.classList.remove("hidden");
+}
+
+function closeImportModal() {
+    importOverlay.classList.add("hidden");
+}
+
+function showSelectedFile(file) {
+    if (!file) return;
+    importFilename.textContent = file.name;
+    importFileInfo.classList.remove("hidden");
+}
+
+document.getElementById("import").addEventListener("click", openImportModal);
+
+importOverlay.addEventListener("click", (e) => {
+    if (e.target === importOverlay) closeImportModal();
+});
+importCloseBtn.addEventListener("click", closeImportModal);
+importCancelBtn.addEventListener("click", closeImportModal);
+
+importDropzone.addEventListener("click", () => importFileInput.click());
+
+importDropzone.addEventListener("dragenter", (e) => { e.preventDefault(); importDropzone.classList.add("drag-over"); });
+importDropzone.addEventListener("dragover",  (e) => { e.preventDefault(); importDropzone.classList.add("drag-over"); });
+importDropzone.addEventListener("dragleave", ()  => { importDropzone.classList.remove("drag-over"); });
+importDropzone.addEventListener("drop", (e) => {
+    e.preventDefault();
+    importDropzone.classList.remove("drag-over");
+    const files = e.dataTransfer.files;
+    if (files.length) {
+        importFileInput.files = files;
+        showSelectedFile(files[0]);
+    }
+});
+
+importFileInput.addEventListener("change", () => {
+    if (importFileInput.files.length) showSelectedFile(importFileInput.files[0]);
+});
+
+importFileClear.addEventListener("click", () => {
+    importFileInput.value = "";
+    importFileInfo.classList.add("hidden");
+    importFilename.textContent = "";
+});
+
+importBtn.addEventListener("click", () => {
+    const files = importFileInput.files;
+    if (!files.length) {
+        showAlert("Upload File First");
+        return;
+    }
+    try {
+        const fr = new FileReader();
+        fr.onload = function (e) {
+            new Import(stage, layer, stage.findOne('#wireLayer'), e.target.result);
+            closeImportModal();
+        };
+        fr.readAsText(files[0]);
+    } catch (err) {
+        document.getElementById("console-window").classList.toggle("hidden", false);
+        let codeDoc = document.getElementById("console").contentWindow.document;
+        codeDoc.open();
+        codeDoc.writeln(
+            `<!DOCTYPE html>\n<style>html{color:white;margin:20;}</style>
+            <body><code>"Error Occurred In Importing The JSON"<br>${err}</code></body></html>`
+        );
+        codeDoc.close();
+    }
+});
 document.getElementById("live-code-refresh").addEventListener("click", () => {
     let script = new VSToJS(stage, layer, "live-code-refresh").script;
     refresh(script);
@@ -143,9 +174,6 @@ document.getElementById("Console").addEventListener("click", (e) => {
 })
 document.getElementById("cross-console").addEventListener("click", (e) => {
     document.getElementById("console-window").classList.toggle("hidden", true);
-});
-document.getElementById("cross-upload-cross").addEventListener("click", (e) => {
-    document.getElementById("import-menu").classList.toggle("hidden", true);
 });
 document.getElementById("reload").addEventListener("click", (e) => {
     prompLastSave(stage, layer, stage.findOne('#wireLayer'));
