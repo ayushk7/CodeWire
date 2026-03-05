@@ -56,6 +56,7 @@ class TabManager {
     getTab(id) { return this._tabs.get(id); }
     getAllTabs() { return [...this._tabs.values()]; }
     getAllFunctionTabs() { return [...this._tabs.values()].filter(t => t.type === 'function'); }
+    getAllSavedFunctionTabs() { return [...this._tabs.values()].filter(t => t.type === 'function' && t.saved); }
 
     createTab(name) {
         if (!isValidFunctionName(name)) {
@@ -90,6 +91,7 @@ class TabManager {
             returnNodeId: null,
             variables: [],
             docString: '',
+            saved: null,
         };
 
         this._tabs.set(id, tab);
@@ -131,6 +133,7 @@ class TabManager {
         if (!tab) return false;
         const oldName = tab.name;
         tab.name = newName;
+        if (tab.saved) tab.saved.name = newName;
         this._renderTabBar();
         this._emit('tabRenamed', { tab, oldName, newName });
         return true;
@@ -163,6 +166,18 @@ class TabManager {
             inputs: [...tab.inputParams],
             outputs: [...tab.outputParams],
         };
+    }
+
+    saveFunction(tabId) {
+        const tab = this._tabs.get(tabId);
+        if (!tab || tab.type !== 'function') return;
+        tab.saved = {
+            name: tab.name,
+            inputParams: tab.inputParams.map(p => ({ ...p })),
+            outputParams: tab.outputParams.map(p => ({ ...p })),
+            docString: tab.docString || '',
+        };
+        this._emit('functionSaved', tab);
     }
 
     on(event, fn) {
