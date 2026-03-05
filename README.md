@@ -8,7 +8,37 @@
 
 Try at https://ayushk7.github.io/CodeWire/
 
-**Run locally:** From the repo root run `npm start`. The app is served from the `src/` directory (default http://localhost:3000).
+## Getting Started
+
+```bash
+npm install
+```
+
+### Local Development
+
+```bash
+npm run dev
+```
+
+Starts the Vite dev server at http://localhost:5173 with hot module replacement.
+
+### Production Build
+
+```bash
+npm run build
+```
+
+Bundles and minifies everything into the `dist/` folder. To preview the production build locally:
+
+```bash
+npm run preview
+```
+
+### Deployment
+
+The `dist/` folder is the deployable output — upload it to any static host (Netlify, Vercel, S3, etc.).
+
+For GitHub Pages, the included workflow (`.github/workflows/deploy-pages.yml`) automatically builds and deploys on push to `main`/`master`.
 
 CodeWire is a node based editor inspired by UE4 Blueprints which helps in better visualization of the code,
 and faster scripting of complex and repetitive tasks.
