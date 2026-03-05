@@ -226,6 +226,13 @@ background-size: 10rem 10rem;
 
 }
 
+#group-name-ip{
+  width: 120px;
+  height: 18px;
+  font-size: 13px;
+  background-color: rgba(30, 35, 50, 0.95);
+  z-index: 100;
+}
 
 .rightbar{
   position: absolute;

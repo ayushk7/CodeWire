@@ -2,6 +2,7 @@ import { Nodes } from '../nodes/nodeFactory.js'
 import { addConnectionWire } from '../nodes/wiring.js'
 import { variableList } from '../ui/variableList.js'
 import { showAlert, vscriptOnLoad } from '../ui/dialogs.js'
+import { getGroupsData, createNodeGroup } from '../editor/nodeGroup.js'
 function writeError(err, msg) {
     document.getElementById("console-window").classList.toggle("hidden", false);
     let codeDoc = document.getElementById("console").contentWindow.document;
@@ -60,6 +61,7 @@ export class Export {
                 variables: variableList.variables,
                 nodesData: nodesData,
                 wireData: wireData,
+                groupsData: getGroupsData(layer),
             }
             let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportScript));
             let exportAnchorElem = document.getElementById('exportAnchorElem');
@@ -122,6 +124,7 @@ export class Save {
                 variables: variableList.variables,
                 nodesData: nodesData,
                 wireData: wireData,
+                groupsData: getGroupsData(layer),
             }
             localStorage.setItem('lastLoadWireScriptJSON', JSON.stringify(exportScript));
             let savingWindow = document.getElementById("saving");
@@ -200,6 +203,16 @@ function printContent(json, stage, layer, wireLayer) {
         }
         catch (err) {
             writeError(err, "Error Occurred In Importing The JSON(Variable Data Not Valid)");
+        }
+    }
+    if (json.groupsData) {
+        for (let g of json.groupsData) {
+            try {
+                createNodeGroup(g.position, g.width, g.height, g.name, layer, stage);
+            }
+            catch (err) {
+                writeError(err, "Error Occurred In Importing The JSON(Group Data Not Valid)");
+            }
         }
     }
     layer.draw();
