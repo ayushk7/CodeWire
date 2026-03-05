@@ -1369,6 +1369,1284 @@ registerNode({
     },
 });
 
+// ---------- String: Concat, StringLength, Substring, CharAt, IndexOf(Str), LastIndexOf(Str), Replace, ReplaceAll, Split, Join, Trim, ToUpperCase, ToLowerCase, StartsWith, EndsWith, Includes(Str), Repeat, ParseFloat, ToString ----------
+registerNode({
+    id: 'Concat',
+    schema: {
+        inputs: [
+            { inputTitle: 'A', dataType: 'String', defValue: "''" },
+            { inputTitle: 'B', dataType: 'String', defValue: "''" },
+        ],
+        outputs: [{ outputTitle: 'Result', dataType: 'String', outOrder: 0 }],
+        color: 'Str',
+        rows: 2,
+        colums: 10,
+    },
+    exprCodegen(compiler, inputNode) {
+        const inputPins = compiler.getInputPins(inputNode.node);
+        return `(${compiler.handleInputs(inputPins[0])} + ${compiler.handleInputs(inputPins[1])})`;
+    },
+});
+
+registerNode({
+    id: 'StringLength',
+    schema: {
+        inputs: [{ inputTitle: 'String', dataType: 'String', defValue: "''" }],
+        outputs: [{ outputTitle: 'Length', dataType: 'Number', outOrder: 0 }],
+        color: 'Str',
+        rows: 2,
+        colums: 13,
+    },
+    exprCodegen(compiler, inputNode) {
+        const inputPins = compiler.getInputPins(inputNode.node);
+        return `${compiler.handleInputs(inputPins[0])}.length`;
+    },
+});
+
+registerNode({
+    id: 'Substring',
+    schema: {
+        inputs: [
+            { inputTitle: 'String', dataType: 'String', defValue: "'hello'" },
+            { inputTitle: 'Start', dataType: 'Number', defValue: 0 },
+            { inputTitle: 'End', dataType: 'Number', defValue: 5 },
+        ],
+        outputs: [{ outputTitle: 'Result', dataType: 'String', outOrder: 0 }],
+        color: 'Str',
+        rows: 2,
+        colums: 12,
+    },
+    exprCodegen(compiler, inputNode) {
+        const inputPins = compiler.getInputPins(inputNode.node);
+        return `${compiler.handleInputs(inputPins[0])}.substring(${compiler.handleInputs(inputPins[1])}, ${compiler.handleInputs(inputPins[2])})`;
+    },
+});
+
+registerNode({
+    id: 'CharAt',
+    schema: {
+        inputs: [
+            { inputTitle: 'String', dataType: 'String', defValue: "'hello'" },
+            { inputTitle: 'Index', dataType: 'Number', defValue: 0 },
+        ],
+        outputs: [{ outputTitle: 'Char', dataType: 'String', outOrder: 0 }],
+        color: 'Str',
+        rows: 2,
+        colums: 10,
+    },
+    exprCodegen(compiler, inputNode) {
+        const inputPins = compiler.getInputPins(inputNode.node);
+        return `${compiler.handleInputs(inputPins[0])}.charAt(${compiler.handleInputs(inputPins[1])})`;
+    },
+});
+
+registerNode({
+    id: 'IndexOf(Str)',
+    schema: {
+        inputs: [
+            { inputTitle: 'String', dataType: 'String', defValue: "'hello'" },
+            { inputTitle: 'Search', dataType: 'String', defValue: "'l'" },
+        ],
+        outputs: [
+            { outputTitle: 'Index', dataType: 'Number', outOrder: 0 },
+            { outputTitle: 'Found', dataType: 'Boolean', outOrder: 1 },
+        ],
+        color: 'Str',
+        rows: 2,
+        colums: 13,
+    },
+    exprCodegen(compiler, inputNode) {
+        const inputPins = compiler.getInputPins(inputNode.node);
+        const str = compiler.handleInputs(inputPins[0]);
+        const search = compiler.handleInputs(inputPins[1]);
+        if (inputNode.srcOutputPinNumber == 0) return `${str}.indexOf(${search})`;
+        return `(${str}.indexOf(${search}) !== -1)`;
+    },
+});
+
+registerNode({
+    id: 'LastIndexOf(Str)',
+    schema: {
+        inputs: [
+            { inputTitle: 'String', dataType: 'String', defValue: "'hello'" },
+            { inputTitle: 'Search', dataType: 'String', defValue: "'l'" },
+        ],
+        outputs: [
+            { outputTitle: 'Index', dataType: 'Number', outOrder: 0 },
+            { outputTitle: 'Found', dataType: 'Boolean', outOrder: 1 },
+        ],
+        color: 'Str',
+        rows: 2,
+        colums: 16,
+    },
+    exprCodegen(compiler, inputNode) {
+        const inputPins = compiler.getInputPins(inputNode.node);
+        const str = compiler.handleInputs(inputPins[0]);
+        const search = compiler.handleInputs(inputPins[1]);
+        if (inputNode.srcOutputPinNumber == 0) return `${str}.lastIndexOf(${search})`;
+        return `(${str}.lastIndexOf(${search}) !== -1)`;
+    },
+});
+
+registerNode({
+    id: 'Replace',
+    schema: {
+        inputs: [
+            { inputTitle: 'String', dataType: 'String', defValue: "'hello'" },
+            { inputTitle: 'Search', dataType: 'String', defValue: "'l'" },
+            { inputTitle: 'Replace', dataType: 'String', defValue: "'r'" },
+        ],
+        outputs: [{ outputTitle: 'Result', dataType: 'String', outOrder: 0 }],
+        color: 'Str',
+        rows: 2,
+        colums: 10,
+    },
+    exprCodegen(compiler, inputNode) {
+        const inputPins = compiler.getInputPins(inputNode.node);
+        return `${compiler.handleInputs(inputPins[0])}.replace(${compiler.handleInputs(inputPins[1])}, ${compiler.handleInputs(inputPins[2])})`;
+    },
+});
+
+registerNode({
+    id: 'ReplaceAll',
+    schema: {
+        inputs: [
+            { inputTitle: 'String', dataType: 'String', defValue: "'hello'" },
+            { inputTitle: 'Search', dataType: 'String', defValue: "'l'" },
+            { inputTitle: 'Replace', dataType: 'String', defValue: "'r'" },
+        ],
+        outputs: [{ outputTitle: 'Result', dataType: 'String', outOrder: 0 }],
+        color: 'Str',
+        rows: 2,
+        colums: 12,
+    },
+    exprCodegen(compiler, inputNode) {
+        const inputPins = compiler.getInputPins(inputNode.node);
+        return `${compiler.handleInputs(inputPins[0])}.replaceAll(${compiler.handleInputs(inputPins[1])}, ${compiler.handleInputs(inputPins[2])})`;
+    },
+});
+
+registerNode({
+    id: 'Split',
+    schema: {
+        inputs: [
+            { inputTitle: 'String', dataType: 'String', defValue: "'a,b,c'" },
+            { inputTitle: 'Delimiter', dataType: 'String', defValue: "','" },
+        ],
+        outputs: [{ outputTitle: 'Result', dataType: 'Array', outOrder: 0 }],
+        color: 'Str',
+        rows: 2,
+        colums: 10,
+    },
+    exprCodegen(compiler, inputNode) {
+        const inputPins = compiler.getInputPins(inputNode.node);
+        return `${compiler.handleInputs(inputPins[0])}.split(${compiler.handleInputs(inputPins[1])})`;
+    },
+});
+
+registerNode({
+    id: 'Join',
+    schema: {
+        inputs: [
+            { inputTitle: 'Array', dataType: 'Array', isInputBoxRequired: false },
+            { inputTitle: 'Delimiter', dataType: 'String', defValue: "','" },
+        ],
+        outputs: [{ outputTitle: 'Result', dataType: 'String', outOrder: 0 }],
+        color: 'Str',
+        rows: 2,
+        colums: 10,
+    },
+    exprCodegen(compiler, inputNode) {
+        const inputPins = compiler.getInputPins(inputNode.node);
+        return `${compiler.handleInputs(inputPins[0])}.join(${compiler.handleInputs(inputPins[1])})`;
+    },
+});
+
+registerNode({
+    id: 'Trim',
+    schema: {
+        inputs: [{ inputTitle: 'String', dataType: 'String', defValue: "' hello '" }],
+        outputs: [{ outputTitle: 'Result', dataType: 'String', outOrder: 0 }],
+        color: 'Str',
+        rows: 2,
+        colums: 10,
+    },
+    exprCodegen(compiler, inputNode) {
+        const inputPins = compiler.getInputPins(inputNode.node);
+        return `${compiler.handleInputs(inputPins[0])}.trim()`;
+    },
+});
+
+registerNode({
+    id: 'ToUpperCase',
+    schema: {
+        inputs: [{ inputTitle: 'String', dataType: 'String', defValue: "'hello'" }],
+        outputs: [{ outputTitle: 'Result', dataType: 'String', outOrder: 0 }],
+        color: 'Str',
+        rows: 2,
+        colums: 12,
+    },
+    exprCodegen(compiler, inputNode) {
+        const inputPins = compiler.getInputPins(inputNode.node);
+        return `${compiler.handleInputs(inputPins[0])}.toUpperCase()`;
+    },
+});
+
+registerNode({
+    id: 'ToLowerCase',
+    schema: {
+        inputs: [{ inputTitle: 'String', dataType: 'String', defValue: "'HELLO'" }],
+        outputs: [{ outputTitle: 'Result', dataType: 'String', outOrder: 0 }],
+        color: 'Str',
+        rows: 2,
+        colums: 12,
+    },
+    exprCodegen(compiler, inputNode) {
+        const inputPins = compiler.getInputPins(inputNode.node);
+        return `${compiler.handleInputs(inputPins[0])}.toLowerCase()`;
+    },
+});
+
+registerNode({
+    id: 'StartsWith',
+    schema: {
+        inputs: [
+            { inputTitle: 'String', dataType: 'String', defValue: "'hello'" },
+            { inputTitle: 'Search', dataType: 'String', defValue: "'he'" },
+        ],
+        outputs: [{ outputTitle: 'Result', dataType: 'Boolean', outOrder: 0 }],
+        color: 'Str',
+        rows: 2,
+        colums: 12,
+    },
+    exprCodegen(compiler, inputNode) {
+        const inputPins = compiler.getInputPins(inputNode.node);
+        return `${compiler.handleInputs(inputPins[0])}.startsWith(${compiler.handleInputs(inputPins[1])})`;
+    },
+});
+
+registerNode({
+    id: 'EndsWith',
+    schema: {
+        inputs: [
+            { inputTitle: 'String', dataType: 'String', defValue: "'hello'" },
+            { inputTitle: 'Search', dataType: 'String', defValue: "'lo'" },
+        ],
+        outputs: [{ outputTitle: 'Result', dataType: 'Boolean', outOrder: 0 }],
+        color: 'Str',
+        rows: 2,
+        colums: 12,
+    },
+    exprCodegen(compiler, inputNode) {
+        const inputPins = compiler.getInputPins(inputNode.node);
+        return `${compiler.handleInputs(inputPins[0])}.endsWith(${compiler.handleInputs(inputPins[1])})`;
+    },
+});
+
+registerNode({
+    id: 'Includes(Str)',
+    schema: {
+        inputs: [
+            { inputTitle: 'String', dataType: 'String', defValue: "'hello'" },
+            { inputTitle: 'Search', dataType: 'String', defValue: "'ell'" },
+        ],
+        outputs: [{ outputTitle: 'Result', dataType: 'Boolean', outOrder: 0 }],
+        color: 'Str',
+        rows: 2,
+        colums: 14,
+    },
+    exprCodegen(compiler, inputNode) {
+        const inputPins = compiler.getInputPins(inputNode.node);
+        return `${compiler.handleInputs(inputPins[0])}.includes(${compiler.handleInputs(inputPins[1])})`;
+    },
+});
+
+registerNode({
+    id: 'Repeat',
+    schema: {
+        inputs: [
+            { inputTitle: 'String', dataType: 'String', defValue: "'ab'" },
+            { inputTitle: 'Count', dataType: 'Number', defValue: 3 },
+        ],
+        outputs: [{ outputTitle: 'Result', dataType: 'String', outOrder: 0 }],
+        color: 'Str',
+        rows: 2,
+        colums: 10,
+    },
+    exprCodegen(compiler, inputNode) {
+        const inputPins = compiler.getInputPins(inputNode.node);
+        return `${compiler.handleInputs(inputPins[0])}.repeat(${compiler.handleInputs(inputPins[1])})`;
+    },
+});
+
+registerNode({
+    id: 'ParseFloat',
+    schema: {
+        inputs: [{ inputTitle: 'String', dataType: 'String', defValue: "'0.0'", isInputBoxRequired: false }],
+        outputs: [{ outputTitle: 'Number', dataType: 'Number', outOrder: 0 }],
+        color: 'Str',
+        rows: 2,
+        colums: 11,
+    },
+    exprCodegen(compiler, inputNode) {
+        const inputPins = compiler.getInputPins(inputNode.node);
+        return `parseFloat(${compiler.handleInputs(inputPins[0])})`;
+    },
+});
+
+registerNode({
+    id: 'ToString',
+    schema: {
+        inputs: [{ inputTitle: 'Value', dataType: 'Data', defValue: 0 }],
+        outputs: [{ outputTitle: 'Result', dataType: 'String', outOrder: 0 }],
+        color: 'Str',
+        rows: 2,
+        colums: 10,
+    },
+    exprCodegen(compiler, inputNode) {
+        const inputPins = compiler.getInputPins(inputNode.node);
+        return `String(${compiler.handleInputs(inputPins[0])})`;
+    },
+});
+
+// ---------- Object/JSON: JSON Parse, JSON Stringify, CreateObject, SetProperty, GetProperty, DeleteProperty, HasProperty, ObjectKeys, ObjectValues, ObjectEntries, FromEntries, MergeObjects, ObjectSize, TypeOf, IsNull, IsArray ----------
+registerNode({
+    id: 'JSON Parse',
+    schema: {
+        inputs: [{ inputTitle: 'String', dataType: 'String', defValue: "'{}'" }],
+        outputs: [{ outputTitle: 'Object', dataType: 'Data', outOrder: 0 }],
+        color: 'Obj',
+        rows: 2,
+        colums: 12,
+    },
+    exprCodegen(compiler, inputNode) {
+        const inputPins = compiler.getInputPins(inputNode.node);
+        return `JSON.parse(${compiler.handleInputs(inputPins[0])})`;
+    },
+});
+
+registerNode({
+    id: 'JSON Stringify',
+    schema: {
+        inputs: [
+            { inputTitle: 'Value', dataType: 'Data', isInputBoxRequired: false },
+            { inputTitle: 'Indent', dataType: 'Number', defValue: 0 },
+        ],
+        outputs: [{ outputTitle: 'String', dataType: 'String', outOrder: 0 }],
+        color: 'Obj',
+        rows: 2,
+        colums: 14,
+    },
+    exprCodegen(compiler, inputNode) {
+        const inputPins = compiler.getInputPins(inputNode.node);
+        return `JSON.stringify(${compiler.handleInputs(inputPins[0])}, null, ${compiler.handleInputs(inputPins[1])})`;
+    },
+});
+
+registerNode({
+    id: 'CreateObject',
+    schema: {
+        execIn: true,
+        execOut: [{ outOrder: 0 }],
+        outputs: [{ outputTitle: 'Object', dataType: 'Data', outOrder: 1 }],
+        color: 'Obj',
+        rows: 2,
+        colums: 13,
+    },
+    execCodegen(compiler, node) {
+        const execOutPins = compiler.getExecOut(node);
+        compiler.script += `let _obj${node._id} = {};\n`;
+        compiler.coreAlgorithm(execOutPins[0]);
+    },
+    exprCodegen(compiler, inputNode) {
+        return `_obj${inputNode.node._id}`;
+    },
+});
+
+registerNode({
+    id: 'SetProperty',
+    schema: {
+        execIn: true,
+        execOut: [{ outOrder: 0 }],
+        inputs: [
+            { inputTitle: 'Object', dataType: 'Data', isInputBoxRequired: false },
+            { inputTitle: 'Key', dataType: 'String', defValue: "'key'" },
+            { inputTitle: 'Value', dataType: 'Data', defValue: 0 },
+        ],
+        outputs: [{ outputTitle: 'Object', dataType: 'Data', outOrder: 1 }],
+        color: 'Obj',
+        rows: 4,
+        colums: 12,
+    },
+    execCodegen(compiler, node) {
+        const inputPins = compiler.getInputPins(node);
+        const execOutPins = compiler.getExecOut(node);
+        compiler.script += `${compiler.handleInputs(inputPins[0])}[${compiler.handleInputs(inputPins[1])}] = ${compiler.handleInputs(inputPins[2])};\n`;
+        compiler.coreAlgorithm(execOutPins[0]);
+    },
+    exprCodegen(compiler, inputNode) {
+        const inputPins = compiler.getInputPins(inputNode.node);
+        return `${compiler.handleInputs(inputPins[0])}`;
+    },
+});
+
+registerNode({
+    id: 'GetProperty',
+    schema: {
+        inputs: [
+            { inputTitle: 'Object', dataType: 'Data', isInputBoxRequired: false },
+            { inputTitle: 'Key', dataType: 'String', defValue: "'key'" },
+        ],
+        outputs: [
+            { outputTitle: 'Value', dataType: 'Data', outOrder: 0 },
+            { outputTitle: 'Exists', dataType: 'Boolean', outOrder: 1 },
+        ],
+        color: 'Obj',
+        rows: 2,
+        colums: 12,
+    },
+    exprCodegen(compiler, inputNode) {
+        const inputPins = compiler.getInputPins(inputNode.node);
+        if (inputNode.srcOutputPinNumber == 0) {
+            return `${compiler.handleInputs(inputPins[0])}[${compiler.handleInputs(inputPins[1])}]`;
+        }
+        return `(${compiler.handleInputs(inputPins[1])} in Object(${compiler.handleInputs(inputPins[0])}))`;
+    },
+});
+
+registerNode({
+    id: 'DeleteProperty',
+    schema: {
+        execIn: true,
+        execOut: [{ outOrder: 0 }],
+        inputs: [
+            { inputTitle: 'Object', dataType: 'Data', isInputBoxRequired: false },
+            { inputTitle: 'Key', dataType: 'String', defValue: "'key'" },
+        ],
+        outputs: [{ outputTitle: 'Object', dataType: 'Data', outOrder: 1 }],
+        color: 'Obj',
+        rows: 2,
+        colums: 14,
+    },
+    execCodegen(compiler, node) {
+        const inputPins = compiler.getInputPins(node);
+        const execOutPins = compiler.getExecOut(node);
+        compiler.script += `delete ${compiler.handleInputs(inputPins[0])}[${compiler.handleInputs(inputPins[1])}];\n`;
+        compiler.coreAlgorithm(execOutPins[0]);
+    },
+    exprCodegen(compiler, inputNode) {
+        const inputPins = compiler.getInputPins(inputNode.node);
+        return `${compiler.handleInputs(inputPins[0])}`;
+    },
+});
+
+registerNode({
+    id: 'HasProperty',
+    schema: {
+        inputs: [
+            { inputTitle: 'Object', dataType: 'Data', isInputBoxRequired: false },
+            { inputTitle: 'Key', dataType: 'String', defValue: "'key'" },
+        ],
+        outputs: [{ outputTitle: 'Result', dataType: 'Boolean', outOrder: 0 }],
+        color: 'Obj',
+        rows: 2,
+        colums: 12,
+    },
+    exprCodegen(compiler, inputNode) {
+        const inputPins = compiler.getInputPins(inputNode.node);
+        return `(${compiler.handleInputs(inputPins[1])} in Object(${compiler.handleInputs(inputPins[0])}))`;
+    },
+});
+
+registerNode({
+    id: 'ObjectKeys',
+    schema: {
+        inputs: [{ inputTitle: 'Object', dataType: 'Data', isInputBoxRequired: false }],
+        outputs: [{ outputTitle: 'Keys', dataType: 'Array', outOrder: 0 }],
+        color: 'Obj',
+        rows: 2,
+        colums: 12,
+    },
+    exprCodegen(compiler, inputNode) {
+        const inputPins = compiler.getInputPins(inputNode.node);
+        return `Object.keys(${compiler.handleInputs(inputPins[0])})`;
+    },
+});
+
+registerNode({
+    id: 'ObjectValues',
+    schema: {
+        inputs: [{ inputTitle: 'Object', dataType: 'Data', isInputBoxRequired: false }],
+        outputs: [{ outputTitle: 'Values', dataType: 'Array', outOrder: 0 }],
+        color: 'Obj',
+        rows: 2,
+        colums: 13,
+    },
+    exprCodegen(compiler, inputNode) {
+        const inputPins = compiler.getInputPins(inputNode.node);
+        return `Object.values(${compiler.handleInputs(inputPins[0])})`;
+    },
+});
+
+registerNode({
+    id: 'ObjectEntries',
+    schema: {
+        inputs: [{ inputTitle: 'Object', dataType: 'Data', isInputBoxRequired: false }],
+        outputs: [{ outputTitle: 'Entries', dataType: 'Array', outOrder: 0 }],
+        color: 'Obj',
+        rows: 2,
+        colums: 14,
+    },
+    exprCodegen(compiler, inputNode) {
+        const inputPins = compiler.getInputPins(inputNode.node);
+        return `Object.entries(${compiler.handleInputs(inputPins[0])})`;
+    },
+});
+
+registerNode({
+    id: 'FromEntries',
+    schema: {
+        inputs: [{ inputTitle: 'Entries', dataType: 'Array', isInputBoxRequired: false }],
+        outputs: [{ outputTitle: 'Object', dataType: 'Data', outOrder: 0 }],
+        color: 'Obj',
+        rows: 2,
+        colums: 12,
+    },
+    exprCodegen(compiler, inputNode) {
+        const inputPins = compiler.getInputPins(inputNode.node);
+        return `Object.fromEntries(${compiler.handleInputs(inputPins[0])})`;
+    },
+});
+
+registerNode({
+    id: 'MergeObjects',
+    schema: {
+        inputs: [
+            { inputTitle: 'ObjectA', dataType: 'Data', isInputBoxRequired: false },
+            { inputTitle: 'ObjectB', dataType: 'Data', isInputBoxRequired: false },
+        ],
+        outputs: [{ outputTitle: 'Result', dataType: 'Data', outOrder: 0 }],
+        color: 'Obj',
+        rows: 2,
+        colums: 13,
+    },
+    exprCodegen(compiler, inputNode) {
+        const inputPins = compiler.getInputPins(inputNode.node);
+        return `Object.assign({}, ${compiler.handleInputs(inputPins[0])}, ${compiler.handleInputs(inputPins[1])})`;
+    },
+});
+
+registerNode({
+    id: 'ObjectSize',
+    schema: {
+        inputs: [{ inputTitle: 'Object', dataType: 'Data', isInputBoxRequired: false }],
+        outputs: [{ outputTitle: 'Size', dataType: 'Number', outOrder: 0 }],
+        color: 'Obj',
+        rows: 2,
+        colums: 12,
+    },
+    exprCodegen(compiler, inputNode) {
+        const inputPins = compiler.getInputPins(inputNode.node);
+        return `Object.keys(${compiler.handleInputs(inputPins[0])}).length`;
+    },
+});
+
+registerNode({
+    id: 'TypeOf',
+    schema: {
+        inputs: [{ inputTitle: 'Value', dataType: 'Data', defValue: 0 }],
+        outputs: [{ outputTitle: 'Type', dataType: 'String', outOrder: 0 }],
+        color: 'Obj',
+        rows: 2,
+        colums: 10,
+    },
+    exprCodegen(compiler, inputNode) {
+        const inputPins = compiler.getInputPins(inputNode.node);
+        return `typeof ${compiler.handleInputs(inputPins[0])}`;
+    },
+});
+
+registerNode({
+    id: 'IsNull',
+    schema: {
+        inputs: [{ inputTitle: 'Value', dataType: 'Data', defValue: 0 }],
+        outputs: [{ outputTitle: 'Result', dataType: 'Boolean', outOrder: 0 }],
+        color: 'Obj',
+        rows: 2,
+        colums: 10,
+    },
+    exprCodegen(compiler, inputNode) {
+        const inputPins = compiler.getInputPins(inputNode.node);
+        return `(${compiler.handleInputs(inputPins[0])} == null)`;
+    },
+});
+
+registerNode({
+    id: 'IsArray',
+    schema: {
+        inputs: [{ inputTitle: 'Value', dataType: 'Data', defValue: 0 }],
+        outputs: [{ outputTitle: 'Result', dataType: 'Boolean', outOrder: 0 }],
+        color: 'Obj',
+        rows: 2,
+        colums: 10,
+    },
+    exprCodegen(compiler, inputNode) {
+        const inputPins = compiler.getInputPins(inputNode.node);
+        return `Array.isArray(${compiler.handleInputs(inputPins[0])})`;
+    },
+});
+
+// ---------- Map: CreateMap, MapSet, MapGet, MapHas, MapDelete, MapSize, MapClear, MapKeys, MapValues, MapEntries, MapFromObject, MapToObject, ForEachMap ----------
+registerNode({
+    id: 'CreateMap',
+    schema: {
+        execIn: true,
+        execOut: [{ outOrder: 0 }],
+        outputs: [{ outputTitle: 'Map', dataType: 'Data', outOrder: 1 }],
+        color: 'Obj',
+        rows: 2,
+        colums: 12,
+    },
+    execCodegen(compiler, node) {
+        const execOutPins = compiler.getExecOut(node);
+        compiler.script += `let _map${node._id} = new Map();\n`;
+        compiler.coreAlgorithm(execOutPins[0]);
+    },
+    exprCodegen(compiler, inputNode) {
+        return `_map${inputNode.node._id}`;
+    },
+});
+
+registerNode({
+    id: 'MapSet',
+    schema: {
+        execIn: true,
+        execOut: [{ outOrder: 0 }],
+        inputs: [
+            { inputTitle: 'Map', dataType: 'Data', isInputBoxRequired: false },
+            { inputTitle: 'Key', dataType: 'Data', defValue: "'key'" },
+            { inputTitle: 'Value', dataType: 'Data', defValue: 0 },
+        ],
+        outputs: [{ outputTitle: 'Map', dataType: 'Data', outOrder: 1 }],
+        color: 'Obj',
+        rows: 4,
+        colums: 10,
+    },
+    execCodegen(compiler, node) {
+        const inputPins = compiler.getInputPins(node);
+        const execOutPins = compiler.getExecOut(node);
+        compiler.script += `${compiler.handleInputs(inputPins[0])}.set(${compiler.handleInputs(inputPins[1])}, ${compiler.handleInputs(inputPins[2])});\n`;
+        compiler.coreAlgorithm(execOutPins[0]);
+    },
+    exprCodegen(compiler, inputNode) {
+        const inputPins = compiler.getInputPins(inputNode.node);
+        return `${compiler.handleInputs(inputPins[0])}`;
+    },
+});
+
+registerNode({
+    id: 'MapGet',
+    schema: {
+        inputs: [
+            { inputTitle: 'Map', dataType: 'Data', isInputBoxRequired: false },
+            { inputTitle: 'Key', dataType: 'Data', defValue: "'key'" },
+        ],
+        outputs: [
+            { outputTitle: 'Value', dataType: 'Data', outOrder: 0 },
+            { outputTitle: 'Exists', dataType: 'Boolean', outOrder: 1 },
+        ],
+        color: 'Obj',
+        rows: 2,
+        colums: 10,
+    },
+    exprCodegen(compiler, inputNode) {
+        const inputPins = compiler.getInputPins(inputNode.node);
+        if (inputNode.srcOutputPinNumber == 0) {
+            return `${compiler.handleInputs(inputPins[0])}.get(${compiler.handleInputs(inputPins[1])})`;
+        }
+        return `${compiler.handleInputs(inputPins[0])}.has(${compiler.handleInputs(inputPins[1])})`;
+    },
+});
+
+registerNode({
+    id: 'MapHas',
+    schema: {
+        inputs: [
+            { inputTitle: 'Map', dataType: 'Data', isInputBoxRequired: false },
+            { inputTitle: 'Key', dataType: 'Data', defValue: "'key'" },
+        ],
+        outputs: [{ outputTitle: 'Result', dataType: 'Boolean', outOrder: 0 }],
+        color: 'Obj',
+        rows: 2,
+        colums: 10,
+    },
+    exprCodegen(compiler, inputNode) {
+        const inputPins = compiler.getInputPins(inputNode.node);
+        return `${compiler.handleInputs(inputPins[0])}.has(${compiler.handleInputs(inputPins[1])})`;
+    },
+});
+
+registerNode({
+    id: 'MapDelete',
+    schema: {
+        execIn: true,
+        execOut: [{ outOrder: 0 }],
+        inputs: [
+            { inputTitle: 'Map', dataType: 'Data', isInputBoxRequired: false },
+            { inputTitle: 'Key', dataType: 'Data', defValue: "'key'" },
+        ],
+        outputs: [
+            { outputTitle: 'Map', dataType: 'Data', outOrder: 1 },
+            { outputTitle: 'Deleted', dataType: 'Boolean', outOrder: 2 },
+        ],
+        color: 'Obj',
+        rows: 2,
+        colums: 12,
+    },
+    execCodegen(compiler, node) {
+        const inputPins = compiler.getInputPins(node);
+        const execOutPins = compiler.getExecOut(node);
+        compiler.script += `let _mapDel${node._id} = ${compiler.handleInputs(inputPins[0])}.delete(${compiler.handleInputs(inputPins[1])});\n`;
+        compiler.coreAlgorithm(execOutPins[0]);
+    },
+    exprCodegen(compiler, inputNode) {
+        const inputPins = compiler.getInputPins(inputNode.node);
+        if (inputNode.srcOutputPinNumber == 0) return `${compiler.handleInputs(inputPins[0])}`;
+        return `_mapDel${inputNode.node._id}`;
+    },
+});
+
+registerNode({
+    id: 'MapSize',
+    schema: {
+        inputs: [{ inputTitle: 'Map', dataType: 'Data', isInputBoxRequired: false }],
+        outputs: [{ outputTitle: 'Size', dataType: 'Number', outOrder: 0 }],
+        color: 'Obj',
+        rows: 2,
+        colums: 10,
+    },
+    exprCodegen(compiler, inputNode) {
+        const inputPins = compiler.getInputPins(inputNode.node);
+        return `${compiler.handleInputs(inputPins[0])}.size`;
+    },
+});
+
+registerNode({
+    id: 'MapClear',
+    schema: {
+        execIn: true,
+        execOut: [{ outOrder: 0 }],
+        inputs: [{ inputTitle: 'Map', dataType: 'Data', isInputBoxRequired: false }],
+        outputs: [{ outputTitle: 'Map', dataType: 'Data', outOrder: 1 }],
+        color: 'Obj',
+        rows: 2,
+        colums: 10,
+    },
+    execCodegen(compiler, node) {
+        const inputPins = compiler.getInputPins(node);
+        const execOutPins = compiler.getExecOut(node);
+        compiler.script += `${compiler.handleInputs(inputPins[0])}.clear();\n`;
+        compiler.coreAlgorithm(execOutPins[0]);
+    },
+    exprCodegen(compiler, inputNode) {
+        const inputPins = compiler.getInputPins(inputNode.node);
+        return `${compiler.handleInputs(inputPins[0])}`;
+    },
+});
+
+registerNode({
+    id: 'MapKeys',
+    schema: {
+        inputs: [{ inputTitle: 'Map', dataType: 'Data', isInputBoxRequired: false }],
+        outputs: [{ outputTitle: 'Keys', dataType: 'Array', outOrder: 0 }],
+        color: 'Obj',
+        rows: 2,
+        colums: 10,
+    },
+    exprCodegen(compiler, inputNode) {
+        const inputPins = compiler.getInputPins(inputNode.node);
+        return `[...${compiler.handleInputs(inputPins[0])}.keys()]`;
+    },
+});
+
+registerNode({
+    id: 'MapValues',
+    schema: {
+        inputs: [{ inputTitle: 'Map', dataType: 'Data', isInputBoxRequired: false }],
+        outputs: [{ outputTitle: 'Values', dataType: 'Array', outOrder: 0 }],
+        color: 'Obj',
+        rows: 2,
+        colums: 12,
+    },
+    exprCodegen(compiler, inputNode) {
+        const inputPins = compiler.getInputPins(inputNode.node);
+        return `[...${compiler.handleInputs(inputPins[0])}.values()]`;
+    },
+});
+
+registerNode({
+    id: 'MapEntries',
+    schema: {
+        inputs: [{ inputTitle: 'Map', dataType: 'Data', isInputBoxRequired: false }],
+        outputs: [{ outputTitle: 'Entries', dataType: 'Array', outOrder: 0 }],
+        color: 'Obj',
+        rows: 2,
+        colums: 12,
+    },
+    exprCodegen(compiler, inputNode) {
+        const inputPins = compiler.getInputPins(inputNode.node);
+        return `[...${compiler.handleInputs(inputPins[0])}.entries()]`;
+    },
+});
+
+registerNode({
+    id: 'MapFromObject',
+    schema: {
+        inputs: [{ inputTitle: 'Object', dataType: 'Data', isInputBoxRequired: false }],
+        outputs: [{ outputTitle: 'Map', dataType: 'Data', outOrder: 0 }],
+        color: 'Obj',
+        rows: 2,
+        colums: 14,
+    },
+    exprCodegen(compiler, inputNode) {
+        const inputPins = compiler.getInputPins(inputNode.node);
+        return `new Map(Object.entries(${compiler.handleInputs(inputPins[0])}))`;
+    },
+});
+
+registerNode({
+    id: 'MapToObject',
+    schema: {
+        inputs: [{ inputTitle: 'Map', dataType: 'Data', isInputBoxRequired: false }],
+        outputs: [{ outputTitle: 'Object', dataType: 'Data', outOrder: 0 }],
+        color: 'Obj',
+        rows: 2,
+        colums: 13,
+    },
+    exprCodegen(compiler, inputNode) {
+        const inputPins = compiler.getInputPins(inputNode.node);
+        return `Object.fromEntries(${compiler.handleInputs(inputPins[0])})`;
+    },
+});
+
+registerNode({
+    id: 'ForEachMap',
+    schema: {
+        execIn: true,
+        execOut: [
+            { execOutTitle: 'Loop Body', outOrder: 0 },
+            { execOutTitle: 'Completed', outOrder: 3 },
+        ],
+        inputs: [{ inputTitle: 'Map', dataType: 'Data', isInputBoxRequired: false }],
+        outputs: [
+            { outputTitle: 'Key', dataType: 'Data', outOrder: 1 },
+            { outputTitle: 'Value', dataType: 'Data', outOrder: 2 },
+        ],
+        color: 'Logic',
+        rows: 2,
+        colums: 12,
+    },
+    execCodegen(compiler, node) {
+        const inputPins = compiler.getInputPins(node);
+        const execOutPins = compiler.getExecOut(node);
+        const v = `_fem${node._id}`;
+        compiler.script += `${compiler.handleInputs(inputPins[0])}.forEach((val${v}, key${v}) => {\n`;
+        compiler.coreAlgorithm(execOutPins[0]);
+        compiler.script += `});\n`;
+        compiler.coreAlgorithm(execOutPins[1]);
+    },
+    exprCodegen(compiler, inputNode) {
+        const v = `_fem${inputNode.node._id}`;
+        if (inputNode.srcOutputPinNumber == 0) return `key${v}`;
+        return `val${v}`;
+    },
+});
+
+// ---------- Clone/Array: DeepClone, CloneArray, Slice, Splice, FlattenArray, Spread(Array), Includes(Arr), Unique ----------
+registerNode({
+    id: 'DeepClone',
+    schema: {
+        inputs: [{ inputTitle: 'Value', dataType: 'Data', isInputBoxRequired: false }],
+        outputs: [{ outputTitle: 'Clone', dataType: 'Data', outOrder: 0 }],
+        color: 'Func',
+        rows: 2,
+        colums: 12,
+    },
+    exprCodegen(compiler, inputNode) {
+        const inputPins = compiler.getInputPins(inputNode.node);
+        return `structuredClone(${compiler.handleInputs(inputPins[0])})`;
+    },
+});
+
+registerNode({
+    id: 'CloneArray',
+    schema: {
+        inputs: [{ inputTitle: 'Array', dataType: 'Array', isInputBoxRequired: false }],
+        outputs: [{ outputTitle: 'Clone', dataType: 'Array', outOrder: 0 }],
+        color: 'Func',
+        rows: 2,
+        colums: 12,
+    },
+    exprCodegen(compiler, inputNode) {
+        const inputPins = compiler.getInputPins(inputNode.node);
+        return `[...${compiler.handleInputs(inputPins[0])}]`;
+    },
+});
+
+registerNode({
+    id: 'Slice',
+    schema: {
+        inputs: [
+            { inputTitle: 'Array', dataType: 'Array', isInputBoxRequired: false },
+            { inputTitle: 'Start', dataType: 'Number', defValue: 0 },
+            { inputTitle: 'End', dataType: 'Number', defValue: 1 },
+        ],
+        outputs: [{ outputTitle: 'Result', dataType: 'Array', outOrder: 0 }],
+        color: 'Func',
+        rows: 2,
+        colums: 10,
+    },
+    exprCodegen(compiler, inputNode) {
+        const inputPins = compiler.getInputPins(inputNode.node);
+        return `${compiler.handleInputs(inputPins[0])}.slice(${compiler.handleInputs(inputPins[1])}, ${compiler.handleInputs(inputPins[2])})`;
+    },
+});
+
+registerNode({
+    id: 'Splice',
+    schema: {
+        execIn: true,
+        execOut: [{ outOrder: 0 }],
+        inputs: [
+            { inputTitle: 'Array', dataType: 'Array', isInputBoxRequired: false },
+            { inputTitle: 'Start', dataType: 'Number', defValue: 0 },
+            { inputTitle: 'DelCount', dataType: 'Number', defValue: 1 },
+        ],
+        outputs: [
+            { outputTitle: 'Array', dataType: 'Array', outOrder: 1 },
+            { outputTitle: 'Removed', dataType: 'Array', outOrder: 2 },
+        ],
+        color: 'Func',
+        rows: 4,
+        colums: 10,
+    },
+    execCodegen(compiler, node) {
+        const inputPins = compiler.getInputPins(node);
+        const execOutPins = compiler.getExecOut(node);
+        compiler.script += `let _spliced${node._id} = ${compiler.handleInputs(inputPins[0])}.splice(${compiler.handleInputs(inputPins[1])}, ${compiler.handleInputs(inputPins[2])});\n`;
+        compiler.coreAlgorithm(execOutPins[0]);
+    },
+    exprCodegen(compiler, inputNode) {
+        const inputPins = compiler.getInputPins(inputNode.node);
+        if (inputNode.srcOutputPinNumber == 0) return `${compiler.handleInputs(inputPins[0])}`;
+        return `_spliced${inputNode.node._id}`;
+    },
+});
+
+registerNode({
+    id: 'FlattenArray',
+    schema: {
+        inputs: [
+            { inputTitle: 'Array', dataType: 'Array', isInputBoxRequired: false },
+            { inputTitle: 'Depth', dataType: 'Number', defValue: 1 },
+        ],
+        outputs: [{ outputTitle: 'Result', dataType: 'Array', outOrder: 0 }],
+        color: 'Func',
+        rows: 2,
+        colums: 13,
+    },
+    exprCodegen(compiler, inputNode) {
+        const inputPins = compiler.getInputPins(inputNode.node);
+        return `${compiler.handleInputs(inputPins[0])}.flat(${compiler.handleInputs(inputPins[1])})`;
+    },
+});
+
+registerNode({
+    id: 'Spread(Array)',
+    schema: {
+        inputs: [
+            { inputTitle: 'ArrayA', dataType: 'Array', isInputBoxRequired: false },
+            { inputTitle: 'ArrayB', dataType: 'Array', isInputBoxRequired: false },
+        ],
+        outputs: [{ outputTitle: 'Result', dataType: 'Array', outOrder: 0 }],
+        color: 'Func',
+        rows: 2,
+        colums: 14,
+    },
+    exprCodegen(compiler, inputNode) {
+        const inputPins = compiler.getInputPins(inputNode.node);
+        return `[...${compiler.handleInputs(inputPins[0])}, ...${compiler.handleInputs(inputPins[1])}]`;
+    },
+});
+
+registerNode({
+    id: 'Includes(Arr)',
+    schema: {
+        inputs: [
+            { inputTitle: 'Array', dataType: 'Array', isInputBoxRequired: false },
+            { inputTitle: 'Value', dataType: 'Data', defValue: 0 },
+        ],
+        outputs: [{ outputTitle: 'Result', dataType: 'Boolean', outOrder: 0 }],
+        color: 'Get',
+        rows: 2,
+        colums: 14,
+    },
+    exprCodegen(compiler, inputNode) {
+        const inputPins = compiler.getInputPins(inputNode.node);
+        return `${compiler.handleInputs(inputPins[0])}.includes(${compiler.handleInputs(inputPins[1])})`;
+    },
+});
+
+registerNode({
+    id: 'Unique',
+    schema: {
+        inputs: [{ inputTitle: 'Array', dataType: 'Array', isInputBoxRequired: false }],
+        outputs: [{ outputTitle: 'Result', dataType: 'Array', outOrder: 0 }],
+        color: 'Func',
+        rows: 2,
+        colums: 10,
+    },
+    exprCodegen(compiler, inputNode) {
+        const inputPins = compiler.getInputPins(inputNode.node);
+        return `[...new Set(${compiler.handleInputs(inputPins[0])})]`;
+    },
+});
+
+// ---------- Higher-Order Array: Filter, ArrayMap, Reduce, Find, Every, Some ----------
+registerNode({
+    id: 'Filter',
+    schema: {
+        execIn: true,
+        execOut: [
+            { execOutTitle: 'Loop Body', outOrder: 0 },
+            { execOutTitle: 'Completed', outOrder: 4 },
+        ],
+        inputs: [
+            { inputTitle: 'Array', dataType: 'Array', isInputBoxRequired: false },
+            { inputTitle: 'Keep?', dataType: 'Boolean', defValue: true },
+        ],
+        outputs: [
+            { outputTitle: 'Element', dataType: 'Data', outOrder: 1 },
+            { outputTitle: 'Index', dataType: 'Number', outOrder: 2 },
+            { outputTitle: 'Result', dataType: 'Array', outOrder: 3 },
+        ],
+        color: 'Logic',
+        rows: 2,
+        colums: 12,
+    },
+    execCodegen(compiler, node) {
+        const inputPins = compiler.getInputPins(node);
+        const execOutPins = compiler.getExecOut(node);
+        const v = `_fl${node._id}`;
+        compiler.script += `let _flResult${node._id} = ${compiler.handleInputs(inputPins[0])}.filter((val${v}, idx${v}) => {\n`;
+        compiler.coreAlgorithm(execOutPins[0]);
+        compiler.script += `return ${compiler.handleInputs(inputPins[1])};\n});\n`;
+        compiler.coreAlgorithm(execOutPins[1]);
+    },
+    exprCodegen(compiler, inputNode) {
+        const v = `_fl${inputNode.node._id}`;
+        if (inputNode.srcOutputPinNumber == 0) return `val${v}`;
+        if (inputNode.srcOutputPinNumber == 1) return `idx${v}`;
+        return `_flResult${inputNode.node._id}`;
+    },
+});
+
+registerNode({
+    id: 'ArrayMap',
+    schema: {
+        execIn: true,
+        execOut: [
+            { execOutTitle: 'Loop Body', outOrder: 0 },
+            { execOutTitle: 'Completed', outOrder: 4 },
+        ],
+        inputs: [
+            { inputTitle: 'Array', dataType: 'Array', isInputBoxRequired: false },
+            { inputTitle: 'Mapped', dataType: 'Data', defValue: 0, isInputBoxRequired: false },
+        ],
+        outputs: [
+            { outputTitle: 'Element', dataType: 'Data', outOrder: 1 },
+            { outputTitle: 'Index', dataType: 'Number', outOrder: 2 },
+            { outputTitle: 'Result', dataType: 'Array', outOrder: 3 },
+        ],
+        color: 'Logic',
+        rows: 2,
+        colums: 12,
+    },
+    execCodegen(compiler, node) {
+        const inputPins = compiler.getInputPins(node);
+        const execOutPins = compiler.getExecOut(node);
+        const v = `_mp${node._id}`;
+        compiler.script += `let _mpResult${node._id} = ${compiler.handleInputs(inputPins[0])}.map((val${v}, idx${v}) => {\n`;
+        compiler.coreAlgorithm(execOutPins[0]);
+        compiler.script += `return ${compiler.handleInputs(inputPins[1])};\n});\n`;
+        compiler.coreAlgorithm(execOutPins[1]);
+    },
+    exprCodegen(compiler, inputNode) {
+        const v = `_mp${inputNode.node._id}`;
+        if (inputNode.srcOutputPinNumber == 0) return `val${v}`;
+        if (inputNode.srcOutputPinNumber == 1) return `idx${v}`;
+        return `_mpResult${inputNode.node._id}`;
+    },
+});
+
+registerNode({
+    id: 'Reduce',
+    schema: {
+        execIn: true,
+        execOut: [
+            { execOutTitle: 'Loop Body', outOrder: 0 },
+            { execOutTitle: 'Completed', outOrder: 5 },
+        ],
+        inputs: [
+            { inputTitle: 'Array', dataType: 'Array', isInputBoxRequired: false },
+            { inputTitle: 'Initial', dataType: 'Data', defValue: 0 },
+            { inputTitle: 'NextAcc', dataType: 'Data', defValue: 0, isInputBoxRequired: false },
+        ],
+        outputs: [
+            { outputTitle: 'Accum', dataType: 'Data', outOrder: 1 },
+            { outputTitle: 'Element', dataType: 'Data', outOrder: 2 },
+            { outputTitle: 'Index', dataType: 'Number', outOrder: 3 },
+            { outputTitle: 'Result', dataType: 'Data', outOrder: 4 },
+        ],
+        color: 'Logic',
+        rows: 2,
+        colums: 12,
+    },
+    execCodegen(compiler, node) {
+        const inputPins = compiler.getInputPins(node);
+        const execOutPins = compiler.getExecOut(node);
+        const v = `_rd${node._id}`;
+        compiler.script += `let _rdResult${node._id} = ${compiler.handleInputs(inputPins[0])}.reduce((acc${v}, val${v}, idx${v}) => {\n`;
+        compiler.coreAlgorithm(execOutPins[0]);
+        compiler.script += `return ${compiler.handleInputs(inputPins[2])};\n}, ${compiler.handleInputs(inputPins[1])});\n`;
+        compiler.coreAlgorithm(execOutPins[1]);
+    },
+    exprCodegen(compiler, inputNode) {
+        const v = `_rd${inputNode.node._id}`;
+        if (inputNode.srcOutputPinNumber == 0) return `acc${v}`;
+        if (inputNode.srcOutputPinNumber == 1) return `val${v}`;
+        if (inputNode.srcOutputPinNumber == 2) return `idx${v}`;
+        return `_rdResult${inputNode.node._id}`;
+    },
+});
+
+registerNode({
+    id: 'Find',
+    schema: {
+        execIn: true,
+        execOut: [
+            { execOutTitle: 'Loop Body', outOrder: 0 },
+            { execOutTitle: 'Completed', outOrder: 5 },
+        ],
+        inputs: [
+            { inputTitle: 'Array', dataType: 'Array', isInputBoxRequired: false },
+            { inputTitle: 'Match?', dataType: 'Boolean', defValue: true },
+        ],
+        outputs: [
+            { outputTitle: 'Element', dataType: 'Data', outOrder: 1 },
+            { outputTitle: 'Index', dataType: 'Number', outOrder: 2 },
+            { outputTitle: 'Result', dataType: 'Data', outOrder: 3 },
+            { outputTitle: 'FoundIdx', dataType: 'Number', outOrder: 4 },
+        ],
+        color: 'Logic',
+        rows: 2,
+        colums: 12,
+    },
+    execCodegen(compiler, node) {
+        const inputPins = compiler.getInputPins(node);
+        const execOutPins = compiler.getExecOut(node);
+        const v = `_fnd${node._id}`;
+        compiler.script += `let _fndResult${node._id};\nlet _fndIdx${node._id} = -1;\n`;
+        compiler.script += `${compiler.handleInputs(inputPins[0])}.some((val${v}, idx${v}) => {\n`;
+        compiler.coreAlgorithm(execOutPins[0]);
+        compiler.script += `if (${compiler.handleInputs(inputPins[1])}) { _fndResult${node._id} = val${v}; _fndIdx${node._id} = idx${v}; return true; }\nreturn false;\n});\n`;
+        compiler.coreAlgorithm(execOutPins[1]);
+    },
+    exprCodegen(compiler, inputNode) {
+        const v = `_fnd${inputNode.node._id}`;
+        if (inputNode.srcOutputPinNumber == 0) return `val${v}`;
+        if (inputNode.srcOutputPinNumber == 1) return `idx${v}`;
+        if (inputNode.srcOutputPinNumber == 2) return `_fndResult${inputNode.node._id}`;
+        return `_fndIdx${inputNode.node._id}`;
+    },
+});
+
+registerNode({
+    id: 'Every',
+    schema: {
+        execIn: true,
+        execOut: [
+            { execOutTitle: 'Loop Body', outOrder: 0 },
+            { execOutTitle: 'Completed', outOrder: 4 },
+        ],
+        inputs: [
+            { inputTitle: 'Array', dataType: 'Array', isInputBoxRequired: false },
+            { inputTitle: 'Match?', dataType: 'Boolean', defValue: true },
+        ],
+        outputs: [
+            { outputTitle: 'Element', dataType: 'Data', outOrder: 1 },
+            { outputTitle: 'Index', dataType: 'Number', outOrder: 2 },
+            { outputTitle: 'Result', dataType: 'Boolean', outOrder: 3 },
+        ],
+        color: 'Logic',
+        rows: 2,
+        colums: 10,
+    },
+    execCodegen(compiler, node) {
+        const inputPins = compiler.getInputPins(node);
+        const execOutPins = compiler.getExecOut(node);
+        const v = `_ev${node._id}`;
+        compiler.script += `let _evResult${node._id} = ${compiler.handleInputs(inputPins[0])}.every((val${v}, idx${v}) => {\n`;
+        compiler.coreAlgorithm(execOutPins[0]);
+        compiler.script += `return ${compiler.handleInputs(inputPins[1])};\n});\n`;
+        compiler.coreAlgorithm(execOutPins[1]);
+    },
+    exprCodegen(compiler, inputNode) {
+        const v = `_ev${inputNode.node._id}`;
+        if (inputNode.srcOutputPinNumber == 0) return `val${v}`;
+        if (inputNode.srcOutputPinNumber == 1) return `idx${v}`;
+        return `_evResult${inputNode.node._id}`;
+    },
+});
+
+registerNode({
+    id: 'Some',
+    schema: {
+        execIn: true,
+        execOut: [
+            { execOutTitle: 'Loop Body', outOrder: 0 },
+            { execOutTitle: 'Completed', outOrder: 4 },
+        ],
+        inputs: [
+            { inputTitle: 'Array', dataType: 'Array', isInputBoxRequired: false },
+            { inputTitle: 'Match?', dataType: 'Boolean', defValue: true },
+        ],
+        outputs: [
+            { outputTitle: 'Element', dataType: 'Data', outOrder: 1 },
+            { outputTitle: 'Index', dataType: 'Number', outOrder: 2 },
+            { outputTitle: 'Result', dataType: 'Boolean', outOrder: 3 },
+        ],
+        color: 'Logic',
+        rows: 2,
+        colums: 10,
+    },
+    execCodegen(compiler, node) {
+        const inputPins = compiler.getInputPins(node);
+        const execOutPins = compiler.getExecOut(node);
+        const v = `_sm${node._id}`;
+        compiler.script += `let _smResult${node._id} = ${compiler.handleInputs(inputPins[0])}.some((val${v}, idx${v}) => {\n`;
+        compiler.coreAlgorithm(execOutPins[0]);
+        compiler.script += `return ${compiler.handleInputs(inputPins[1])};\n});\n`;
+        compiler.coreAlgorithm(execOutPins[1]);
+    },
+    exprCodegen(compiler, inputNode) {
+        const v = `_sm${inputNode.node._id}`;
+        if (inputNode.srcOutputPinNumber == 0) return `val${v}`;
+        if (inputNode.srcOutputPinNumber == 1) return `idx${v}`;
+        return `_smResult${inputNode.node._id}`;
+    },
+});
+
 // ---------- Menu order (null = separator) ----------
 registerMenuOrder([
     'Begin', 'Print', 'Alert', 'Confirm', 'Prompt', null,
@@ -1377,7 +2655,18 @@ registerMenuOrder([
     'Swap', 'Equals', 'Not Equals', 'Less', 'LessEq', 'Greater', 'GreaterEq', null,
     'AND', 'OR', 'XOR', 'NEG', 'Ternary', null,
     'bAND', 'bOR', 'bXOR', 'bNEG', null,
-    'OpenWindow', 'HttpRequest', 'GetByName(JSON)', 'ParseInt', null,
-    'StrToArray', 'ArrayToStr', 'Length', 'Front', 'Back', 'GetByPos', 'SetByPos', 'Search', 'BinarySearch(Num)',
-    'PushBack', 'PopBack', 'PushFront', 'PopFront', 'Insert', 'Sort(Num)', 'isEmpty', 'Reverse', 'Max(Array)', 'Min(Array)', null,
+    'Concat', 'StringLength', 'Substring', 'CharAt', 'IndexOf(Str)', 'LastIndexOf(Str)',
+    'Replace', 'ReplaceAll', 'Split', 'Join', 'Trim', 'ToUpperCase', 'ToLowerCase',
+    'StartsWith', 'EndsWith', 'Includes(Str)', 'Repeat',
+    'ParseInt', 'ParseFloat', 'ToString', 'StrToArray', 'ArrayToStr', null,
+    'JSON Parse', 'JSON Stringify', 'CreateObject', 'SetProperty', 'GetProperty', 'DeleteProperty',
+    'HasProperty', 'ObjectKeys', 'ObjectValues', 'ObjectEntries', 'FromEntries',
+    'MergeObjects', 'ObjectSize', 'TypeOf', 'IsNull', 'IsArray', null,
+    'CreateMap', 'MapSet', 'MapGet', 'MapHas', 'MapDelete', 'MapSize', 'MapClear',
+    'MapKeys', 'MapValues', 'MapEntries', 'MapFromObject', 'MapToObject', 'ForEachMap', null,
+    'OpenWindow', 'HttpRequest', 'GetByName(JSON)', null,
+    'Length', 'Front', 'Back', 'GetByPos', 'SetByPos', 'Search', 'BinarySearch(Num)',
+    'PushBack', 'PopBack', 'PushFront', 'PopFront', 'Insert', 'Sort(Num)', 'isEmpty', 'Reverse', 'Max(Array)', 'Min(Array)',
+    'Slice', 'Splice', 'Spread(Array)', 'FlattenArray', 'CloneArray', 'DeepClone', 'Includes(Arr)', 'Unique', null,
+    'Filter', 'ArrayMap', 'Reduce', 'Find', 'Every', 'Some', null,
 ]);
