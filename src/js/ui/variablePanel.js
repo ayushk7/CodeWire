@@ -25,10 +25,10 @@ export class leftPanel {
         });
         let createVariableForm = document.getElementById("create-variables");
         let forms = {
-            numberForm: document.getElementById("number-default-form"),
-            stringForm: document.getElementById("string-default-form"),
-            boolForm: document.getElementById("bool-default-form"),
-            arrayForm: document.getElementById("array-default-form"),
+            numberForm: document.getElementById("number-default-value"),
+            stringForm: document.getElementById("string-default-value"),
+            boolForm: document.getElementById("bool-default-value"),
+            arrayForm: document.getElementById("array-default-value"),
         }
         let formInputsField = {
             numberFormField: document.getElementById("number-default-value"),

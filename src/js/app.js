@@ -5,6 +5,7 @@ import { DragAndDrop } from './editor/dragAndDrop.js'
 import { Wiring } from './nodes/wiring.js'
 import { ContextMenu } from './editor/contextMenu.js'
 import { leftPanel } from './ui/variablePanel.js'
+import { variableList } from './ui/variableList.js'
 import { VSToJS } from './compiler/compiler.js'
 import { Delete } from './editor/deleteHandler.js'
 import { Export, Import, Save, prompLastSave } from './persistence/saveAndLoad.js'
@@ -36,6 +37,7 @@ Delete.enableDelete(stage, layer);
 Wiring.enableWiring(stage, layer);
 ContextMenu.contextMenu(stage, layer);
 let panel = new leftPanel();
+variableList.init(layer, stage);
 // layer.toggleHitCanvas();
 // document.getElementById("number-ip").value = 12;
 layer.draw();

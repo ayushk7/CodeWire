@@ -31,51 +31,34 @@
                         style="position: absolute; right: 0.7rem; transition: 0.1s;"><i class="fas fa-chevron-down"></i></div>
                 </div>
                 <div id="add-variables-content" class="left-panel-tab-content">
-                    <div id="create-variables" class="pb-5">
-                        <div class="input-group pt-3 ps-5 pe-5 input-group-lg">
-                            <div class="icon2">Type</div>
-                            <select class="form-select" id="variable-data-type">
-                                <option value="Number" selected>Number</option>
-                                <option value="Boolean">Boolean</option>
-                                <option value="String">String</option>
-                                <option value="Array">Array</option>
-                            </select>
+                    <div id="create-variables" class="var-inline-edit">
+                        <select id="variable-data-type">
+                            <option value="Number" selected>Number</option>
+                            <option value="Boolean">Boolean</option>
+                            <option value="String">String</option>
+                            <option value="Array">Array</option>
+                        </select>
+                        <input type="text" placeholder="Name" id="variable-name">
+                        <input type="number" placeholder="Default value" title="enter number"
+                            id="number-default-value" value="0">
+                        <input type="text" placeholder="Default value" title="enter string"
+                            id="string-default-value" value="hello" class="hidden">
+                        <input type="text" placeholder="[1, 2, 3]"
+                            title="enter array values in [1, 2, 3, 4] format"
+                            id="array-default-value" value="[]" class="hidden">
+                        <select id="bool-default-value" class="hidden">
+                            <option value="true" selected>True</option>
+                            <option value="false">False</option>
+                        </select>
+                        <div class="var-edit-actions">
+                            <button class="var-edit-save" id="create-btn">Create</button>
                         </div>
-                        <div class="input-group input-group-lg pt-3 ps-5 pe-5">
-                            <div class="icon2">Name</div>
-                            <input type="text" class="form-control" placeholder="Name" id="variable-name">
-                        </div>
-                        <div class="input-group input-group-lg pt-3 ps-5 pe-5" id="number-default-form">
-                            <div class="icon2">Value</div>
-                            <input type="number" class="form-control" placeholder="Default" title="enter number"
-                                id="number-default-value" value=0>
-                        </div>
-                        <div class="input-group input-group-lg pt-3 ps-5 pe-5 hidden" id="string-default-form">
-                            <div class="icon2">Value</div>
-                            <input type="text" class="form-control" placeholder="Default" title="enter string"
-                                id="string-default-value" value=hello>
-                        </div>
-                        <div class="input-group input-group-lg pt-3 ps-5 pe-5 hidden" id="array-default-form">
-                            <div class="icon2">Value</div>
-                            <input type="text" class="form-control" placeholder="Default"
-                                title="enter array values in [1, 2, 3, 4] or ['Love', 'Shove', 'Dove'] or [true, false, true] etc format"
-                                id="array-default-value" value=[]>
-                        </div>
-                        <div class="input-group pt-3 ps-5 pe-5 input-group-lg hidden" id="bool-default-form">
-                            <div class="icon2">Value</div>
-                            <select class="form-select" id="bool-default-value">
-                                <option value=true selected>True</option>
-                                <option value=false>False</option>
-                            </select>
-                        </div>
-                        <button type="button" class="icon" style="margin: auto; margin-top: 15px;"
-                            id="create-btn">Create</button>
                     </div>
                 </div>
                 <div id="list-of-variables" class="left-panel-tab">Variable List<div id="list-of-variables-down-icon"
                         style="position: absolute; right: 0.7rem; transition: 0.1s;"><i class="fas fa-chevron-down"></i></div>
                 </div>
-                <div id="list-of-variables-content" class="left-panel-tab-content" style="width: 90%;">
+                <div id="list-of-variables-content" class="left-panel-tab-content">
                     <div class="variableList" style="width: 100%;">
                         <ul class="list-group list-group-flush" id="variable-list">
                         </ul>
@@ -176,9 +159,17 @@
             <button id="refresh-cancel-btn" class="icon">Cancel</button>
         </div>
     </div>
+    <div id="confirm-dialog" class="sidebox hidden">
+        <div class="sidebox-flex">
+            <div id="confirm-dialog-msg" style="font-size: 1.1rem; color: white; text-align: center;"></div>
+            <div class="confirm-actions">
+                <button id="confirm-dialog-ok" class="icon">Delete</button>
+                <button id="confirm-dialog-cancel" class="icon">Cancel</button>
+            </div>
+        </div>
+    </div>
     <div id="delete-ctx-container" class="context-menu-items hidden">
         <div>Delete</div>
-        <div style="font-size: xx-small;">Ctrl+LMB</div>
     </div>
     <div id="get-set-ctx-menu-container" class="hidden">
         <div id="get-set-ctx-menu">

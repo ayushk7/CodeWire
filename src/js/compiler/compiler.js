@@ -9,15 +9,19 @@ export var VSToJS = class {
         this.builtin_functions = {};
         this.nodeCount = 0;
         this.isRunOrCode = isRunOrCode;
+        this.compileIssues = [];
         for (let variable of variableList.variables) {
-            // console.log(variable);
             this.script += `let ${variable.name} = ${variable.value};\n`;
         }
         let begin = this.getBegin(stage);
         if (begin) {
             try {
                 this.coreAlgorithm(begin);
-                // console.log(this.script);
+                if (this.compileIssues.length > 0) {
+                    showAlert("Compile failed — fix these issues first:<br>" + this.compileIssues.join("<br>"));
+                    this.script = '';
+                    return;
+                }
                 if (this.isRunOrCode == "Run") {
                     document.getElementById("console-window").classList.toggle("hidden", false);
                     let codeDoc = document.getElementById("console").contentWindow.document;
@@ -120,21 +124,28 @@ export var VSToJS = class {
         let X = [];
         for (let aNode of node.customClass.inputPins) {
             if (aNode.wire) {
-                X.push({ node: aNode.wire.attrs.src.getParent(), isWire: true, srcOutputPinNumber: this.getSrcOutputPinNumber(aNode.wire.attrs.src.getParent(), aNode.wire) });
+                X.push({ node: aNode.wire.attrs.src.getParent(), isWire: true, wire: aNode.wire, srcOutputPinNumber: this.getSrcOutputPinNumber(aNode.wire.attrs.src.getParent(), aNode.wire) });
             }
             else {
-                // console.log(aNode.textBox);
-                X.push({ node: aNode.textBox.textBox.text(), isWire: false, srcOutputPinNumber: null });
+                X.push({ node: aNode.textBox.textBox.text(), isWire: false, wire: null, srcOutputPinNumber: null });
             }
         }
         return X;
     }
     coreAlgorithm(node) {
         if (node == null) return;
+
+        if (node.customClass.isOrphaned) {
+            this.compileIssues.push(`Skipped orphaned node: "${node.customClass.type.typeOfNode}"`);
+            let execOutPins = this.getExecOut(node);
+            for (let each of execOutPins) {
+                this.coreAlgorithm(each);
+            }
+            return;
+        }
+
         let execOutPins = this.getExecOut(node);
         let inputPins = this.getInputPins(node);
-        // console.log(node.customClass.type);
-        // console.log(inputPins);
         if (node.customClass.type.isGetSet) {
             if (node.customClass.type.typeOfNode.slice(0, 3) == 'Set') {
                 this.script += `${node.customClass.type.typeOfNode.slice(4)} = ${this.handleInputs(inputPins[0])};\n`;
@@ -154,6 +165,17 @@ export var VSToJS = class {
         if (!inputNode.isWire) {
             return inputNode.node;
         }
+
+        if (inputNode.wire && inputNode.wire.isMismatched) {
+            this.compileIssues.push(`Skipped type-mismatched wire connected to "${inputNode.node.customClass.type.typeOfNode}"`);
+            return "undefined";
+        }
+
+        if (inputNode.node.customClass.isOrphaned) {
+            this.compileIssues.push(`Skipped orphaned node: "${inputNode.node.customClass.type.typeOfNode}"`);
+            return "undefined";
+        }
+
         let inputPins = this.getInputPins(inputNode.node);
         if (inputNode.node.customClass.type.isGetSet) {
             return `${inputNode.node.customClass.type.typeOfNode.slice(4)}`;

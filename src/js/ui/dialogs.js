@@ -6,7 +6,6 @@ export function showAlert(msg) {
     let alertBox = document.getElementById("alert-box");
     document.getElementById("alert-ok-btn").addEventListener("click", (e) => {
         alertBox.classList.toggle("hidden", true);
-        // console.log("ok clicked");
     });
     alertMsg.innerHTML = `<span style="color: tomato;">Alert:</span> ${msg}`;
     alertBox.classList.toggle('hidden', false);
@@ -18,6 +17,37 @@ export function showAlert(msg) {
             value.classList.toggle("hidden", false);
         }
     })
+}
+
+export function showConfirm(msg, onConfirm) {
+    const dialog = document.getElementById("confirm-dialog");
+    const msgEl = document.getElementById("confirm-dialog-msg");
+    const okBtn = document.getElementById("confirm-dialog-ok");
+    const cancelBtn = document.getElementById("confirm-dialog-cancel");
+
+    msgEl.innerHTML = msg;
+
+    [...document.getElementsByClassName("sidebox")].forEach(value => {
+        if (value !== dialog) {
+            value.classList.toggle("hidden", true);
+        }
+    });
+    dialog.classList.toggle("hidden", false);
+
+    const cleanup = () => {
+        dialog.classList.toggle("hidden", true);
+        okBtn.removeEventListener("click", handleOk);
+        cancelBtn.removeEventListener("click", handleCancel);
+    };
+    const handleOk = () => {
+        cleanup();
+        onConfirm();
+    };
+    const handleCancel = () => {
+        cleanup();
+    };
+    okBtn.addEventListener("click", handleOk);
+    cancelBtn.addEventListener("click", handleCancel);
 }
 
 // <div style="font-size: 1.2rem; color: white; padding: 10px; margin-top: 10px; text-align: center"><span
