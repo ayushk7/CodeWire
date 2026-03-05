@@ -230,17 +230,15 @@ export function initFunctionPanel() {
             const tab = tabManager.getActiveTab();
             if (!tab || tab.type !== 'function') return;
             tab.docString = docStringInput.value.trim();
-            Nodes.updateCallNodesDocString(tab.name, tab.docString);
-            tabManager._emit('functionDocChanged', { tab });
         });
     }
 
-    const updateCallersBtn = document.getElementById('update-callers-btn');
-    if (updateCallersBtn) {
-        updateCallersBtn.addEventListener('click', () => {
+    const saveFunctionBtn = document.getElementById('save-function-btn');
+    if (saveFunctionBtn) {
+        saveFunctionBtn.addEventListener('click', () => {
             const tab = tabManager.getActiveTab();
             if (!tab || tab.type !== 'function') return;
-            Nodes.updateCallNodesToDefinition(tab.name, tab.inputParams, tab.outputParams, tab.docString || '');
+            tabManager.saveFunction(tab.id);
         });
     }
 
@@ -280,8 +278,6 @@ export function initFunctionPanel() {
         if (tab.type === 'function' && !tabManager._suppressAutoNodes) {
             createFunctionNodes(tab);
         }
-        refreshFunctionsList();
-        refreshContextMenuFunctions();
     });
 
     tabManager.on('tabClosed', (tab) => {
@@ -311,13 +307,13 @@ export function initFunctionPanel() {
 
     tabManager.on('functionParamsChanged', ({ tab, paramType }) => {
         syncFunctionNodes(tab, paramType);
-        Nodes.updateCallNodesToDefinition(tab.name, tab.inputParams, tab.outputParams, tab.docString || '');
-        refreshFunctionsList();
-        refreshContextMenuFunctions();
     });
 
-    tabManager.on('functionDocChanged', () => {
+    tabManager.on('functionSaved', (tab) => {
+        Nodes.updateCallNodesToDefinition(tab.name, tab.saved.inputParams, tab.saved.outputParams, tab.saved.docString);
+        Nodes.updateCallNodesDocString(tab.name, tab.saved.docString);
         refreshFunctionsList();
+        refreshContextMenuFunctions();
     });
 }
 
@@ -364,13 +360,13 @@ function updatePanelVisibility(tab) {
     const outputSection = document.getElementById('output-params-section');
     const docSection = document.getElementById('doc-string-section');
     const docStringInput = document.getElementById('doc-string-input');
-    const updateCallersSection = document.getElementById('update-callers-section');
+    const saveFunctionSection = document.getElementById('save-function-section');
 
     if (tab.type === 'function') {
         inputSection.classList.remove('hidden');
         outputSection.classList.remove('hidden');
         if (docSection) docSection.classList.remove('hidden');
-        if (updateCallersSection) updateCallersSection.classList.remove('hidden');
+        if (saveFunctionSection) saveFunctionSection.classList.remove('hidden');
         if (docStringInput) docStringInput.value = tab.docString || '';
         refreshInputList();
         refreshOutputList();
@@ -378,7 +374,7 @@ function updatePanelVisibility(tab) {
         inputSection.classList.add('hidden');
         outputSection.classList.add('hidden');
         if (docSection) docSection.classList.add('hidden');
-        if (updateCallersSection) updateCallersSection.classList.add('hidden');
+        if (saveFunctionSection) saveFunctionSection.classList.add('hidden');
     }
 }
 
@@ -387,8 +383,9 @@ function refreshFunctionsList() {
     if (!listEl) return;
     listEl.innerHTML = '';
 
-    const funcTabs = tabManager.getAllFunctionTabs();
+    const funcTabs = tabManager.getAllSavedFunctionTabs();
     for (const ft of funcTabs) {
+        const saved = ft.saved;
         const li = document.createElement('li');
         li.className = 'left-panel-variable';
         li.style.borderWidth = '2px';
@@ -400,7 +397,7 @@ function refreshFunctionsList() {
 
         const nameSpan = document.createElement('span');
         nameSpan.className = 'var-name-text';
-        nameSpan.textContent = ft.name;
+        nameSpan.textContent = saved.name;
         nameSpan.style.overflow = 'hidden';
         nameSpan.style.textOverflow = 'ellipsis';
         nameSpan.style.whiteSpace = 'nowrap';
@@ -408,7 +405,7 @@ function refreshFunctionsList() {
         li.appendChild(nameSpan);
 
         let docIcon = null;
-        if (ft.docString) {
+        if (saved.docString) {
             docIcon = document.createElement('span');
             docIcon.className = 'function-list-doc-icon';
             docIcon.textContent = 'i';
@@ -420,8 +417,8 @@ function refreshFunctionsList() {
         infoSpan.style.fontSize = '0.8rem';
         infoSpan.style.opacity = '0.5';
         infoSpan.style.marginLeft = '0.3rem';
-        const inCount = ft.inputParams.length;
-        const outCount = ft.outputParams.length;
+        const inCount = saved.inputParams.length;
+        const outCount = saved.outputParams.length;
         infoSpan.textContent = `(${inCount}→${outCount})`;
         li.appendChild(infoSpan);
 
@@ -435,7 +432,7 @@ function refreshFunctionsList() {
 
         if (docIcon) {
             li.addEventListener('mouseenter', (e) => {
-                showDocTooltip(docIcon, ft.docString);
+                showDocTooltip(docIcon, saved.docString);
             });
         }
 
@@ -461,7 +458,7 @@ function refreshContextMenuFunctions() {
         section.remove();
     }
 
-    const funcTabs = tabManager.getAllFunctionTabs();
+    const funcTabs = tabManager.getAllSavedFunctionTabs();
     if (funcTabs.length === 0) return;
 
     section = document.createElement('div');
@@ -493,9 +490,10 @@ function refreshContextMenuFunctions() {
     body.className = 'ctx-menu-section-body';
 
     for (const ft of funcTabs) {
+        const saved = ft.saved;
         const item = document.createElement('div');
         item.className = 'context-menu-items';
-        item.textContent = `Call ${ft.name}`;
+        item.textContent = `Call ${saved.name}`;
         item.dataset.functionTabId = ft.id;
         item.style.borderLeftColor = callColor;
         item.style.color = callColor;
@@ -507,8 +505,8 @@ function refreshContextMenuFunctions() {
             const containerRect = stage.container().getBoundingClientRect();
             const x = rect.x - containerRect.x;
             const y = rect.y - containerRect.y;
-            Nodes.CreateCallNode(ft.name, ft.inputParams, ft.outputParams,
-                { x, y }, activeLayer, stage, ft.docString || '');
+            Nodes.CreateCallNode(saved.name, saved.inputParams, saved.outputParams,
+                { x, y }, activeLayer, stage, saved.docString || '');
             activeLayer.draw();
             document.getElementById('ctx-menu-container').classList.add('hidden');
         });

@@ -232,6 +232,12 @@ function printContent(json, stage, layer, wireLayer) {
                 tab.outputParams = funcData.outputParams || [];
                 tab.variables = funcData.variables || [];
                 tab.docString = funcData.docString || '';
+                tab.saved = {
+                    name: tab.name,
+                    inputParams: tab.inputParams.map(p => ({ ...p })),
+                    outputParams: tab.outputParams.map(p => ({ ...p })),
+                    docString: tab.docString,
+                };
 
                 loadLayerContent(funcData.nodesData, funcData.wireData, tab.layer, tab.wireLayer, stage);
 
@@ -248,6 +254,7 @@ function printContent(json, stage, layer, wireLayer) {
 
                 tab.layer.draw();
                 tab.wireLayer.draw();
+                tabManager._emit('functionSaved', tab);
             } catch (err) {
                 tabManager._suppressAutoNodes = false;
                 writeError(err, "Error Occurred In Importing The JSON(Function Data Not Valid)");
