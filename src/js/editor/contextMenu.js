@@ -301,13 +301,14 @@ export var ContextMenu = {
             if (e.dataTransfer.getData("functionTabId")) {
                 const funcTabId = e.dataTransfer.getData("functionTabId");
                 const funcTab = tabManager.getTab(funcTabId);
-                if (funcTab) {
+                if (funcTab && funcTab.saved) {
+                    const saved = funcTab.saved;
                     const containerRect = stage.getContainer().getBoundingClientRect();
                     const x = e.clientX - containerRect.x;
                     const y = e.clientY - containerRect.y;
                     const activeLayer = tabManager.getActiveLayer();
-                    Nodes.CreateCallNode(funcTab.name, funcTab.inputParams, funcTab.outputParams,
-                        { x, y }, activeLayer, stage, funcTab.docString || '');
+                    Nodes.CreateCallNode(saved.name, saved.inputParams, saved.outputParams,
+                        { x, y }, activeLayer, stage, saved.docString || '');
                     activeLayer.draw();
                 }
             } else if (e.dataTransfer.getData("variableName")) {

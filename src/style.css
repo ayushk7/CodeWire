@@ -81,7 +81,7 @@ background-size: 10rem 10rem;
   #input-params-section,
   #output-params-section,
   #doc-string-section,
-  #update-callers-section{
+  #save-function-section{
     width: 100%;
   }
   #ctx-menu-container{
@@ -636,7 +636,7 @@ iframe{
 .left-panel-variable .var-actions .var-delete-btn:hover{
   color: #f44;
 }
-.update-callers-btn{
+.save-function-btn{
   width: 100%;
   min-width: 0;
   max-width: 100%;
@@ -651,7 +651,7 @@ iframe{
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s;
 }
-.update-callers-btn:hover{
+.save-function-btn:hover{
   background: #00a090;
   border-color: #00e5cc;
   color: #fff;

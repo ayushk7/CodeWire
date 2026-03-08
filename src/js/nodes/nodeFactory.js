@@ -626,6 +626,16 @@ export var Nodes = {
             });
         }
 
+        const savedExecOuts = [];
+        for (let j = 0; j < programNode.execOutPins.length; j++) {
+            const ep = programNode.execOutPins[j];
+            if (ep.wire) {
+                const destPin = ep.wire.attrs.dest;
+                deleteWire(ep.wire);
+                savedExecOuts[j] = destPin;
+            }
+        }
+
         const pos = grp.position();
         const grpId = grp.id();
         grp.destroy();
@@ -637,6 +647,14 @@ export var Nodes = {
         }, layer, stage);
         newNode.grp.id(grpId);
         const newCC = newNode.grp.customClass;
+
+        for (let j = 0; j < savedExecOuts.length; j++) {
+            if (!savedExecOuts[j]) continue;
+            const newExecOutPin = newCC.execOutPins[j]?.thisNode;
+            if (newExecOutPin) {
+                addConnectionWire(savedExecOuts[j], newExecOutPin, stage, 1, wireLayer);
+            }
+        }
 
         const outPins = newNode.grp.find('.pin').filter(p => p.attrs.pinType === 'outp');
         outPins.sort((a, b) => {
@@ -866,6 +884,19 @@ export var Nodes = {
             }
         }
 
+        const savedExecIns = [];
+        for (let i = 0; i < programNode.execInPins.length; i++) {
+            const ep = programNode.execInPins[i];
+            if (ep.wire && ep.wire.length > 0) {
+                const wireCopy = [...ep.wire];
+                savedExecIns[i] = wireCopy.map(w => {
+                    const srcPin = w.attrs.src;
+                    deleteWire(w);
+                    return srcPin;
+                });
+            }
+        }
+
         const pos = grp.position();
         const grpId = grp.id();
         grp.destroy();
@@ -877,6 +908,16 @@ export var Nodes = {
         }, layer, stage);
         newNode.grp.id(grpId);
         const newCC = newNode.grp.customClass;
+
+        for (let i = 0; i < savedExecIns.length; i++) {
+            if (!savedExecIns[i]) continue;
+            const newExecInPin = newCC.execInPins[0]?.thisNode;
+            if (newExecInPin) {
+                for (const srcPin of savedExecIns[i]) {
+                    addConnectionWire(newExecInPin, srcPin, stage, 1, wireLayer);
+                }
+            }
+        }
 
         const outputParamsArr = outputParams || [];
         for (let i = 0; i < savedInputs.length && i < outputParamsArr.length; i++) {
