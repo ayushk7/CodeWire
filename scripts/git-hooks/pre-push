@@ -1,0 +1,24 @@
+#!/bin/sh
+# Enforces branch name format: type/short-description
+# Allowed types: feature, fix, chore, docs, refactor, test
+# master and main are always allowed.
+
+# Get current branch
+current_branch=$(git rev-parse --abbrev-ref HEAD)
+
+# Allow master and main
+case "$current_branch" in
+  master|main) exit 0 ;;
+esac
+
+# Must match type/description (lowercase, hyphens allowed)
+if echo "$current_branch" | grep -qE '^(feature|fix|chore|docs|refactor|test)/[a-z0-9][a-z0-9_-]*$'; then
+  exit 0
+fi
+
+echo "Branch name does not follow conventions." >&2
+echo "Use: type/short-description" >&2
+echo "Types: feature, fix, chore, docs, refactor, test" >&2
+echo "Example: feature/node-registry" >&2
+echo "Current branch: $current_branch" >&2
+exit 1

@@ -1,0 +1,30 @@
+#!/bin/sh
+# Enforces Conventional Commits: type(scope): description
+# Types: feat, fix, chore, docs, refactor, style, test, perf
+
+commit_msg_file="$1"
+if [ ! -f "$commit_msg_file" ]; then
+  echo "Error: No commit message file." >&2
+  exit 1
+fi
+
+# Read first line, trim
+first_line=$(head -n 1 "$commit_msg_file" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+
+# Pattern: type or type(scope) followed by : and space and message
+# Also allow Merge commits and Revert
+if echo "$first_line" | grep -qE '^(Merge |Revert "|feat|fix|chore|docs|refactor|style|test|perf)(\([a-zA-Z0-9_-]+\))?!?: .+'; then
+  exit 0
+fi
+
+# Allow merge commit (no colon)
+if echo "$first_line" | grep -qE '^Merge (branch|pull request|remote-tracking)'; then
+  exit 0
+fi
+
+echo "Invalid commit message format." >&2
+echo "Use: type(scope): description" >&2
+echo "Types: feat, fix, chore, docs, refactor, style, test, perf" >&2
+echo "Example: feat(nodes): add custom node type" >&2
+echo "Your first line was: $first_line" >&2
+exit 1

@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>CodeWire</title>
+    <link rel="icon" href="images/Code Wire Logo.svg">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
+    <script src="https://kit.fontawesome.com/337dc27142.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="./vendor/codemirror/codemirror.css">
+    <link rel="stylesheet" href="./vendor/codemirror/material.css">
+
+</head>
+
+<body>
+    <div class="main">
+        <div id="left-panel">
+            <!-- <div>Icons made by <a href="https://www.flaticon.com/authors/google" title="Google">Google</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div> -->
+            <!-- <img src="./images/right-chevron.svg" id="slider"> -->
+            <div class="slider-icon" id="slide-left-panel">
+                <div style="margin-top: 1rem;">
+                    <i class="fas fa-arrow-left"></i>
+                </div>
+            </div>
+            <div class="left-panel-content">
+                <div id="save-function-section" class="hidden">
+                    <div class="left-panel-section-inner" style="padding: 0.5rem 0;">
+                        <button type="button" id="save-function-btn" class="save-function-btn"
+                            title="Save this function definition and make it available for use">
+                            Save Function
+                        </button>
+                    </div>
+                </div>
+                <div id="input-params-section" class="hidden">
+                    <div id="input-params" class="left-panel-tab">Input Parameters <div id="input-params-arrow"
+                            style="position: absolute; right: 0.7rem; transition: 0.1s;"><i class="fas fa-chevron-down"></i></div>
+                    </div>
+                    <div id="input-params-content" class="left-panel-tab-content"></div>
+                </div>
+                <div id="output-params-section" class="hidden">
+                    <div id="output-params" class="left-panel-tab">Output Parameters <div id="output-params-arrow"
+                            style="position: absolute; right: 0.7rem; transition: 0.1s;"><i class="fas fa-chevron-down"></i></div>
+                    </div>
+                    <div id="output-params-content" class="left-panel-tab-content"></div>
+                </div>
+                <div id="doc-string-section" class="hidden">
+                    <div id="doc-string" class="left-panel-tab">Description <div id="doc-string-arrow"
+                            style="position: absolute; right: 0.7rem; transition: 0.1s;"><i class="fas fa-chevron-down"></i></div>
+                    </div>
+                    <div id="doc-string-content" class="left-panel-tab-content">
+                        <div class="left-panel-section-inner">
+                            <textarea id="doc-string-input" class="doc-string-textarea" placeholder="Describe what this function does..." rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div id="add-variables" class="left-panel-tab">Add Variable <div id="add-variables-plus-icon"
+                        style="position: absolute; right: 0.7rem; transition: 0.1s;"><i class="fas fa-chevron-down"></i></div>
+                </div>
+                <div id="add-variables-content" class="left-panel-tab-content">
+                    <div id="create-variables" class="var-inline-edit">
+                        <select id="variable-data-type">
+                            <option value="Number" selected>Number</option>
+                            <option value="Boolean">Boolean</option>
+                            <option value="String">String</option>
+                            <option value="Array">Array</option>
+                        </select>
+                        <input type="text" placeholder="Name" id="variable-name">
+                        <input type="number" placeholder="Default value" title="enter number"
+                            id="number-default-value" value="0">
+                        <input type="text" placeholder="Default value" title="enter string"
+                            id="string-default-value" value="hello" class="hidden">
+                        <input type="text" placeholder="[1, 2, 3]"
+                            title="enter array values in [1, 2, 3, 4] format"
+                            id="array-default-value" value="[]" class="hidden">
+                        <select id="bool-default-value" class="hidden">
+                            <option value="true" selected>True</option>
+                            <option value="false">False</option>
+                        </select>
+                        <div class="var-edit-actions">
+                            <button class="var-edit-save" id="create-btn">Create</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="list-of-variables" class="left-panel-tab">Variable List<div id="list-of-variables-down-icon"
+                        style="position: absolute; right: 0.7rem; transition: 0.1s;"><i class="fas fa-chevron-down"></i></div>
+                </div>
+                <div id="list-of-variables-content" class="left-panel-tab-content">
+                    <div class="variableList" style="width: 100%;">
+                        <ul class="list-group list-group-flush" id="variable-list">
+                        </ul>
+                    </div>
+                </div>
+                <div id="list-of-functions" class="left-panel-tab">Functions<div id="list-of-functions-down-icon"
+                        style="position: absolute; right: 0.7rem; transition: 0.1s;"><i class="fas fa-chevron-down"></i></div>
+                </div>
+                <div id="list-of-functions-content" class="left-panel-tab-content">
+                    <div class="variableList" style="width: 100%;">
+                        <ul id="function-list" class="param-list"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="tab-bar">
+            <div id="tab-list"></div>
+            <button id="add-tab-btn" title="Add Function">+</button>
+        </div>
+        <div id="container">
+
+        </div>
+        <div id="live-code-container" class="live-code-container live-code-closed">
+            <div class="icons-live-code">
+                <div id="live-code-arrow"><i class="fas fa-arrow-left"></i></div>
+                <div id="live-code-refresh" title="Ctrl+Q"><i class="fas fa-sync"></i></div>
+                <h3 style="margin-left: 2rem; color: yellowgreen; transform: translateY(2px);">Live Code</h3>
+            </div>
+            <div id="live-code">
+
+            </div>
+        </div>
+
+    </div>
+    <div class="rightbar">
+        <button class="icon" id="Run">
+            Run
+        </button>
+        <button class="icon" id="Code">
+            <span>Code</span>
+        </button>
+        <button class="icon" id="Github">
+            <a href="https://github.com/ayushk7/CodeWire" target="_blank" style="text-decoration: none;"
+                class="icon">Github</a>
+        </button>
+        <button class="icon" id="Console">
+            Output
+        </button>
+        <button class="icon" id="import">
+            Import
+        </button>
+        <button class="icon" id="export">
+            Export
+            <a id="exportAnchorElem" style="display:none"></a>
+        </button>
+        <button class="icon" id="starter">
+            Starter
+        </button>
+        <button class="icon" id="refresh">
+            New
+        </button>
+        <button class="icon" id="reload">
+            Reload
+        </button>
+        <button class="icon" id="save">
+            Save
+        </button>
+
+    </div>
+
+    <div id="import-overlay" class="hidden">
+        <div id="import-modal">
+            <div class="import-modal-header">
+                <span class="import-modal-title">Import Script</span>
+                <button id="import-close-btn" class="import-modal-close">&times;</button>
+            </div>
+            <div id="import-dropzone">
+                <i class="fas fa-file-upload import-dropzone-icon"></i>
+                <p class="import-dropzone-text">Drag & drop a <strong>.json</strong> file here, or click to browse</p>
+                <input id="upload-json" type="file" accept=".json">
+            </div>
+            <div id="import-file-info" class="hidden">
+                <i class="fas fa-file-code"></i>
+                <span id="import-filename"></span>
+                <button id="import-file-clear" title="Remove file">&times;</button>
+            </div>
+            <div class="import-modal-warning">
+                <i class="fas fa-exclamation-triangle"></i> Current script will be replaced
+            </div>
+            <div class="import-modal-footer">
+                <button id="import-cancel-btn" class="import-btn-secondary">Cancel</button>
+                <button id="import-btn" class="import-btn-primary">Import</button>
+            </div>
+        </div>
+    </div>
+    <div id="save-menu" class="sidebox hidden">
+        <div class="sidebox-flex">
+            <div style="font-size: 1.2rem; color: white; padding: 10px; text-align: center;"><span
+                    style="color: yellowgreen;">Save Found:</span> Reload Last Save?</div>
+            <button id="load-btn" class="icon">Load</button>
+            <button id="load-cancel-btn" class="icon">No</button>
+        </div>
+    </div>
+    <div id="saving" class="sidebox hidden">
+        <div class="sidebox-flex">
+            <div style="font-size: 1.2rem; color: white; padding: 10px; text-align: center;">Saving...</div>
+        </div>
+    </div>
+    <div id="alert-box" class="sidebox hidden">
+        <div class="sidebox-flex">
+            <div style="font-size: 1.2rem; color: white; padding: 10px;; text-align: center;"><span
+                    style="color: tomato;">Alert:</span> Export Current script If Not Exported</div>
+            <button id="alert-ok-btn" class="icon">OK</button>
+        </div>
+    </div>
+    <div id="refresh-box" class="sidebox hidden">
+        <div class="sidebox-flex">
+            <div style="font-size: 1.2rem; color: white; padding: 10px;; text-align: center;;"><span
+                    style="color: tomato;">Alert:</span> Current Script Will Be Lost</div>
+            <button id="refresh-btn" class="icon">Refresh</button>
+            <button id="refresh-cancel-btn" class="icon">Cancel</button>
+        </div>
+    </div>
+    <div id="confirm-dialog" class="sidebox hidden">
+        <div class="sidebox-flex">
+            <div id="confirm-dialog-msg" style="font-size: 1.1rem; color: white; text-align: center;"></div>
+            <div class="confirm-actions">
+                <button id="confirm-dialog-ok" class="icon">Delete</button>
+                <button id="confirm-dialog-cancel" class="icon">Cancel</button>
+            </div>
+        </div>
+    </div>
+    <div id="delete-ctx-container" class="context-menu-items hidden">
+        <div>Delete</div>
+    </div>
+    <div id="get-set-ctx-menu-container" class="hidden">
+        <div id="get-set-ctx-menu">
+            <div class="context-menu-items" data-isGetOrSet="Get">Get</div>
+            <div class="context-menu-items" data-isGetOrSet="Set">Set</div>
+        </div>
+    </div>
+    <div id="ctx-menu-container" class="hidden">
+        <input type="text" id="ctx-search-bar" placeholder="Search...">
+        <div id="context-menu">
+            <!-- Populated from NodeRegistry by contextMenu.js -->
+        </div>
+    </div>
+    <input type="number" name="number-ip" id="number-ip" class="ipn" title="Enter Number">
+    <input type="text" name="string-ip" id="string-ip" class="ips"
+        title="if(string) then enter with single 'quotes' only with no special character inbetween">
+    <input type="text" name="array-ip" id="array-ip" class="ips" title="enter array in [1, 2, 3, 4] format">
+    <select class="ipb" id="bool-ip" title="select value">
+        <option value=true selected>true</option>
+        <option value=false>false</option>
+    </select>
+    <input type="text" id="group-name-ip" class="ips group-name-input" placeholder="Group Name">
+
+    <div class="hidden" id="console-window">
+        <p style="position: absolute; font-size: 1.4rem; font-family: 'Courier New', Courier, monospace; padding: 0.5rem 1rem;">Console</p>
+        <button id="cross-console" class="cross">
+            <div>+</div>
+        </button>
+        <iframe id="console">
+        </iframe>
+    </div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+    crossorigin="anonymous"></script>
+<script src="./vendor/codemirror/codemirror.js"></script>
+<script src="./vendor/codemirror/javascript/javascript.js"></script>
+<script src="./vendor/jquery/jquery.js"></script>
+<script src="./vendor/konva/konva.min.js"></script>
+<script type="module" src="./js/app.js"></script>
+
+</html>
